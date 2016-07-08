@@ -189,7 +189,7 @@ function init_wc_gateway_paysoncheckout_class() {
 					'default'     => '',
 				),
 				'testmode' => array(
-					'title'       => __( 'PaysonCheckout testmode', 'woocommerce-gateway-paysoncheckout' ),
+					'title'       => __( 'Testmode', 'woocommerce-gateway-paysoncheckout' ),
 					'type'        => 'checkbox',
 					'label'       => __( 'Enable PaysonCheckout testmode', 'woocommerce-gateway-paysoncheckout' ),
 					'default'     => 'no',

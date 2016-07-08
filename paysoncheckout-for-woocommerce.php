@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:     PaysonCheckout 2.0 gateway for WooCommerce
+ * Plugin Name:     PaysonCheckout 2.0 for WooCommerce
  * Plugin URI:      http://krokedil.com/
- * Description:     Provides PaysonCheckout 2.0 payment gateway for WooCommerce.
+ * Description:     Provides a PaysonCheckout 2.0 payment gateway for WooCommerce.
  * Version:         0.1
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
@@ -44,4 +44,3 @@ function load_custom_checkout_template( $located, $template_name ) {
 	}
 	return $located;
 }
-//add_filter( 'wc_get_template', 'load_custom_checkout_template', 10, 2 );
