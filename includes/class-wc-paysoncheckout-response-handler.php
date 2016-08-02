@@ -61,8 +61,8 @@ class WC_PaysonCheckout_Response_Handler {
 			// Add order addresses
 			$this->add_order_addresses( $order, $checkout );
 			
-			// Add order customer info
-			//$this->add_order_customer_info( $order, $checkout );
+			// Add Payson order status
+			update_post_meta( $order->id, '_payson_order_status', $checkout->status );
 			
 			// Change the order status to Processing/Completed in WooCommerce
 			$order->payment_complete( $checkout->id );
@@ -101,7 +101,7 @@ class WC_PaysonCheckout_Response_Handler {
 		update_post_meta( $order_id, '_shipping_city', $checkout->customer->city );
 		update_post_meta( $order_id, '_shipping_country', $checkout->customer->countryCode );
 		// Store PaysonCheckout locale
-		update_post_meta( $order_id, '_klarna_locale', $checkout->gui->locale );
+		update_post_meta( $order_id, '_payson_locale', $checkout->gui->locale );
 	}
 	
 	
