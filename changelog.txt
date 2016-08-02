@@ -1,0 +1,5 @@
+*** PaysonCheckout 2.0 Changelog ***
+
+2016.08.02		- version 0.2
+* Tweak			- Improved display of the Payson iframe in checkout pages with a two column layout.
+* Tweak			- Added Payson order status readyToShip as post meta to orders on payment_complete().
