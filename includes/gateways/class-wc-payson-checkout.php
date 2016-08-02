@@ -50,14 +50,15 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->description = $this->get_option( 'description' );
 			$this->debug       = $this->get_option( 'debug' );
 			*/
-			$this->enabled		= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
-			$this->title		= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
-			$this->description	= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
-			$this->merchant_id	= ( isset( $this->settings['merchant_id'] ) ) ? $this->settings['merchant_id'] : '';
-			$this->api_key		= ( isset( $this->settings['api_key'] ) ) ? $this->settings['api_key'] : '';
-			$this->color_scheme	= ( isset( $this->settings['color_scheme'] ) ) ? $this->settings['color_scheme'] : '';
-			$this->debug		= ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : '';
-
+			$this->enabled			= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
+			$this->title			= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
+			$this->description		= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
+			$this->merchant_id		= ( isset( $this->settings['merchant_id'] ) ) ? $this->settings['merchant_id'] : '';
+			$this->api_key			= ( isset( $this->settings['api_key'] ) ) ? $this->settings['api_key'] : '';
+			$this->color_scheme		= ( isset( $this->settings['color_scheme'] ) ) ? $this->settings['color_scheme'] : '';
+			$this->debug			= ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : '';
+			$this->mobile_threshold	= ( isset( $this->settings['mobile_threshold'] ) ) ? $this->settings['mobile_threshold'] : '';
+			
 			$this->supports = array(
 				'products',
 				'refunds'
@@ -209,6 +210,12 @@ function init_wc_gateway_paysoncheckout_class() {
 					'default'     => 'gray',
 					'desc_tip'    => true
 				),
+				'mobile_threshold' => array(
+					'title'       => __( 'Mobile threshold', 'woocommerce-gateway-paysoncheckout' ),
+					'type'        => 'text',
+					'description' => __( 'If your theme has a two column checkout layout; specify the width in px (but without the actual px, e.g. 767) where the checkout layout alters to a one column layout. Leave blank to disable this feature. Storefront and one column checkout layouts will not require this setting.', 'woocommerce-gateway-paysoncheckout' ),
+					'default'     => '',
+				),
 				'debug' => array(
 					'title'       => __( 'Debug Log', 'woocommerce-gateway-paysoncheckout' ),
 					'type'        => 'checkbox',
@@ -280,6 +287,9 @@ function init_wc_gateway_paysoncheckout_class() {
 			} else {
 				$current_theme = 'somethingelse';
 			}
+			
+			// Get mobile threshold
+			$mobile_threshold = $this->mobile_threshold;
 			
 			if ( ( is_checkout() || defined( 'WOOCOMMERCE_CHECKOUT' ) && 'yes' == $this->enabled ) ) {
 				?>
@@ -370,22 +380,32 @@ function init_wc_gateway_paysoncheckout_class() {
 				        console.log( 'sendUpdate' );
 				    }
 				    
+				    
 				    // Function for moving the Payson Checkout iframe. 
-				    // Currently only if Flatsome theme is used
 				    function maybe_move_payson_iframe() {
+					    
 					    // Declare the theme
 						var current_theme = '<?php echo $current_theme; ?>';
 						
-					    if ('Flatsome' == current_theme ) {
+						// Declare mobile threshold
+						var mobile_threshold = '<?php echo $mobile_threshold; ?>';
+						
+						// Only run this if a mobile threshold is set in settings
+						if( mobile_threshold ) {
 						    var $iW = jQuery(window).width();
-							if ($iW > 767){
-								//jQuery('.order-review #customer_details_payson').remove();
-								jQuery('#customer_details_payson').appendTo(jQuery('.large-7.columns')); // Flatsome
+							if ($iW > mobile_threshold){
+								// Move the payson iframe to billing/shipping area if window is larger than the mobile threshold
+								if ('Flatsome' == current_theme ) {
+									jQuery('#customer_details_payson').appendTo(jQuery('.large-7.columns')); // Flatsome
+								} else {
+									jQuery('#customer_details_payson').insertBefore('#customer_details'); // Themes with WooCommerce standard html markup
+								}
 							} else {
-								jQuery('#customer_details_payson').appendTo('#order_review'); // Flatsome
+								// Move payson iframe to below the order review box if the window is smaller than the mobile threshold
+								jQuery('#customer_details_payson').appendTo('#order_review');
 							}
 						}
-				    }
+					}
 	
 				</script>
 				<?php
