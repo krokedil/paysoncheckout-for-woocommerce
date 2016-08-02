@@ -298,24 +298,30 @@ function init_wc_gateway_paysoncheckout_class() {
 					// Document ready
 					jQuery(document).ready(function ($) {
 						
+						// Check if we need to move the payson iframe on page load
+						maybe_move_payson_iframe();
+						
+						// Check if we need to move the payson iframe after page resize
+						var id;
+						$(window).resize(function() {
+						    clearTimeout(id);
+						    id = setTimeout(maybe_move_payson_iframe, 500);
+						    
+						});
+						
 						// Check if Payson payment method is selected
 						var selected_payment_method = jQuery('input[name=payment_method]:checked').val();
 						//console.log( selected_payment_method );
 						
-						// Hide the .get-address-box if the customer is a individual, the selected payment method is invoice and $this->country = Norway
+						// Hide/show shipping and billing form depending on the selecter payment gateway
 						if ( selected_payment_method == 'paysoncheckout') {
 							jQuery('#customer_details').hide();
 							jQuery('.checkout-group').hide(); // Flatsome
-							
 							jQuery('.place-order').hide();
-							
-							maybe_move_payson_iframe();
-							
 							jQuery('#customer_details_payson').show();
 						} else {
 							jQuery('#customer_details').show();
 							jQuery('.checkout-group').show(); // Flatsome
-							
 							jQuery('.place-order').show();
 							jQuery('#customer_details_payson').hide();
 						}
@@ -326,21 +332,15 @@ function init_wc_gateway_paysoncheckout_class() {
 	
 							var selected_payment_method = jQuery('input[name=payment_method]:checked').val();
 							console.log( selected_payment_method );
-							
-														
+						
 							if ( selected_payment_method == 'paysoncheckout') {
 								jQuery('#customer_details').hide();
 								jQuery('.checkout-group').hide(); // Flatsome
-								
 								jQuery('.place-order').hide();
-								
-								maybe_move_payson_iframe();
-
 								jQuery('#customer_details_payson').show();
 							} else {
 								jQuery('#customer_details').show();
 								jQuery('.checkout-group').show(); // Flatsome
-								
 								jQuery('.place-order').show();
 								jQuery('#customer_details_payson').hide();
 							}
@@ -348,14 +348,12 @@ function init_wc_gateway_paysoncheckout_class() {
 	
 						});
 						
+						// On ajax complete
 						jQuery(document).ajaxComplete(function () {
 							var selected_payment_method = jQuery('input[name=payment_method]:checked').val();
 							if ( selected_payment_method == 'paysoncheckout') {
 								jQuery('#customer_details').hide();
 								jQuery('.place-order').hide();
-								
-								maybe_move_payson_iframe();
-								
 								jQuery('#customer_details_payson').show();
 							} else {
 								jQuery('#customer_details').show();
