@@ -22,7 +22,6 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	 * @return array $order_lines
 	 */
 	public function get_order_lines( $order_id = false ) {
-		
 		if ( $order_id ) {
 			return $this->get_order_lines_from_order( $order_id );
 		} else {
@@ -31,7 +30,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	}
 
 	/**
-	 * Process WooCommerce order into AfterPay order lines
+	 * Process WooCommerce order into Payson order lines
 	 *
 	 * @param $order_id
 	 *
@@ -94,7 +93,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 				$price = round( ( $order_fee_value['line_tax'] + $order_fee_value['line_total'] ), 2 );
 				$qty = 1;
 				$vat = round( $order_fee_value['line_tax'] / $order_fee_value['line_total'], 2 );
-				$sku = 'Shipping';
+				$sku = 'Fee';
 				$payData->AddOrderItem(new  PaysonEmbedded\OrderItem($title, $price, $qty, $vat, $sku, PaysonEmbedded\OrderItemType::PHYSICAL, 0, 'ean12345', 'http://uri', 'http://imageUri'));
 				
 			}
@@ -106,25 +105,30 @@ class WC_PaysonCheckout_Process_Order_Lines {
 
 
 	/**
-	 * Process WooCommerce cart into AfterPay order lines
+	 * Process WooCommerce cart into Payson order lines
 	 *
 	 * @return array
 	 */
 	public function get_order_lines_from_cart() {
-		$order_lines = array();
+		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		
+		if( 'EUR' == get_woocommerce_currency() ) {
+			$payData = new  PaysonEmbedded\PayData(PaysonEmbedded\CurrencyCode::EUR);
+		} else {
+			$payData = new  PaysonEmbedded\PayData(PaysonEmbedded\CurrencyCode::SEK);
+		}
 
 		// Process order lines
 		if ( sizeof( WC()->cart->cart_contents ) > 0 ) {
-			foreach ( WC()->cart->cart_contents as $item_key => $item ) {
-				$order_lines[] = array(
-					'GrossUnitPrice'  => ( $item['line_tax'] + $item['line_total'] ) / $item['quantity'],
-					'ItemDescription' => get_the_title( $item['product_id'] ),
-					'ItemID'          => $item['product_id'],
-					'LineNumber'      => $item_key,
-					'NetUnitPrice'    => $item['line_total'] / $item['quantity'],
-					'Quantity'        => $item['quantity'],
-					'VatPercent'      => round( $item['line_tax'] / $item['line_total'], 4 ) * 100
-				);
+			foreach ( WC()->cart->cart_contents as $cart_item_key => $cart_item ) {
+				$_product     		= apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+				$product_name      	= apply_filters( 'woocommerce_cart_item_name', $_product->get_title(), $cart_item, $cart_item_key );
+				$product_price     	= ($cart_item['line_total'] + $cart_item['line_tax'] )/ $cart_item['quantity'];
+				$qty 				= $cart_item['quantity'];
+				$sku				= $_product->get_sku();
+				$vat 				= round( $cart_item['line_tax'] / $cart_item['line_total'], 2 );
+				
+				$payData->AddOrderItem(new  PaysonEmbedded\OrderItem($product_name, $product_price, $qty, $vat, $sku, PaysonEmbedded\OrderItemType::PHYSICAL, 0, 'ean12345', 'http://uri', 'http://imageUri'));
 			}
 		}
 
@@ -135,20 +139,18 @@ class WC_PaysonCheckout_Process_Order_Lines {
 					$shipping_tax = array_sum( $shipping_rate_value->taxes );
 
 					if ( $shipping_rate_value->cost > 0 ) {
-						$vat_percent = round( $shipping_tax / $shipping_rate_value->cost, 4 ) * 100;
+						$vat_percent = round( $shipping_tax / $shipping_rate_value->cost, 2 );
 					} else {
 						$vat_percent = 0;
 					}
-
-					$order_lines[] = array(
-						'GrossUnitPrice'  => $shipping_tax + $shipping_rate_value->cost,
-						'ItemDescription' => $shipping_rate_value->label,
-						'ItemID'          => $shipping_rate_value->id,
-						'LineNumber'      => $shipping_rate_key,
-						'NetUnitPrice'    => $shipping_rate_value->cost,
-						'Quantity'        => 1,
-						'VatPercent'      => $vat_percent
-					);
+				
+					$title = $shipping_rate_value->label;
+					$price = $shipping_rate_value->cost + $shipping_tax;
+					$qty = 1;
+					$sku = 'Shipping';
+					
+					$payData->AddOrderItem(new  PaysonEmbedded\OrderItem($title, $price, $qty, $vat_percent, $sku, PaysonEmbedded\OrderItemType::PHYSICAL, 0, 'ean12345', 'http://uri', 'http://imageUri'));
+				
 				}
 			}
 
@@ -158,20 +160,15 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		if ( WC()->cart->fee_total > 0 ) {
 			foreach ( WC()->cart->get_fees() as $cart_fee ) {
 				$cart_fee_tax = array_sum( $cart_fee->tax_data );
-
-				$order_lines[] = array(
-					'GrossUnitPrice'  => round( ( $cart_fee->amount + $cart_fee_tax ), 2 ),
-					'ItemDescription' => $cart_fee->label,
-					'ItemID'          => $cart_fee->id,
-					'LineNumber'      => $cart_fee->id,
-					'NetUnitPrice'    => $cart_fee->amount,
-					'Quantity'        => 1,
-					'VatPercent'      => round( $cart_fee_tax / $cart_fee->amount, 4 ) * 100
-				);
+				$title = $cart_fee->label;
+				$price = round( ( $cart_fee->amount + $cart_fee_tax ), 2 );
+				$qty = 1;
+				$vat = round( $cart_fee_tax / $cart_fee->amount, 2 );
+				$sku = 'Fee';
+				$payData->AddOrderItem(new  PaysonEmbedded\OrderItem($title, $price, $qty, $vat, $sku, PaysonEmbedded\OrderItemType::PHYSICAL, 0, 'ean12345', 'http://uri', 'http://imageUri'));
 			}
 		}
-		
-		return $order_lines;
+		return $payData;
 	}
 	
 	
