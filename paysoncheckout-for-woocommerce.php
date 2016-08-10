@@ -30,6 +30,7 @@ include_once( 'includes/class-wc-paysoncheckout-wc-order.php' );
 include_once( 'includes/class-wc-paysoncheckout-create-checkout.php' );
 include_once( 'includes/class-wc-paysoncheckout-ajax-handler.php' );
 include_once( 'includes/class-wc-paysoncheckout-response-handler.php' );
+include_once( 'includes/class-wc-paysoncheckout-capture.php' );
 
 //include_once( 'includes/class-process-order-lines.php' );
 

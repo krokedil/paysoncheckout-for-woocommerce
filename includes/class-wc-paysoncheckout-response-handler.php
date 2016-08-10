@@ -62,7 +62,7 @@ class WC_PaysonCheckout_Response_Handler {
 			$this->add_order_addresses( $order, $checkout );
 			
 			// Add Payson order status
-			update_post_meta( $order->id, '_payson_order_status', $checkout->status );
+			update_post_meta( $order->id, '_paysoncheckout_order_status', $checkout->status );
 			
 			// Change the order status to Processing/Completed in WooCommerce
 			$order->payment_complete( $checkout->id );
