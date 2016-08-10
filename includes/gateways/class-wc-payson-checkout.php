@@ -203,7 +203,7 @@ function init_wc_gateway_paysoncheckout_class() {
 					'type'    => 'checkbox',
 					'label'   => __( 'Enable Payson order capture on WooCommerce order completion and Payson order cancellation on WooCommerce order cancellation', 'woocommerce-gateway-paysoncheckout' ),
 					'default' => 'yes'
-				);
+				),
 				'color_scheme'		=> array(
 					'title'       => __( 'Color Scheme', 'woocommerce-gateway-paysoncheckout' ),
 					'type'        => 'select',
