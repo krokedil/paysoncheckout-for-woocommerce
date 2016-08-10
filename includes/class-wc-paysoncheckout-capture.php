@@ -52,7 +52,7 @@ class WC_PaysonCheckout_Capture {
 		// If this reservation was already cancelled, do nothing.
 		if ( get_post_meta( $this->order_id, '_paysoncheckout_reservation_captured', true ) ) {
 			$order->add_order_note(
-				__( 'Could not capture PaysonCheckout reservation, PaysonCheckout reservation is already captured.', 'woocommerce-gateway-afterpay' )
+				__( 'Could not capture PaysonCheckout reservation, PaysonCheckout reservation is already captured.', 'woocommerce-gateway-paysoncheckout' )
 			);
 
 			return;
@@ -69,8 +69,6 @@ class WC_PaysonCheckout_Capture {
 		$checkout_temp_obj 		= $payson_api->GetCheckout( $order->get_transaction_id() );
 		
 		$payson_embedded_status = $checkout_temp_obj->status;
-		$response = $payson_api->ShipCheckout($checkout_temp_obj);
-		
 		
 		try {
 			$response = $payson_api->ShipCheckout($checkout_temp_obj);
@@ -81,14 +79,14 @@ class WC_PaysonCheckout_Capture {
 				// Add Payson order status
 				update_post_meta( $order->id, '_paysoncheckout_order_status', $response->status );
 
-				$order->add_order_note( sprintf( __( 'PaysonCheckout reservation was successfully captured, invoice number: %s.', 'woocommerce-gateway-afterpay' ), '' ) );
+				$order->add_order_note( sprintf( __( 'PaysonCheckout reservation was successfully captured, invoice number: %s.', 'woocommerce-gateway-paysoncheckout' ), '' ) );
 
 			} else {
-				$order->add_order_note( __( 'PaysonCheckout reservation could not be captured.', 'woocommerce-gateway-afterpay' ) );
+				$order->add_order_note( __( 'PaysonCheckout reservation could not be captured.', 'woocommerce-gateway-paysoncheckout' ) );
 			}
 		} catch ( Exception $e ) {
 			WC_Gateway_AfterPay_Factory::log( $e->getMessage() );
-			$order->add_order_note( sprintf( __( 'PaysonCheckout reservation could not be captured, reason: %s.', 'woocommerce-gateway-afterpay' ), $e->getMessage() ) );
+			$order->add_order_note( sprintf( __( 'PaysonCheckout reservation could not be captured, reason: %s.', 'woocommerce-gateway-paysoncheckout' ), $e->getMessage() ) );
 		}
 		
 	}
