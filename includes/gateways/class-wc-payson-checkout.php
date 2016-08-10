@@ -104,6 +104,8 @@ function init_wc_gateway_paysoncheckout_class() {
 			    echo $checkout->snippet; 
 				echo "</div>";
 				WC()->session->__unset( 'payson_checkout_id' );
+				WC()->session->__unset( 'ongoing_payson_order' );
+				
 			}
 		}
 		
