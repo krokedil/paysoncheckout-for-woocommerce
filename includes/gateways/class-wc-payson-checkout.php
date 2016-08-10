@@ -57,6 +57,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->api_key			= ( isset( $this->settings['api_key'] ) ) ? $this->settings['api_key'] : '';
 			$this->color_scheme		= ( isset( $this->settings['color_scheme'] ) ) ? $this->settings['color_scheme'] : '';
 			$this->debug			= ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : '';
+			$this->order_management	= ( isset( $this->settings['order_management'] ) ) ? $this->settings['order_management'] : '';
 			$this->mobile_threshold	= ( isset( $this->settings['mobile_threshold'] ) ) ? $this->settings['mobile_threshold'] : '';
 			
 			$this->supports = array(
@@ -197,6 +198,12 @@ function init_wc_gateway_paysoncheckout_class() {
 					'label'       => __( 'Enable PaysonCheckout testmode', 'woocommerce-gateway-paysoncheckout' ),
 					'default'     => 'no',
 				),
+				'order_management' => array(
+					'title'   => __( 'Enable Order Management', 'woocommerce-gateway-paysoncheckout' ),
+					'type'    => 'checkbox',
+					'label'   => __( 'Enable Payson order capture on WooCommerce order completion and Payson order cancellation on WooCommerce order cancellation', 'woocommerce-gateway-paysoncheckout' ),
+					'default' => 'yes'
+				);
 				'color_scheme'		=> array(
 					'title'       => __( 'Color Scheme', 'woocommerce-gateway-paysoncheckout' ),
 					'type'        => 'select',
