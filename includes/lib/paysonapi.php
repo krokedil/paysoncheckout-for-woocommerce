@@ -87,7 +87,6 @@ namespace PaysonEmbedded {
         }
 
         private function doCurlRequest($method, $url, $postfields) {
-	        
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $this->authorizationHeader());
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

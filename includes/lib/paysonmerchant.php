@@ -8,8 +8,8 @@ namespace PaysonEmbedded {
         /** @var url $notificationUri Notification URI which receives CPR-status updates. */
         public $notificationUri;
         /** @var url $verificationUri Validation URI which is called to verify an order before it can be paid. */
-        public $verificationUri = NULL;
-        /** @var url $termsUri URI som leder till säljarens villkor. */
+        public $validationUri = NULL;
+        /** @var url $termsUri URI leading to the sellers terms. */
         public $termsUri;
         /** @var string $reference Merchants own reference of the checkout.*/
         public $reference = NULL;
@@ -18,19 +18,19 @@ namespace PaysonEmbedded {
         /** @var string $integrationInfo Information about the integration. */
         public $integrationInfo = NULL;
 
-        public function __construct($checkoutUri, $confirmationUri, $notificationUri, $termsUri, $partnerId = NULL, $reference, $integrationInfo = ' PaysonEmbedded|1.0|NONE') {
+        public function __construct($checkoutUri, $confirmationUri, $notificationUri, $termsUri, $partnerId = NULL, $integrationInfo = ' PaysonEmbedded|1.0|NONE') {
             $this->checkoutUri = $checkoutUri;
             $this->confirmationUri = $confirmationUri;
             $this->notificationUri = $notificationUri;
             $this->termsUri = $termsUri;
             $this->partnerId = $partnerId;
-            $this->reference = $reference;
             $this->integrationInfo = $integrationInfo;
         }
         
         public static function create($data) {
-            $merchant =  new Merchant($data->checkoutUri,$data->confirmationUri,$data->notificationUri,$data->termsUri, $data->partnerId, $data->reference, $data->integrationInfo);
-            //
+            $merchant =  new Merchant($data->checkoutUri,$data->confirmationUri,$data->notificationUri,$data->termsUri, $data->partnerId, $data->integrationInfo);
+            $merchant->reference=$data->reference;
+            $merchant->validationUri=$data->validationUri;
             return $merchant;
         }
      

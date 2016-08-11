@@ -10,6 +10,8 @@ namespace PaysonEmbedded{
     
     class OrderItem {
         
+        /** @var string $id */
+        public $itemId;
         /** @var float $discountRate Discount rate of the article (Decimal number (0.00-1.00)). */
         public $discountRate;
         /** @var float $creditedAmount Credited amount (Decimal number (with two decimals)). */
@@ -53,7 +55,7 @@ namespace PaysonEmbedded{
             $this->type = $type;
             $this->reference = $reference;
             
-            if(!$name || !isset($unitPrice) || !$quantity || !isset($taxRate) || !$type || !$reference) {
+			if(!$name || is_null($unitPrice) || !$quantity || is_null($taxRate) || !$type || !$reference) {
                 throw new PaysonApiException("Not all of mandatory fields are set for creating of an OrderItem object");
             }
             
@@ -68,6 +70,9 @@ namespace PaysonEmbedded{
             $item = new OrderItem($data->name, $data->unitPrice, $data->quantity, $data->taxRate, $data->reference, $data->type, isset($data->ean)?$data->ean:null, isset($data->uri)?$data->uri:null, isset($data->imageUri)?$data->imageUri:null);
             $item->discountRate=$data->discountRate;
             $item->creditedAmount=$data->creditedAmount;
+            if(isset($data->itemId)) {
+                $item->itemId = $data->itemId;
+            }
             return $item;
         }
         

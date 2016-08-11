@@ -19,6 +19,9 @@ namespace PaysonEmbedded {
         /** @var string $id */
         public $id;
         
+        /** @var int $purchaseId */
+        public $purchaseId;
+        
         /** @var string $snippet */
         public $snippet;
        
@@ -27,6 +30,7 @@ namespace PaysonEmbedded {
             $this->payData = $payData;
             $this->gui = $gui?:new Gui();
             $this->customer = $customer?:new Customer();
+            $this->purchaseId = null;
         }
         
         public static function create($data) {
@@ -34,6 +38,9 @@ namespace PaysonEmbedded {
             $checkout->status = $data->status;
             $checkout->id = $data->id;
             $checkout->snippet = $data->snippet;
+            if(isset($data->purchaseId)) {
+                $checkout->purchaseId = $data->purchaseId;
+            }
             return $checkout;
         }
       
