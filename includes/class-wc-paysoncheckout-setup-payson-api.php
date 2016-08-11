@@ -33,6 +33,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$payData		= $this->set_pay_data( $order_id );
 		$gui			= $this->set_gui();
 		$customer		= $this->set_customer();
+		//$purchaseId		= $order_id;
 		
 		// Gather
 		$checkout = new  PaysonEmbedded\Checkout($paysonMerchant, $payData, $gui, $customer); 
@@ -105,7 +106,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$termsUri        	= wc_get_page_permalink( 'terms' );
 		$partnerId			= 'Krokedil';
 		$reference 			= $order_id;
-	
+		
 		$paysonMerchant = new PaysonEmbedded\Merchant($checkoutUri, $confirmationUri, $notificationUri, $termsUri, $partnerId, $reference);
 		
 		return $paysonMerchant;

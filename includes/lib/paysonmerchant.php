@@ -18,12 +18,13 @@ namespace PaysonEmbedded {
         /** @var string $integrationInfo Information about the integration. */
         public $integrationInfo = NULL;
 
-        public function __construct($checkoutUri, $confirmationUri, $notificationUri, $termsUri, $partnerId = NULL, $integrationInfo = ' PaysonEmbedded|1.0|NONE') {
+        public function __construct($checkoutUri, $confirmationUri, $notificationUri, $termsUri, $partnerId, $reference, $integrationInfo = ' PaysonEmbedded|1.0|NONE') {
             $this->checkoutUri = $checkoutUri;
             $this->confirmationUri = $confirmationUri;
             $this->notificationUri = $notificationUri;
             $this->termsUri = $termsUri;
             $this->partnerId = $partnerId;
+            $this->reference = $reference;
             $this->integrationInfo = $integrationInfo;
         }
         
