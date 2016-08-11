@@ -69,7 +69,7 @@ class WC_PaysonCheckout_Cancel_Reservation {
 		$checkout_temp_obj 		= $payson_api->GetCheckout( $order->get_transaction_id() );
 		
 		$payson_embedded_status = $checkout_temp_obj->status;
-		
+		WC_Gateway_PaysonCheckout::log( 'Payson object before CancelCheckout: ' . var_export($checkout_temp_obj, true) );
 		try {
 			$response = $payson_api->CancelCheckout($checkout_temp_obj);
 
@@ -85,7 +85,7 @@ class WC_PaysonCheckout_Cancel_Reservation {
 				$order->add_order_note( __( 'PaysonCheckout reservation could not be cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 			}
 		} catch ( Exception $e ) {
-			WC_Gateway_AfterPay_Factory::log( $e->getMessage() );
+			WC_Gateway_PaysonCheckout::log( $e->getMessage() );
 			$order->add_order_note( sprintf( __( 'PaysonCheckout reservation could not be cancelled, reason: %s.', 'woocommerce-gateway-paysoncheckout' ), $e->getMessage() ) );
 		}
 		
