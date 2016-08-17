@@ -43,24 +43,24 @@ class WC_PaysonCheckout_Create_Checkout {
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
 	}
 
-
+	
+	/**
+	 * Retrieve and print the PaysonCheckout iframe.
+	 *
+	 */
 	public function get_iframe() {
 		
 		if( 'yes' !== $this->enabled ) {
 			return;
 		}
-		
-		//$order_id		= $this->prepare_wc_order();
+	
 		$wc_order 		= new WC_PaysonCheckout_WC_Order();
 		$order_id		= $wc_order->update_or_create_local_order();
 		
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
-		try {
-			$checkout = $payson_api->get_checkout( $order_id );
-		} catch ( Exception $e ) {
-			print_r( $e->getMessage() );
-		}
+		$checkout = $payson_api->get_checkout( $order_id );
+
 		/*
 		 * Step 4 Print out checkout html
 		 */
@@ -79,13 +79,14 @@ class WC_PaysonCheckout_Create_Checkout {
 		
 		echo '<div class="col2-set checkout-group" id="customer_details_payson">';
 		echo '<div class="paysonceckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
-		    echo $checkout->snippet;
+		    if ( is_wp_error( $checkout ) ) {
+				echo $checkout->get_error_message();
+			} else {
+		    	echo $checkout->snippet;
+		    }
 		echo '</div></div>';
 		
 	}
-	
-	
-	
 	
 }
 $wc_paysoncheckout_create_checkout = new WC_PaysonCheckout_Create_Checkout();

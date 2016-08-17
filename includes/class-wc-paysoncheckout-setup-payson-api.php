@@ -36,7 +36,8 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		//$purchaseId		= $order_id;
 		
 		// Gather
-		$checkout = new  PaysonEmbedded\Checkout($paysonMerchant, $payData, $gui, $customer); 
+		$checkout = new  PaysonEmbedded\Checkout($paysonMerchant, $payData, $gui, $customer);
+		
 		
 		/*
 		 * Step 2 Create checkout
@@ -47,21 +48,35 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		
 		if( WC()->session->get( 'payson_checkout_id' ) ) {
 			
-			$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
+			try {
+				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
+			} catch ( Exception $e ) {
+				return new WP_Error( 'connection-error', $e->getMessage() );
+			}
 			$payson_embedded_status = $checkout_temp_obj->status;
 		}
 		
 		if( WC()->session->get( 'payson_checkout_id' ) && 'created' == $payson_embedded_status ) {
 			
 			// Update checkout
-            $checkout_temp_obj = $callPaysonApi->GetCheckout(WC()->session->get( 'payson_checkout_id' ));
+			try {
+				$checkout_temp_obj = $callPaysonApi->GetCheckout(WC()->session->get( 'payson_checkout_id' ));
+			} catch ( Exception $e ) {
+				return new WP_Error( 'connection-error', $e->getMessage() );
+			}
+            
             $checkout_temp_obj->payData = $this->set_pay_data( $order_id );
             $checkout_temp_obj = $callPaysonApi->UpdateCheckout($checkout_temp_obj);
             
 		} else {
 			
 			// Create checkout
-			$checkoutId = $callPaysonApi->CreateCheckout($checkout);
+			try {
+				$checkoutId = $callPaysonApi->CreateCheckout($checkout);
+			} catch ( Exception $e ) {
+				return new WP_Error( 'connection-error', $e->getMessage() );
+			}
+			
 			$checkout_temp_obj = $callPaysonApi->GetCheckout($checkoutId);
 			
 			// Update notification url with the Payson Checkout ID
@@ -98,8 +113,6 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		} else {
 			$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
 		}
-		
-		//$confirmationUri 	= add_query_arg( array( 'pco' => 'yes' ), $confirmationUri );
 		
 		$checkoutUri     	= wc_get_checkout_url();
 		$notificationUri 	= get_home_url() . '/wc-api/WC_Gateway_PaysonCheckout/';
