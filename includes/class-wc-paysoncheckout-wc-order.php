@@ -6,14 +6,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Prepare Local Order
  *
- * @class    WC_PaysonCheckout_Create_Checkout_Iframe
+ * @class    WC_PaysonCheckout_WC_Order
  * @version  1.0.0
  * @package  WC_Gateway_PaysonCheckout/Classes
  * @category Class
  * @author   Krokedil
  */
 class WC_PaysonCheckout_WC_Order {
-/**
+	/**
 	 * Prepares local order.
 	 *
 	 * @since  1.0.0
@@ -63,7 +63,6 @@ class WC_PaysonCheckout_WC_Order {
 			
 			// Let plugins add meta
 			do_action( 'woocommerce_checkout_update_order_meta', $order->id, array() );
-			// Store which KCO API was used
 			
 			return $order->id;
 		}
@@ -110,11 +109,7 @@ class WC_PaysonCheckout_WC_Order {
 	 */
 	public function add_order_items( $order ) {
 		$order->remove_order_items();
-		/*
-		if ( $this->klarna_debug == 'yes' ) {
-			$this->klarna_log->add( 'klarna', 'Adding order items...' );
-		}
-		*/
+		
 		global $woocommerce;
 		$order_id = $order->id;
 		foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values ) {
@@ -129,10 +124,7 @@ class WC_PaysonCheckout_WC_Order {
 				)
 			) );
 			if ( ! $item_id ) {
-				/*
-				if ( $this->klarna_debug == 'yes' ) {
-					$this->klarna_log->add( 'klarna', 'Unable to add order item.' );
-				} */
+				WC_Gateway_PaysonCheckout::log( 'Unable to add order item' );
 				throw new Exception( __( 'Error: Unable to add order item. Please try again.', 'woocommerce' ) );
 			}
 			// Allow plugins to add order item meta
@@ -151,17 +143,13 @@ class WC_PaysonCheckout_WC_Order {
 	 * @throws Exception
 	 */
 	public function add_order_fees( $order ) {
-		/*if ( $this->klarna_debug == 'yes' ) {
-			$this->klarna_log->add( 'klarna', 'Adding order fees...' );
-		}*/
+		
 		global $woocommerce;
 		$order_id = $order->id;
 		foreach ( $woocommerce->cart->get_fees() as $fee_key => $fee ) {
 			$item_id = $order->add_fee( $fee );
 			if ( ! $item_id ) {
-				if ( $this->klarna_debug == 'yes' ) {
-					$this->klarna_log->add( 'klarna', 'Unable to add order fee.' );
-				}
+				WC_Gateway_PaysonCheckout::log( 'Unable to add order fee.' );
 				throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
 			}
 			// Allow plugins to add order item meta to fees
@@ -221,9 +209,7 @@ class WC_PaysonCheckout_WC_Order {
 		// Store tax rows
 		foreach ( array_keys( WC()->cart->taxes + WC()->cart->shipping_taxes ) as $tax_rate_id ) {
 			if ( $tax_rate_id && ! $order->add_tax( $tax_rate_id, WC()->cart->get_tax_amount( $tax_rate_id ), WC()->cart->get_shipping_tax_amount( $tax_rate_id ) ) && apply_filters( 'woocommerce_cart_remove_taxes_zero_rate_id', 'zero-rated' ) !== $tax_rate_id ) {
-				if ( $this->klarna_debug == 'yes' ) {
-					$this->klarna_log->add( 'klarna', 'Unable to add taxes.' );
-				}
+				WC_Gateway_PaysonCheckout::log( 'Unable to add taxes.' );
 				throw new Exception( sprintf( __( 'Error %d: Unable to create order. Please try again.', 'woocommerce' ), 405 ) );
 			}
 		}
@@ -245,9 +231,7 @@ class WC_PaysonCheckout_WC_Order {
 		global $woocommerce;
 		foreach ( $woocommerce->cart->get_coupons() as $code => $coupon ) {
 			if ( ! $order->add_coupon( $code, $woocommerce->cart->get_coupon_discount_amount( $code ) ) ) {
-				/*if ( $this->klarna_debug == 'yes' ) {
-					$this->klarna_log->add( 'klarna', 'Unable to add coupons.' );
-				}*/
+				WC_Gateway_PaysonCheckout::log( 'Unable to create order.' );
 				throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
 			}
 		}
