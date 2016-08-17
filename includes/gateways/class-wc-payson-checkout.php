@@ -61,8 +61,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->mobile_threshold	= ( isset( $this->settings['mobile_threshold'] ) ) ? $this->settings['mobile_threshold'] : '';
 			
 			$this->supports = array(
-				'products',
-				'refunds'
+				'products'
 			);
 
 			// Actions
@@ -81,34 +80,13 @@ function init_wc_gateway_paysoncheckout_class() {
 			add_filter( 'wc_order_statuses', array( $this, 'add_payson_incomplete_to_order_statuses' ) );
 			
 			// Thankyou page
+			add_filter( 'woocommerce_thankyou_order_received_text', array( $this, 'payson_thankyou_order_received_text' ), 10, 2 );
 			add_action( 'woocommerce_thankyou_paysoncheckout', array( $this, 'payson_thankyou' ) );
-			
-			
+
 		}
 		
-		public function payson_thankyou() {
-			
-			if( $_GET['paysonorder'] ) {
-				
-				remove_action( 'woocommerce_thankyou', 'woocommerce_order_details_table', 10 );
+		
 
-				include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
-				$payson_api 	= new WC_PaysonCheckout_Setup_Payson_API();
-				$checkout 		= $payson_api->get_notification_checkout(  $_GET['paysonorder'] );
-				WC_Gateway_PaysonCheckout::log( 'Posted checkout info in thankyou page: ' . var_export( $checkout, true ) );
-				
-				/*echo '<pre>';
-				var_dump($checkout->snippet);
-				echo '</pre>';
-				*/
-				echo '<div class="paysonceckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
-			    echo $checkout->snippet; 
-				echo "</div>";
-				WC()->session->__unset( 'payson_checkout_id' );
-				WC()->session->__unset( 'ongoing_payson_order' );
-				
-			}
-		}
 		
 		/**
 		 * Logging method.
@@ -153,6 +131,47 @@ function init_wc_gateway_paysoncheckout_class() {
 			endif;	
 		
 			return false;
+		}
+		
+		
+		/**
+		 * Remove thankyou page order received text if PaysonCheckout is the selected payment method.
+		 */
+		public function payson_thankyou_order_received_text( $text, $order ) {
+			
+			if( 'paysoncheckout' == WC()->session->get( 'chosen_payment_method' ) ) {
+				$text = '';
+			}
+			
+			return $text;
+		}
+		
+		
+		/**
+		 * Add PaysonCheckout iframe to thankyou page.
+		 */
+		public function payson_thankyou() {
+			
+			if( $_GET['paysonorder'] ) {
+				
+				remove_action( 'woocommerce_thankyou', 'woocommerce_order_details_table', 10 );
+
+				include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
+				$payson_api 	= new WC_PaysonCheckout_Setup_Payson_API();
+				$checkout 		= $payson_api->get_notification_checkout(  $_GET['paysonorder'] );
+				WC_Gateway_PaysonCheckout::log( 'Posted checkout info in thankyou page: ' . var_export( $checkout, true ) );
+				
+				/*echo '<pre>';
+				var_dump($checkout->snippet);
+				echo '</pre>';
+				*/
+				echo '<div class="paysonceckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
+			    echo $checkout->snippet; 
+				echo "</div>";
+				WC()->session->__unset( 'payson_checkout_id' );
+				WC()->session->__unset( 'ongoing_payson_order' );
+				
+			}
 		}
 		
 		
