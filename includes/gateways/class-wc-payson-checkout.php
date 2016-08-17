@@ -45,11 +45,6 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->init_settings();
 		
 			// Define user set variables
-			/*
-			$this->title       = $this->get_option( 'title' );
-			$this->description = $this->get_option( 'description' );
-			$this->debug       = $this->get_option( 'debug' );
-			*/
 			$this->enabled			= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
 			$this->title			= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
 			$this->description		= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
@@ -60,6 +55,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->order_management	= ( isset( $this->settings['order_management'] ) ) ? $this->settings['order_management'] : '';
 			$this->mobile_threshold	= ( isset( $this->settings['mobile_threshold'] ) ) ? $this->settings['mobile_threshold'] : '';
 			
+			// Supports
 			$this->supports = array(
 				'products'
 			);
@@ -86,8 +82,6 @@ function init_wc_gateway_paysoncheckout_class() {
 		}
 		
 		
-
-		
 		/**
 		 * Logging method.
 		 *
@@ -107,7 +101,6 @@ function init_wc_gateway_paysoncheckout_class() {
 		/**
 		* Check if this gateway is enabled and available in the user's country
 		*/
-		
 		function is_available() {
 			global $woocommerce;
 			
