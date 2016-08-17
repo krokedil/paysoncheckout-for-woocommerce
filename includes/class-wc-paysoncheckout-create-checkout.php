@@ -72,11 +72,11 @@ class WC_PaysonCheckout_Create_Checkout {
 		print_r($order_id);
 		echo '</pre>';
 		
-		echo '<pre>CheckoutId<br/>';
-		print_r($checkout->id);
-		
+		echo '<pre>Checkout<br/>';
+		print_r($checkout);
 		echo '</pre>';
 		*/
+		
 		echo '<div class="col2-set checkout-group" id="customer_details_payson">';
 		echo '<div class="paysonceckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
 		    echo $checkout->snippet;
