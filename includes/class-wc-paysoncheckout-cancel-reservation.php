@@ -33,7 +33,16 @@ class WC_PaysonCheckout_Cancel_Reservation {
 
 		add_action( 'woocommerce_order_status_cancelled', array( $this, 'cancel_reservation' ) );
 	}
-
+	
+	
+	/**
+	 * Grab Payson Checkout ID.
+	 *
+	 * @return string
+	 */
+	public function get_checkout_id() {
+		return get_post_meta( $this->order_id, '_payson_checkout_id', true );
+	}
 
 	/**
 	 * Process reservation cancellation.
@@ -66,7 +75,7 @@ class WC_PaysonCheckout_Cancel_Reservation {
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api 			= new WC_PaysonCheckout_Setup_Payson_API();
 		$payson_api 			= $payson_api->set_payson_api();
-		$checkout_temp_obj 		= $payson_api->GetCheckout( $order->get_transaction_id() );
+		$checkout_temp_obj 		= $payson_api->GetCheckout( $this->get_checkout_id() );
 		
 		$payson_embedded_status = $checkout_temp_obj->status;
 		WC_Gateway_PaysonCheckout::log( 'Payson object before CancelCheckout: ' . var_export($checkout_temp_obj, true) );

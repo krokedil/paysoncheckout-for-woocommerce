@@ -33,7 +33,16 @@ class WC_PaysonCheckout_Capture {
 
 		add_action( 'woocommerce_order_status_completed', array( $this, 'capture_full' ) );
 	}
-
+	
+	
+	/**
+	 * Grab Payson Checkout ID.
+	 *
+	 * @return string
+	 */
+	public function get_checkout_id() {
+		return get_post_meta( $this->order_id, '_payson_checkout_id', true );
+	}
 
 	/**
 	 * Process reservation cancellation.
@@ -66,7 +75,7 @@ class WC_PaysonCheckout_Capture {
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api 			= new WC_PaysonCheckout_Setup_Payson_API();
 		$payson_api 			= $payson_api->set_payson_api();
-		$checkout_temp_obj 		= $payson_api->GetCheckout( $order->get_transaction_id() );
+		$checkout_temp_obj 		= $payson_api->GetCheckout( $this->get_checkout_id() );
 		
 		$payson_embedded_status = $checkout_temp_obj->status;
 		
@@ -79,7 +88,7 @@ class WC_PaysonCheckout_Capture {
 				// Add Payson order status
 				update_post_meta( $order->id, '_paysoncheckout_order_status', $response->status );
 
-				$order->add_order_note( sprintf( __( 'PaysonCheckout reservation was successfully captured, invoice number: %s.', 'woocommerce-gateway-paysoncheckout' ), '' ) );
+				$order->add_order_note( sprintf( __( 'PaysonCheckout reservation was successfully captured.', 'woocommerce-gateway-paysoncheckout' ), '' ) );
 
 			} else {
 				$order->add_order_note( __( 'PaysonCheckout reservation could not be captured.', 'woocommerce-gateway-paysoncheckout' ) );
