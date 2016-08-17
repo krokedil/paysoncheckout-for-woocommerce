@@ -67,7 +67,7 @@ namespace PaysonEmbedded{
         }
 
         public static function create($data) {
-            $item = new OrderItem($data->name, $data->unitPrice, $data->quantity, $data->taxRate, $data->reference, $data->type, isset($data->ean)?$data->ean:null, isset($data->uri)?$data->uri:null, isset($data->imageUri)?$data->imageUri:null);
+            $item = new OrderItem($data->name, $data->unitPrice, $data->quantity, $data->taxRate, $data->reference, $data->type, isset($data->discountRate)?$data->discountRate:null, isset($data->ean)?$data->ean:null, isset($data->uri)?$data->uri:null, isset($data->imageUri)?$data->imageUri:null);
             $item->discountRate=$data->discountRate;
             $item->creditedAmount=$data->creditedAmount;
             if(isset($data->itemId)) {
