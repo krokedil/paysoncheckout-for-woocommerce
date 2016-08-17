@@ -1,5 +1,13 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.08.17		- version 0.3
+* Feature		- Added Cancel reservation in Payson directly from WooCommerce.
+* Feature		- Added Capture transaction in Payson directly from WooCommerce. 
+* Tweak			- Improved try/catch when connecting to Payson.
+* Tweak			- Store Payson checkout id as a separate post meta instead of the order transaction number.
+* Tweak			- Updated Payson SDK to latest version.
+* Fix			- Unset all created sessions on successful payment.
+
 2016.08.02		- version 0.2
 * Tweak			- Improved display of the Payson iframe in checkout pages with a two column layout.
 * Tweak			- Added Payson order status readyToShip as post meta to orders on payment_complete().
