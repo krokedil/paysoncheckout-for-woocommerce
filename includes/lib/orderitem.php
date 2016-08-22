@@ -55,7 +55,7 @@ namespace PaysonEmbedded{
             $this->type = $type;
             $this->reference = $reference;
             
-			if(!$name || is_null($unitPrice) || !$quantity || is_null($taxRate) || !$type || !$reference) {
+			if(!$name || !isset($unitPrice) || !$quantity || !isset($taxRate) || !$type || !$reference) {
                 throw new PaysonApiException("Not all of mandatory fields are set for creating of an OrderItem object");
             }
             
