@@ -59,8 +59,15 @@ class WC_PaysonCheckout_Process_Order_Lines {
 				$title = $item['name'];
 				$price = $order->get_item_total( $item, true );
 				$qty = $item['qty'];
-				$vat = round( $order->get_item_tax( $item ) / $order->get_item_total( $item, false ), 2 );
+				$vat = 0;
 				
+				
+				// We manually calculate the tax here
+				if ( $order->get_line_tax( $item ) != 0 ) {
+					$vat = round( $order->get_item_tax( $item ) / $order->get_item_total( $item, false ), 2 );
+				} else {
+					$vat = $order->get_line_tax( $item );
+				}
 				
 				$sku = $this->get_item_reference( $_product );
 				
