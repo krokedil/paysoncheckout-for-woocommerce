@@ -336,13 +336,15 @@ function init_wc_gateway_paysoncheckout_class() {
 						
 						// Hide/show shipping and billing form depending on the selecter payment gateway
 						if ( selected_payment_method == 'paysoncheckout') {
-							jQuery('#customer_details').hide();
-							jQuery('.checkout-group').hide(); // Flatsome
+							jQuery('.woocommerce-billing-fields').hide();
+							jQuery('.woocommerce-shipping-fields').hide();
+							//jQuery('.checkout-group').hide(); // Flatsome
 							jQuery('.place-order').hide();
 							jQuery('#customer_details_payson').show();
 						} else {
-							jQuery('#customer_details').show();
-							jQuery('.checkout-group').show(); // Flatsome
+							jQuery('.woocommerce-billing-fields').show();
+							jQuery('.woocommerce-shipping-fields').show();
+							//jQuery('.checkout-group').show(); // Flatsome
 							jQuery('.place-order').show();
 							jQuery('#customer_details_payson').hide();
 						}
@@ -355,13 +357,15 @@ function init_wc_gateway_paysoncheckout_class() {
 							console.log( selected_payment_method );
 						
 							if ( selected_payment_method == 'paysoncheckout') {
-								jQuery('#customer_details').hide();
-								jQuery('.checkout-group').hide(); // Flatsome
+								jQuery('.woocommerce-billing-fields').hide();
+								jQuery('.woocommerce-shipping-fields').hide();
+								//jQuery('.checkout-group').hide(); // Flatsome
 								jQuery('.place-order').hide();
 								jQuery('#customer_details_payson').show();
 							} else {
-								jQuery('#customer_details').show();
-								jQuery('.checkout-group').show(); // Flatsome
+								jQuery('.woocommerce-billing-fields').show();
+								jQuery('.woocommerce-shipping-fields').show();
+								//jQuery('.checkout-group').show(); // Flatsome
 								jQuery('.place-order').show();
 								jQuery('#customer_details_payson').hide();
 							}
@@ -370,14 +374,17 @@ function init_wc_gateway_paysoncheckout_class() {
 						});
 						
 						// On ajax complete
+						
 						jQuery(document).ajaxComplete(function () {
 							var selected_payment_method = jQuery('input[name=payment_method]:checked').val();
 							if ( selected_payment_method == 'paysoncheckout') {
-								jQuery('#customer_details').hide();
+								jQuery('.woocommerce-billing-fields').hide();
+								jQuery('.woocommerce-shipping-fields').hide();
 								jQuery('.place-order').hide();
 								jQuery('#customer_details_payson').show();
 							} else {
-								jQuery('#customer_details').show();
+								jQuery('.woocommerce-billing-fields').show();
+								jQuery('.woocommerce-shipping-fields').show();
 								jQuery('.place-order').show();
 								jQuery('#customer_details_payson').hide();
 							}
