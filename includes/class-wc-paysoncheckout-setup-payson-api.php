@@ -103,6 +103,22 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		return $checkout;
 	}
 	
+	public function get_validate_account() {
+		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		$merchant_id 	= $this->settings['merchant_id'];
+		$api_key 		= $this->settings['api_key'];
+		$environment 	= ( 'yes' == $this->settings['testmode'] ) ? true : false;
+		
+		$callPaysonApi = new  PaysonEmbedded\PaysonApi($merchant_id, $api_key, $environment);
+		
+		try {
+		    $account = $callPaysonApi->Validate();
+		    return $account;
+		} catch(Exception $ex) {
+		    return new WP_Error( 'error', __( 'The entered Payson Merchant ID, API Key or test/live mode is not correct.', 'woocommerce-gateway-paysoncheckout' ) );
+		}
+	}
+	
 	
 	public function set_merchant( $order_id ) {
 		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';

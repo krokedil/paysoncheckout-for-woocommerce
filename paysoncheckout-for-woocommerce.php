@@ -36,3 +36,4 @@ include_once( 'includes/class-wc-paysoncheckout-ajax-handler.php' );
 include_once( 'includes/class-wc-paysoncheckout-response-handler.php' );
 include_once( 'includes/class-wc-paysoncheckout-capture.php' );
 include_once( 'includes/class-wc-paysoncheckout-cancel-reservation.php' );
+include_once( 'includes/class-wc-paysoncheckout-admin-notices.php' );
