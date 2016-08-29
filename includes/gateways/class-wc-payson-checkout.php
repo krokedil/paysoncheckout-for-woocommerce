@@ -51,6 +51,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->merchant_id		= ( isset( $this->settings['merchant_id'] ) ) ? $this->settings['merchant_id'] : '';
 			$this->api_key			= ( isset( $this->settings['api_key'] ) ) ? $this->settings['api_key'] : '';
 			$this->color_scheme		= ( isset( $this->settings['color_scheme'] ) ) ? $this->settings['color_scheme'] : '';
+			$this->request_phone	= ( isset( $this->settings['request_phone'] ) ) ? $this->settings['request_phone'] : '';
 			$this->debug			= ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : '';
 			$this->order_management	= ( isset( $this->settings['order_management'] ) ) ? $this->settings['order_management'] : '';
 			$this->mobile_threshold	= ( isset( $this->settings['mobile_threshold'] ) ) ? $this->settings['mobile_threshold'] : '';
@@ -230,6 +231,12 @@ function init_wc_gateway_paysoncheckout_class() {
 					'description' => __( 'Different color schemes for how the embedded PaysonCheckout iframe should be displayed.', 'woocommerce-gateway-paysoncheckout' ),
 					'default'     => 'gray',
 					'desc_tip'    => true
+				),
+				'request_phone' => array(
+					'title'   => __( 'Request phone', 'woocommerce-gateway-paysoncheckout' ),
+					'type'    => 'checkbox',
+					'label'   => __( 'Check this box to require the customer to fill in his phone number.', 'woocommerce-gateway-paysoncheckout' ),
+					'default' => 'no'
 				),
 				'mobile_threshold' => array(
 					'title'       => __( 'Mobile threshold', 'woocommerce-gateway-paysoncheckout' ),

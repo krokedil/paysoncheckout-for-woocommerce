@@ -165,7 +165,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	public function set_gui() {
 		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		
-		$gui = new  PaysonEmbedded\Gui( $this->get_payson_language(), $this->settings['color_scheme'], 'none', 0 );
+		$gui = new  PaysonEmbedded\Gui( $this->get_payson_language(), $this->settings['color_scheme'], 'none', $this->get_request_phone() );
 		return $gui;
 	}
 	
@@ -203,5 +203,13 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		}
 		
 		return $payson_language;
+	}
+	
+	public function get_request_phone() {
+		if( 'yes' == $this->settings['request_phone'] ) {
+			return true;
+		} else {
+			return NULL;
+		}
 	}
 }
