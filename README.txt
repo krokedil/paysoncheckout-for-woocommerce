@@ -7,7 +7,7 @@ Requires WooCommerce at least: 2.5
 Tested WooCommerce up to: 2.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 0.5
+Stable tag: 0.6
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,14 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2016.08.30	- version 0.6 =
+* Feature		- Added setting for enable/disable request phone number in checkout.
+* Misc			- First release on wordpress.org.
+
+= 2016.08.24	- version 0.5 =
+* Tweak			- Added admin notices to inform merchant about possible misconfigurations in Payson settings.
+* Tweak			- Change css class names for the divs that is hidden/displayed when Payson is the selected payment method in checkout.
 
 = 2016.08.22	- version 0.4 =
 * Fix			- Allow free products in order sent to PaysonCheckout (caused fatal error).

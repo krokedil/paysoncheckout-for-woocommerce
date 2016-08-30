@@ -1,5 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.08.30		- version 0.6
+* Feature		- Added setting for enable/disable request phone number in checkout.
+* Misc			- First release on wordpress.org.
+
 2016.08.24		- version 0.5
 * Tweak			- Added admin notices to inform merchant about possible misconfigurations in Payson settings.
 * Tweak			- Change css class names for the divs that is hidden/displayed when Payson is the selected payment method in checkout.
