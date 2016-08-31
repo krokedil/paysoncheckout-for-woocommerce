@@ -29,7 +29,8 @@ define( 'PAYSONCHECKOUT_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) 
 define( 'PAYSONCHECKOUT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 
 // Include files
-include_once( 'includes/gateways/class-wc-payson-checkout.php' );
+include_once( 'includes/gateways/class-wc-paysoncheckout.php' );
+include_once( 'includes/gateways/class-wc-paysoncheckout-gateway.php' );
 include_once( 'includes/class-wc-paysoncheckout-wc-order.php' );
 include_once( 'includes/class-wc-paysoncheckout-create-checkout.php' );
 include_once( 'includes/class-wc-paysoncheckout-ajax-handler.php' );
