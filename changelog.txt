@@ -1,5 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.08.31		- version 0.7
+* Tweak			- Small code refactoring.
+* Fix			- Fixes issue to be able to see orders with parson-incomplete order status in shop order list.
+
 2016.08.30		- version 0.6
 * Feature		- Added setting for enable/disable request phone number in checkout.
 * Misc			- First release on wordpress.org.
