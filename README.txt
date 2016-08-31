@@ -7,7 +7,7 @@ Requires WooCommerce at least: 2.5
 Tested WooCommerce up to: 2.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 0.7
+Stable tag: 0.8
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2016.08.31	- version 0.8 =
+* Fix			- Fixing wrong url in include_once, caused PHP warnings.
 
 = 2016.08.31	- version 0.7 =
 * Tweak			- Small code refactoring.

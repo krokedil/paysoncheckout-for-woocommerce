@@ -1,5 +1,8 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.08.31		- version 0.8
+* Fix			- Fixing wrong url in include_once, caused PHP warnings.
+
 2016.08.31		- version 0.7
 * Tweak			- Small code refactoring.
 * Fix			- Fixes issue to be able to see orders with parson-incomplete order status in shop order list.
