@@ -251,10 +251,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			);
 		}
 		
-		
-		
-		
-		
+	
 	
 		/**
 		 * Javascript for testing visibility of checkout forms
@@ -281,32 +278,60 @@ function init_wc_gateway_paysoncheckout_class() {
 					// Document ready
 					jQuery(document).ready(function ($) {
 						
-						// Check if we need to move the payson iframe on page load
+						// Set variable to declare that the checkout isn't initialized yet. To avoid that the checkout iframe doesn't update directly on page load.
+						var wc_payson_initialized = false;
+						
+						// Check if we need to move the payson iframe on page load (desktop layout for 2 column layouts)
 						maybe_move_payson_iframe();
 						
 						// Check if we need to move the payson iframe after page resize
-						var id;
-						$(window).resize(function() {
-						    clearTimeout(id);
-						    id = setTimeout(maybe_move_payson_iframe, 500);
-						    
-						});
 						
+						/* Store the window width */
+					    var windowWidth = $(window).width();
+					
+					    /* Resize Event */
+					    $(window).resize(function() {
+					        // Check window width has actually changed and it's not just iOS triggering a resize event on scroll
+					        if ($(window).width() != windowWidth) {
+					
+					            // Update the window width for next time
+					            windowWidth = $(window).width();
+					
+					            // Maybe move the iframe
+					            var id;
+					            clearTimeout(id);
+								id = setTimeout(maybe_move_payson_iframe, 500);
+					
+					        }
+					    });
+					    
+					    
 						// Check if Payson payment method is selected
 						var selected_payment_method = jQuery('input[name=payment_method]:checked').val();
 						//console.log( selected_payment_method );
 						
 						// Hide/show shipping and billing form depending on the selecter payment gateway
 						if ( selected_payment_method == 'paysoncheckout') {
+							/*jQuery('.woocommerce-billing-fields').css('visibility', 'hidden');
+							jQuery('.woocommerce-shipping-fields').css('visibility', 'hidden');
+							jQuery('.place-order').hide();
+							jQuery('#customer_details_payson').css('visibility', 'visible');
+							*/
 							jQuery('.woocommerce-billing-fields').hide();
 							jQuery('.woocommerce-shipping-fields').hide();
-							//jQuery('.checkout-group').hide(); // Flatsome
 							jQuery('.place-order').hide();
 							jQuery('#customer_details_payson').show();
 						} else {
+							/*
+							jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+							jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
+							jQuery('.place-order').show();
+							jQuery('#customer_details_payson').css('visibility', 'hidden');
+							*/
 							jQuery('.woocommerce-billing-fields').show();
 							jQuery('.woocommerce-shipping-fields').show();
-							//jQuery('.checkout-group').show(); // Flatsome
+							jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+							jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
 							jQuery('.place-order').show();
 							jQuery('#customer_details_payson').hide();
 						}
@@ -319,44 +344,75 @@ function init_wc_gateway_paysoncheckout_class() {
 							console.log( selected_payment_method );
 						
 							if ( selected_payment_method == 'paysoncheckout') {
+								/*
+								jQuery('.woocommerce-billing-fields').css('visibility', 'hidden');
+								jQuery('.woocommerce-shipping-fields').css('visibility', 'hidden');
+								jQuery('.place-order').hide();
+								jQuery('#customer_details_payson').css('visibility', 'visible');
+								*/
 								jQuery('.woocommerce-billing-fields').hide();
 								jQuery('.woocommerce-shipping-fields').hide();
-								//jQuery('.checkout-group').hide(); // Flatsome
 								jQuery('.place-order').hide();
 								jQuery('#customer_details_payson').show();
 							} else {
+								/*
+								jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+								jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
+								jQuery('.place-order').show();
+								jQuery('#customer_details_payson').css('visibility', 'hidden');
+								*/
 								jQuery('.woocommerce-billing-fields').show();
 								jQuery('.woocommerce-shipping-fields').show();
-								//jQuery('.checkout-group').show(); // Flatsome
+								jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+								jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
 								jQuery('.place-order').show();
 								jQuery('#customer_details_payson').hide();
 							}
 	
 	
 						});
-						
-						// On ajax complete
 						
 						jQuery(document).ajaxComplete(function () {
 							var selected_payment_method = jQuery('input[name=payment_method]:checked').val();
+							
 							if ( selected_payment_method == 'paysoncheckout') {
+								/*jQuery('.woocommerce-billing-fields').css('visibility', 'hidden');
+								jQuery('.woocommerce-shipping-fields').css('visibility', 'hidden');
+								jQuery('.place-order').hide();
+								jQuery('#customer_details_payson').css('visibility', 'visible');
+								*/
 								jQuery('.woocommerce-billing-fields').hide();
 								jQuery('.woocommerce-shipping-fields').hide();
 								jQuery('.place-order').hide();
 								jQuery('#customer_details_payson').show();
+								
 							} else {
+								/*jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+								jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
+								jQuery('.place-order').show();
+								jQuery('#customer_details_payson').css('visibility', 'hidden');
+								*/
 								jQuery('.woocommerce-billing-fields').show();
 								jQuery('.woocommerce-shipping-fields').show();
+								jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+								jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
 								jQuery('.place-order').show();
 								jQuery('#customer_details_payson').hide();
+								
 							}
+
 						});
 						
+												
 						// Update iframe
 						jQuery('body').on('updated_checkout', function($) {
+							//console.log( wc_payson_initialized );
 						    // code
-						    console.log( 'Checkout updated' );
-						    sendPaysonUpdate();
+						    if(!wc_payson_initialized) {
+							    wc_payson_initialized = true;
+							} else {
+								sendPaysonUpdate();
+							}
 						});
 						
 					});
