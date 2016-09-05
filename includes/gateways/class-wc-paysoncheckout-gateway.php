@@ -69,9 +69,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			
 			// Scripts
 			add_action( 'wp_footer', array( $this, 'print_checkout_script' ) );
-			//add_action( 'wp_enqueue_scripts', array( $this, 'paysoncheckout_enqueuer' ) );
-			
-			
+			add_action( 'wp_head', array( $this, 'add_inline_style' ) );
 			
 			// Thankyou page
 			add_filter( 'woocommerce_thankyou_order_received_text', array( $this, 'payson_thankyou_order_received_text' ), 10, 2 );
@@ -454,6 +452,21 @@ function init_wc_gateway_paysoncheckout_class() {
 				</script>
 				<?php
 			} // End if is_checkout()
+		}
+		
+		/**
+		 * Add inline css to hide WooCommerce billing & shipping fields on page load if needed
+		 * Todo: Implement this in a better way
+		 *
+		 **/
+		public function add_inline_style() {
+			if ( is_checkout() && 'yes' == $this->enabled ) {
+				$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+				
+				if( ( 1 == count($available_gateways) && 'paysoncheckout' == key($available_gateways) ) || 'paysoncheckout' == WC()->session->chosen_payment_method ) {
+					echo '<style>.woocommerce-billing-fields, .woocommerce-shipping-fields {visibility:hidden}; .place-order {display:none};</style>';
+				}
+			}
 		}
 	}
 }
