@@ -1,5 +1,10 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.09.06		- version 0.8.1
+* Tweak			- Hide WooCommerce billing and shipping fields on loading of checkout page if PaysonCheckout is the selected payment method.
+* Fix			- Prevent checkout iframe to reload/update directly on page load.
+* Fix			- Prevent checkout iframe to update on scroll on mobile devices (triggered by resize js event).
+
 2016.08.31		- version 0.8
 * Fix			- Fixing wrong url in include_once, caused PHP warnings.
 
