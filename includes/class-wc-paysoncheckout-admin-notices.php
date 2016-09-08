@@ -43,9 +43,9 @@ class WC_PaysonCheckout_Admin_Notices {
 		}
 		
 		// Terms page
-		if( empty( get_option( 'woocommerce_terms_page_id' ) ) ) {
+		if( !wc_get_page_id( 'terms' ) || wc_get_page_id( 'terms' ) < 0 ) {
 			echo '<div class="notice notice-error">';
-			echo '<p>You need to specify a terms page to be able to use Payson.</p>';
+			echo '<p>' . __( 'You need to specify a terms page in WooCommerce Settings to be able to use Payson.', 'woocommerce-gateway-paysoncheckout' ) . '</p>';
 			echo '</div>';
 		}
 	}
