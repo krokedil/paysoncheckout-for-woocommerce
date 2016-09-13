@@ -2,12 +2,12 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.6
+Tested up to: 4.6.1
 Requires WooCommerce at least: 2.5
-Tested WooCommerce up to: 2.6
+Tested WooCommerce up to: 2.6.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 0.8.2
+Stable tag: 0.8.3
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2016.09.14	- version 0.8.3 =
+* Tweak			- Changes orderstatus from Payson Incomplete to Pending on Address Changed JS callback from Payson.
+* Tweak			- Adds customer address to local order on Address Changed JS callback from Payson.
+* Fix			- Fixed issue with new order emails not being sent.
 
 = 2016.09.08	- version 0.8.2 =
 * Fix			- Fixed PHP error in check_terms() function caused when using PHP 5.5 and older.

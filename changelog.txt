@@ -1,5 +1,10 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.09.14		- version 0.8.3
+* Tweak			- Changes orderstatus from Payson Incomplete to Pending on Address Changed JS callback from Payson.
+* Tweak			- Adds customer address to local order on Address Changed JS callback from Payson.
+* Fix			- Fixed issue with new order emails not being sent.
+
 2016.09.08		- version 0.8.2
 * Fix			- Fixed PHP error in check_terms() function caused when using PHP 5.5 and older.
 
