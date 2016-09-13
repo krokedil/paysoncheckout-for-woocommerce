@@ -413,6 +413,34 @@ function init_wc_gateway_paysoncheckout_class() {
 							}
 						});
 						
+						// Address update callback
+						$(document).on('PaysonEmbeddedAddressChanged', function(data) {
+							$.ajax(
+								'<?php echo get_site_url() . '/wp-admin/admin-ajax.php' ?>',
+								{
+									type: 'POST',
+									dataType: 'json',
+									data: {
+										action		: 'payson_address_changed_callback',
+										address		: data.detail,
+										_wpnonce	: '<?php echo wp_create_nonce('payson_nonce'); ?>',
+									},
+									success: function(response) {
+										console.log('Address update AJAX sucess');
+										//sendPaysonUpdate();
+										//console.log(response);
+									},
+									error: function(response) {
+										console.log('Address update AJAX error');
+										//console.log(response);
+									},
+									complete: function() {
+										console.log('Address update AJAX complete');
+									}
+								}
+							);
+						});
+						
 					});
 					
 					// Function for updating the Payson iframe
@@ -468,6 +496,7 @@ function init_wc_gateway_paysoncheckout_class() {
 				}
 			}
 		}
+		
 	}
 }
 

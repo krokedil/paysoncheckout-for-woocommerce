@@ -21,6 +21,10 @@ class WC_PaysonCheckout_Response_Handler {
 		
 		// Notification listener
 		add_action( 'woocommerce_api_wc_gateway_paysoncheckout', array( $this, 'notification_listener' ) );
+		
+		// Ajax for Address Update JS call from Payson
+		add_action( 'wp_ajax_payson_address_changed_callback', array( $this, 'payson_address_changed_callback' ) );
+		add_action( 'wp_ajax_nopriv_payson_address_changed_callback', array( $this, 'payson_address_changed_callback' ) );
 	}
 	
 	
@@ -159,6 +163,45 @@ class WC_PaysonCheckout_Response_Handler {
 				update_post_meta( $order->id, '_customer_user', $this->customer_id );
 			}
 		}
+	}
+	
+	
+	/**
+	 * Updates local order with address received from Payson
+	 * Changes the order status to Pending
+	 *
+	 * @since  0.8.3
+	 **/
+	public function payson_address_changed_callback() {
+		
+		if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'payson_nonce' ) ) {
+			exit( 'Nonce can not be verified.' );
+		}
+		
+		$address = $_POST['address'];
+		$order_id = WC()->session->get( 'ongoing_payson_order' );
+		$order = wc_get_order( $order_id );
+		$order->update_status( 'pending', __( 'Address Update callback from Payson.', 'woocommerce-gateway-paysoncheckout' ) );
+		
+		// Add customer billing address
+		update_post_meta( $order_id, '_billing_first_name', $address['FirstName'] );
+		update_post_meta( $order_id, '_billing_last_name', $address['LastName'] );
+		update_post_meta( $order_id, '_billing_address_1', $address['Street'] );
+		update_post_meta( $order_id, '_billing_postcode', $address['PostalCode'] );
+		update_post_meta( $order_id, '_billing_city', $address['City'] );
+		update_post_meta( $order_id, '_billing_country', $address['CountryCode'] );
+		
+		// Add customer shipping address
+		update_post_meta( $order_id, '_shipping_first_name', $address['FirstName'] );
+		update_post_meta( $order_id, '_shipping_last_name', $address['LastName'] );
+		update_post_meta( $order_id, '_shipping_address_1', $address['Street'] );
+		update_post_meta( $order_id, '_shipping_postcode', $address['PostalCode'] );
+		update_post_meta( $order_id, '_shipping_city', $address['City'] );
+		update_post_meta( $order_id, '_shipping_country', $address['CountryCode'] );
+		
+		$data['order_id'] = $order_id;
+		wp_send_json_success( $data );
+		wp_die();
 	}
 }
 $wc_paysoncheckout_response_handler = new WC_PaysonCheckout_Response_Handler();
