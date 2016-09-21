@@ -199,7 +199,8 @@ function init_wc_gateway_paysoncheckout_class() {
 				),
 				'description' => array(
 					'title'       => __( 'Description', 'woocommerce-gateway-paysoncheckout' ),
-					'type'        => 'text',
+					'type'        => 'textarea',
+					'default'     => __( 'Pay with Payson via invoice, card, direct bank payments, part payment and sms.', 'woocommerce-gateway-paysoncheckout' ),
 					'desc_tip'    => true,
 					'description' => __( 'This controls the description which the user sees during checkout.', 'woocommerce-gateway-paysoncheckout' ),
 				),
