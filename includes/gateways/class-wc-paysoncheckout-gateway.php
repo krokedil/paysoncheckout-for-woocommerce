@@ -205,7 +205,7 @@ function init_wc_gateway_paysoncheckout_class() {
 					'description' => __( 'This controls the description which the user sees during checkout.', 'woocommerce-gateway-paysoncheckout' ),
 				),
 				'merchant_id' => array(
-					'title'       => __( 'Merchant ID', 'woocommerce-gateway-paysoncheckout' ),
+					'title'       => __( 'Agent ID', 'woocommerce-gateway-paysoncheckout' ),
 					'type'        => 'text',
 					'description' => __( '', 'woocommerce-gateway-paysoncheckout' ),
 					'default'     => '',
