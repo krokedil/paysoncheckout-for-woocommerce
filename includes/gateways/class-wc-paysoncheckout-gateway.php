@@ -122,6 +122,21 @@ function init_wc_gateway_paysoncheckout_class() {
 			return false;
 		}
 		
+		/**
+		 * Get gateway icon.
+		 *
+		 * @return string
+		 */
+		public function get_icon() {
+			$icon_html  = '';
+			$icon_src   = 'https://www.payson.se/sites/all/files/images/external/payson.png';
+			$icon_width = '85';
+			
+			$icon_html = '<img src="' . $icon_src . '" alt="PaysonCheckout 2.0" style="max-width:' . $icon_width . 'px"/>';
+	
+			return apply_filters( 'wc_payson_icon_html', $icon_html );
+		}
+		
 		
 		/**
 		 * Remove thankyou page order received text if PaysonCheckout is the selected payment method.
