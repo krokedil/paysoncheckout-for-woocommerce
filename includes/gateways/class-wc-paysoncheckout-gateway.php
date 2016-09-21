@@ -333,6 +333,34 @@ function init_wc_gateway_paysoncheckout_class() {
 							jQuery('.place-order').show();
 							jQuery('#customer_details_payson').hide();
 						}
+						
+						setInterval(function() {
+							// Hide/show shipping and billing form depending on the selecter payment gateway
+							if ( selected_payment_method == 'paysoncheckout') {
+								/*jQuery('.woocommerce-billing-fields').css('visibility', 'hidden');
+								 jQuery('.woocommerce-shipping-fields').css('visibility', 'hidden');
+								 jQuery('.place-order').hide();
+								 jQuery('#customer_details_payson').css('visibility', 'visible');
+								 */
+								jQuery('.woocommerce-billing-fields').hide();
+								jQuery('.woocommerce-shipping-fields').hide();
+								jQuery('.place-order').hide();
+								jQuery('#customer_details_payson').show();
+							} else {
+								/*
+								 jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+								 jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
+								 jQuery('.place-order').show();
+								 jQuery('#customer_details_payson').css('visibility', 'hidden');
+								 */
+								jQuery('.woocommerce-billing-fields').show();
+								jQuery('.woocommerce-shipping-fields').show();
+								jQuery('.woocommerce-billing-fields').css('visibility', 'visible');
+								jQuery('.woocommerce-shipping-fields').css('visibility', 'visible');
+								jQuery('.place-order').show();
+								jQuery('#customer_details_payson').hide();
+							}
+						}, 1000);
 	
 	
 						// On switch of payment method radiobuttons
