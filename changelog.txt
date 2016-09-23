@@ -1,5 +1,11 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.09.23		- version 0.8.4
+* Tweak			- Added Payson logo to payment method display in checkout.
+* Tweak			- Changed naming of Merchant ID to Agent ID in settings.
+* Tweak			- Added Swedish translation file.
+* Tweak			- Added default payment gateway description in settings.
+
 2016.09.14		- version 0.8.3
 * Tweak			- Changes orderstatus from Payson Incomplete to Pending on Address Changed JS callback from Payson.
 * Tweak			- Adds customer address to local order on Address Changed JS callback from Payson.
