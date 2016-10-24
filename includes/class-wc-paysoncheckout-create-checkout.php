@@ -77,7 +77,7 @@ class WC_PaysonCheckout_Create_Checkout {
 		echo '</pre>';
 		*/
 		
-		echo '<div class="col2-set checkout-group" id="customer_details_payson" style="display:none;>';
+		echo '<div class="col2-set checkout-group" id="customer_details_payson" style="display:none;">';
 		echo '<div class="paysonceckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
 		    if ( is_wp_error( $checkout ) ) {
 				echo $checkout->get_error_message();
