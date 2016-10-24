@@ -28,7 +28,12 @@ class WC_PaysonCheckout {
 		add_filter( 'wc_order_statuses', array( $this, 'add_payson_incomplete_to_order_statuses' ) );
 		add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', array( $this,'payson_incomplete_payment_complete' ) );
 		add_filter( 'woocommerce_valid_order_statuses_for_payment', array( $this, 'payson_incomplete_payment_complete' ) );
+		
+		// Send customer and merchant emails for Payson Incomplete > Processing status change
+		add_filter( 'woocommerce_email_actions', array( $this, 'wc_add_payson_incomplete_email_actions' ) );
+		add_action( 'woocommerce_order_status_payson-incomplete_to_processing_notification', array( $this, 'wc_payson_incomplete_trigger' ) );
 	}
+	
 	
 	
 	/**
@@ -75,6 +80,33 @@ class WC_PaysonCheckout {
 	public function payson_incomplete_payment_complete( $order_statuses ) {
 		$order_statuses[] = 'payson-incomplete';
 		return $order_statuses;
+	}
+	
+	/**
+	 * Add payson-incomplete_to_processing to statuses that can send email
+	 *
+	 * @since  0.8.5
+	 **/
+	public function wc_add_payson_incomplete_email_actions( $email_actions ) {
+		$email_actions[] = 'woocommerce_order_status_payson-incomplete_to_processing';
+		return $email_actions;
+	}
+	
+
+	/**
+	 * Triggers the email payson-incomplete_to_processing email
+	 *
+	 * @since  0.8.5
+	 **/
+	public function wc_payson_incomplete_trigger( $orderid ) {
+		$payson_mailer = WC()->mailer();
+		$payson_mails  = $payson_mailer->get_emails();
+		foreach ( $payson_mails as $payson_mail ) {
+			$order = new WC_Order( $orderid );
+			if ( 'new_order' == $payson_mail->id || 'customer_processing_order' == $payson_mail->id ) {
+				$payson_mail->trigger( $order->id );
+			}
+		}
 	}
 
 }
