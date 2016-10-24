@@ -7,7 +7,7 @@ Requires WooCommerce at least: 2.5
 Tested WooCommerce up to: 2.6.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 0.8.4
+Stable tag: 0.8.5
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,12 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2016.10.24	- version 0.8.5 =
+* Tweak			- Added support for Flatsome 3.x. No need for specific markup for Flatsome anymore.
+* Tweak			- Removed duplicate code.
+* Fix			- Fixed issue with new order emails not being sent (if PaysonEmbeddedAddressChanged js-event wasn't triggered).
+* Fix			- Fixed missing quote in inline CSS.
 
 = 2016.09.23	- version 0.8.4 =
 * Tweak			- Added Payson logo to payment method display in checkout.
