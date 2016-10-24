@@ -169,7 +169,7 @@ function init_wc_gateway_paysoncheckout_class() {
 				var_dump($checkout->snippet);
 				echo '</pre>';
 				*/
-				echo '<div class="paysonceckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
+				echo '<div class="paysonceckout-container" style="width:100%; margin-left:auto; margin-right:auto;">';
 			    echo $checkout->snippet; 
 				echo "</div>";
 				WC()->session->__unset( 'payson_checkout_id' );
@@ -273,14 +273,6 @@ function init_wc_gateway_paysoncheckout_class() {
 		 **/
 		function print_checkout_script() {
 			global $woocommerce;
-			
-			// Get the theme
-			$theme = wp_get_theme();
-			if ('Flatsome' == $theme->name || 'Flatsome' == $theme->parent_theme) {
-			    $current_theme = 'Flatsome';
-			} else {
-				$current_theme = 'somethingelse';
-			}
 			
 			// Get mobile threshold
 			$mobile_threshold = $this->mobile_threshold;
@@ -469,9 +461,6 @@ function init_wc_gateway_paysoncheckout_class() {
 				    
 				    // Function for moving the Payson Checkout iframe. 
 				    function maybe_move_payson_iframe() {
-					    
-					    // Declare the theme
-						var current_theme = '<?php echo $current_theme; ?>';
 						
 						// Declare mobile threshold
 						var mobile_threshold = '<?php echo $mobile_threshold; ?>';
@@ -480,12 +469,7 @@ function init_wc_gateway_paysoncheckout_class() {
 						if( mobile_threshold ) {
 						    var $iW = jQuery(window).width();
 							if ($iW > mobile_threshold){
-								// Move the payson iframe to billing/shipping area if window is larger than the mobile threshold
-								if ('Flatsome' == current_theme ) {
-									jQuery('#customer_details_payson').appendTo(jQuery('.large-7.columns')); // Flatsome
-								} else {
-									jQuery('#customer_details_payson').insertBefore('#customer_details'); // Themes with WooCommerce standard html markup
-								}
+								jQuery('#customer_details_payson').insertBefore('#customer_details'); // Themes with WooCommerce standard html markup
 							} else {
 								// Move payson iframe to below the order review box if the window is smaller than the mobile threshold
 								jQuery('#customer_details_payson').appendTo('#order_review');
