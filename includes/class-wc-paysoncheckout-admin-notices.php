@@ -20,8 +20,8 @@ class WC_PaysonCheckout_Admin_Notices {
 	public function __construct() {
 		$paysoncheckout_settings = get_option( 'woocommerce_paysoncheckout_settings' );
 		$this->enabled           = $paysoncheckout_settings['enabled'];
-		//add_action( 'admin_notices', array( $this, 'check_settings' ) );
-		//add_action( 'woocommerce_settings_saved', array( $this, 'validate_account' ) );
+		// add_action( 'admin_notices', array( $this, 'check_settings' ) );
+		// add_action( 'woocommerce_settings_saved', array( $this, 'validate_account' ) );
 		add_action( 'admin_init', array( $this, 'check_settings' ) );
 	}
 
@@ -80,7 +80,7 @@ class WC_PaysonCheckout_Admin_Notices {
 		// Account check
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
-		$validation = $payson_api->get_validate_account( $_GET['paysonorder'] );
+		$validation = $payson_api->get_validate_account();
 		if ( is_wp_error( $validation ) ) {
 			echo '<div class="notice notice-error">';
 			echo '<p>' . $validation->get_error_message() . '</p>';

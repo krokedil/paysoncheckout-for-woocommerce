@@ -34,37 +34,35 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->icon               = '';
 			$this->has_fields         = true;
 			$this->method_description = __( 'Allows payments through ' . $this->method_title . '.', 'woocommerce-gateway-paysoncheckout' );
+
 			// Load the form fields.
 			$this->init_form_fields();
+
 			// Load the settings.
 			$this->init_settings();
+
 			// Define user set variables
-			$this->enabled          = ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
-			$this->title            = ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
-			$this->description      = ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
-			$this->merchant_id      = ( isset( $this->settings['merchant_id'] ) ) ? $this->settings['merchant_id'] : '';
-			$this->api_key          = ( isset( $this->settings['api_key'] ) ) ? $this->settings['api_key'] : '';
-			$this->color_scheme     = ( isset( $this->settings['color_scheme'] ) ) ? $this->settings['color_scheme'] : '';
-			$this->request_phone    = ( isset( $this->settings['request_phone'] ) ) ? $this->settings['request_phone'] : '';
-			$this->debug            = ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : '';
-			$this->order_management = ( isset( $this->settings['order_management'] ) ) ? $this->settings['order_management'] : '';
-			$this->mobile_threshold = ( isset( $this->settings['mobile_threshold'] ) ) ? $this->settings['mobile_threshold'] : '';
+			$this->enabled          = $this->get_option( 'enabled' );
+			$this->title            = $this->get_option( 'title' );
+			$this->description      = $this->get_option( 'description' );
+			$this->merchant_id      = $this->get_option( 'merchant_id' );
+			$this->api_key          = $this->get_option( 'api_key' );
+			$this->color_scheme     = $this->get_option( 'color_scheme' );
+			$this->request_phone    = $this->get_option( 'request_phone' );
+			$this->debug            = $this->get_option( 'debug' );
+			$this->order_management = $this->get_option( 'order_management' );
+
 			// Supports
-			$this->supports = array(
-				'products'
-			);
+			$this->supports = array( 'products' );
+
 			// Actions
-			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array(
-				$this,
-				'process_admin_options'
-			) );
+			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+
 			// Scripts
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
 			// Thankyou page
-			add_filter( 'woocommerce_thankyou_order_received_text', array(
-				$this,
-				'payson_thankyou_order_received_text'
-			), 10, 2 );
+			add_filter( 'woocommerce_thankyou_order_received_text', array( $this, 'payson_thankyou_order_received_text' ), 10, 2 );
 			add_action( 'woocommerce_thankyou_paysoncheckout', array( $this, 'payson_thankyou' ) );
 		}
 
@@ -74,8 +72,8 @@ function init_wc_gateway_paysoncheckout_class() {
 		 * @param string $message
 		 */
 		public static function log( $message ) {
-			$afterpay_settings = get_option( 'woocommerce_paysoncheckout_settings' );
-			if ( $afterpay_settings['debug'] == 'yes' ) {
+			$paysoncheckout_settings = get_option( 'woocommerce_paysoncheckout_settings' );
+			if ( $paysoncheckout_settings['debug'] === 'yes' ) {
 				if ( empty( self::$log ) ) {
 					self::$log = new WC_Logger();
 				}
@@ -87,15 +85,16 @@ function init_wc_gateway_paysoncheckout_class() {
 		 * Check if this gateway is enabled and available in the user's country
 		 */
 		function is_available() {
-			global $woocommerce;
-			if ( $this->enabled == "yes" ) :
+			if ( 'yes' === $this->enabled ) {
 				if ( ! is_admin() ) {
 					// Currency check
 					if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ) ) ) {
 						return false;
 					}
+
 					// Country check
 					//if (!in_array(WC()->customer->get_country(), array('FI', 'SE'))) return false;
+
 					// Required fields check
 					if ( ! $this->merchant_id || ! $this->api_key ) {
 						return false;
@@ -103,7 +102,7 @@ function init_wc_gateway_paysoncheckout_class() {
 				}
 
 				return true;
-			endif;
+			}
 
 			return false;
 		}
@@ -114,7 +113,6 @@ function init_wc_gateway_paysoncheckout_class() {
 		 * @return string
 		 */
 		public function get_icon() {
-			$icon_html  = '';
 			$icon_src   = 'https://www.payson.se/sites/all/files/images/external/payson.png';
 			$icon_width = '85';
 			$icon_html  = '<img src="' . $icon_src . '" alt="PaysonCheckout 2.0" style="max-width:' . $icon_width . 'px"/>';
@@ -123,11 +121,16 @@ function init_wc_gateway_paysoncheckout_class() {
 		}
 
 		/**
-		 * Remove thankyou page order received text if PaysonCheckout is the selected payment method.
+		 * Remove thank you page order received text if PaysonCheckout is the selected payment method.
+		 *
+		 * @param $text
+		 * @param $order
+		 *
+		 * @return string
 		 */
 		public function payson_thankyou_order_received_text( $text, $order ) {
 			if ( 'paysoncheckout' == WC()->session->get( 'chosen_payment_method' ) ) {
-				$text = '';
+				return '';
 			}
 
 			return $text;
@@ -225,12 +228,6 @@ function init_wc_gateway_paysoncheckout_class() {
 					'label'   => __( 'Check this box to require the customer to fill in his phone number.', 'woocommerce-gateway-paysoncheckout' ),
 					'default' => 'no'
 				),
-				'mobile_threshold' => array(
-					'title'       => __( 'Mobile threshold', 'woocommerce-gateway-paysoncheckout' ),
-					'type'        => 'text',
-					'description' => __( 'If your theme has a two column checkout layout; specify the width in px (but without the actual px, e.g. 767) where the checkout layout alters to a one column layout. Leave blank to disable this feature. Storefront and one column checkout layouts will not require this setting.', 'woocommerce-gateway-paysoncheckout' ),
-					'default'     => '',
-				),
 				'debug'            => array(
 					'title'       => __( 'Debug Log', 'woocommerce-gateway-paysoncheckout' ),
 					'type'        => 'checkbox',
@@ -245,12 +242,9 @@ function init_wc_gateway_paysoncheckout_class() {
 			if ( is_checkout() ) {
 				$theme            = wp_get_theme();
 				$theme_name       = $theme->name;
-				$mobile_threshold = $this->mobile_threshold;
 				wp_register_script( 'wc_paysoncheckout', PAYSONCHECKOUT_URL . '/assets/js/paysoncheckout.js', array( 'jquery' ), false, true );
 				wp_localize_script( 'wc_paysoncheckout', 'wc_paysoncheckout', array(
 					'ajax_url'                   => admin_url( 'admin-ajax.php' ),
-					'theme_name'                 => $theme_name,
-					'mobile_threshold'           => $mobile_threshold,
 					'select_another_method_text' => 'Select another payment method',
 					'wc_payson_checkout_nonce'   => wp_create_nonce( 'wc_payson_checkout_nonce' )
 				) );
@@ -267,10 +261,8 @@ function init_wc_gateway_paysoncheckout_class() {
  * Add PaysonCheckout 2.0 payment gateway
  *
  * @wp_hook woocommerce_payment_gateways
- *
- * @param  $methods Array All registered payment methods
- *
- * @return $methods Array All registered payment methods
+ * @param  array $methods All registered payment methods
+ * @return array $methods All registered payment methods
  */
 function add_paysoncheckout_method( $methods ) {
 	$methods[] = 'WC_Gateway_PaysonCheckout';

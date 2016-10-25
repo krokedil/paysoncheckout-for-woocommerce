@@ -41,25 +41,29 @@ class WC_PaysonCheckout_Capture {
 	public function capture_full( $order_id ) {
 		$this->order_id = $order_id;
 		$order          = wc_get_order( $this->order_id );
+
 		// If this order wasn't created using PaysonCheckout payment method, bail.
 		if ( 'paysoncheckout' != $order->payment_method ) {
 			return;
 		}
+
 		// If this reservation was already cancelled, do nothing.
 		if ( get_post_meta( $this->order_id, '_paysoncheckout_reservation_captured', true ) ) {
 			$order->add_order_note( __( 'Could not capture PaysonCheckout reservation, PaysonCheckout reservation is already captured.', 'woocommerce-gateway-paysoncheckout' ) );
 
 			return;
 		}
+
 		// If payment method is set to not capture orders automatically, bail.
 		if ( ! $this->order_management ) {
 			return;
 		}
+
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api        = new WC_PaysonCheckout_Setup_Payson_API();
 		$payson_api        = $payson_api->set_payson_api();
 		$checkout_temp_obj = $payson_api->GetCheckout( $this->get_checkout_id() );
-		$payson_embedded_status = $checkout_temp_obj->status;
+
 		try {
 			$response = $payson_api->ShipCheckout( $checkout_temp_obj );
 			if ( 'shipped' == $response->status ) {
@@ -72,7 +76,7 @@ class WC_PaysonCheckout_Capture {
 				$order->add_order_note( __( 'PaysonCheckout reservation could not be captured.', 'woocommerce-gateway-paysoncheckout' ) );
 			}
 		} catch ( Exception $e ) {
-			WC_Gateway_AfterPay_Factory::log( $e->getMessage() );
+			WC_Gateway_PaysonCheckout::log( $e->getMessage() );
 			$order->add_order_note( sprintf( __( 'PaysonCheckout reservation could not be captured, reason: %s.', 'woocommerce-gateway-paysoncheckout' ), $e->getMessage() ) );
 		}
 	}

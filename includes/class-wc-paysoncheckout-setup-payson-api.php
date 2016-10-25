@@ -177,7 +177,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$merchant_id = $this->settings['merchant_id'];
 		$api_key     = $this->settings['api_key'];
 		$environment = ( 'yes' == $this->settings['testmode'] ) ? true : false;
-		$callPaysonApi = new  PaysonEmbedded\PaysonApi( $merchant_id, $api_key, $environment );
+		$callPaysonApi = new PaysonEmbedded\PaysonApi( $merchant_id, $api_key, $environment );
 		try {
 			$account = $callPaysonApi->Validate();
 

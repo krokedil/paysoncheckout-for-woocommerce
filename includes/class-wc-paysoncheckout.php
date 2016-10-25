@@ -66,7 +66,11 @@ class WC_PaysonCheckout {
 	 * Add KCO Incomplete to list of order status
 	 *
 	 * @since  0.1
-	 **/
+	 *
+	 * @param $order_statuses
+	 *
+	 * @return mixed
+	 */
 	public function add_payson_incomplete_to_order_statuses( $order_statuses ) {
 		// Add this status only if not in account page (so it doesn't show in My Account list of orders)
 		if ( ! is_account_page() ) {
@@ -91,7 +95,11 @@ class WC_PaysonCheckout {
 	 * Add payson-incomplete_to_processing to statuses that can send email
 	 *
 	 * @since  0.8.5
-	 **/
+	 *
+	 * @param $email_actions
+	 *
+	 * @return array
+	 */
 	public function wc_add_payson_incomplete_email_actions( $email_actions ) {
 		$email_actions[] = 'woocommerce_order_status_payson-incomplete_to_processing';
 
@@ -102,10 +110,13 @@ class WC_PaysonCheckout {
 	 * Triggers the email payson-incomplete_to_processing email
 	 *
 	 * @since  0.8.5
-	 **/
+	 *
+	 * @param $orderid
+	 */
 	public function wc_payson_incomplete_trigger( $orderid ) {
 		$payson_mailer = WC()->mailer();
 		$payson_mails  = $payson_mailer->get_emails();
+
 		foreach ( $payson_mails as $payson_mail ) {
 			$order = new WC_Order( $orderid );
 			if ( 'new_order' == $payson_mail->id || 'customer_processing_order' == $payson_mail->id ) {

@@ -20,6 +20,9 @@ class WC_PaysonCheckout_WC_Order {
 	 * @since  1.0.0
 	 * @access public
 	 *
+	 * @param string $customer_email
+	 *
+	 * @return int
 	 */
 	public function update_or_create_local_order( $customer_email = '' ) {
 		if ( WC()->session->get( 'ongoing_payson_order' ) && wc_get_order( WC()->session->get( 'ongoing_payson_order' ) ) ) {
