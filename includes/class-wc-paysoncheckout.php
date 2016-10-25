@@ -15,27 +15,32 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author Krokedil
  */
 class WC_PaysonCheckout {
-	
+
 	/**
 	 * WC_PaysonCheckout constructor.
 	 */
 	public function __construct() {
 		$paysoncheckout_settings = get_option( 'woocommerce_paysoncheckout_settings' );
-		$this->debug	= $paysoncheckout_settings['debug'];
-
+		$this->debug             = $paysoncheckout_settings['debug'];
 		// Register new order status
-		add_action( 'init', array( $this, 'register_payson_incomplete_order_status' ) );	
+		add_action( 'init', array( $this, 'register_payson_incomplete_order_status' ) );
 		add_filter( 'wc_order_statuses', array( $this, 'add_payson_incomplete_to_order_statuses' ) );
-		add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', array( $this,'payson_incomplete_payment_complete' ) );
-		add_filter( 'woocommerce_valid_order_statuses_for_payment', array( $this, 'payson_incomplete_payment_complete' ) );
-		
+		add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', array(
+			$this,
+			'payson_incomplete_payment_complete'
+		) );
+		add_filter( 'woocommerce_valid_order_statuses_for_payment', array(
+			$this,
+			'payson_incomplete_payment_complete'
+		) );
 		// Send customer and merchant emails for Payson Incomplete > Processing status change
 		add_filter( 'woocommerce_email_actions', array( $this, 'wc_add_payson_incomplete_email_actions' ) );
-		add_action( 'woocommerce_order_status_payson-incomplete_to_processing_notification', array( $this, 'wc_payson_incomplete_trigger' ) );
+		add_action( 'woocommerce_order_status_payson-incomplete_to_processing_notification', array(
+			$this,
+			'wc_payson_incomplete_trigger'
+		) );
 	}
-	
-	
-	
+
 	/**
 	 * Register Payson Incomplete order status
 	 *
@@ -47,7 +52,6 @@ class WC_PaysonCheckout {
 		} else {
 			$show_in_admin_status_list = false;
 		}
-		
 		register_post_status( 'wc-payson-incomplete', array(
 			'label'                     => 'Payson incomplete',
 			'public'                    => false,
@@ -56,9 +60,8 @@ class WC_PaysonCheckout {
 			'show_in_admin_status_list' => $show_in_admin_status_list,
 			'label_count'               => _n_noop( 'Payson incomplete <span class="count">(%s)</span>', 'Payson incomplete <span class="count">(%s)</span>' ),
 		) );
-		
 	}
-	
+
 	/**
 	 * Add KCO Incomplete to list of order status
 	 *
@@ -69,6 +72,7 @@ class WC_PaysonCheckout {
 		if ( ! is_account_page() ) {
 			$order_statuses['wc-payson-incomplete'] = 'Incomplete PaysonCheckout';
 		}
+
 		return $order_statuses;
 	}
 
@@ -79,9 +83,10 @@ class WC_PaysonCheckout {
 	 **/
 	public function payson_incomplete_payment_complete( $order_statuses ) {
 		$order_statuses[] = 'payson-incomplete';
+
 		return $order_statuses;
 	}
-	
+
 	/**
 	 * Add payson-incomplete_to_processing to statuses that can send email
 	 *
@@ -89,9 +94,9 @@ class WC_PaysonCheckout {
 	 **/
 	public function wc_add_payson_incomplete_email_actions( $email_actions ) {
 		$email_actions[] = 'woocommerce_order_status_payson-incomplete_to_processing';
+
 		return $email_actions;
 	}
-	
 
 	/**
 	 * Triggers the email payson-incomplete_to_processing email
@@ -110,4 +115,5 @@ class WC_PaysonCheckout {
 	}
 
 }
+
 $wc_paysoncheckout = new WC_PaysonCheckout;

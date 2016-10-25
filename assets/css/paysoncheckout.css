@@ -1,0 +1,33 @@
+#customer_details,
+#order_review_heading,
+#order_review,
+.woo-shipping,
+.woo-billing,
+.checkout-sidebar,
+.order-review {
+	display: none;
+}
+
+.paysoncheckout-deselected #customer_details,
+.paysoncheckout-deselected #order_review_heading,
+.paysoncheckout-deselected #order_review,
+.paysoncheckout-deselected .woo-shipping,
+.paysoncheckout-deselected .woo-billing,
+.paysoncheckout-deselected .checkout-sidebar,
+.paysoncheckout-deselected .order-review {
+	display: block;
+}
+
+.paysoncheckout-selected .woocommerce {
+	max-width: 840px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#customer_details_payson {
+	display: none;
+}
+
+.paysoncheckout-selected #customer_details_payson {
+	display: block;
+}

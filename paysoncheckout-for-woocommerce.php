@@ -14,26 +14,22 @@
  * License:         GNU General Public License v3.0
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.html
  */
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
-
 /**
  * Localisation.
  */
 load_plugin_textdomain( 'woocommerce-gateway-paysoncheckout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-
 // Define plugin paths
 define( 'PAYSONCHECKOUT_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
-
 // Include files
 include_once( 'includes/class-wc-paysoncheckout.php' );
 include_once( 'includes/gateways/class-wc-paysoncheckout-gateway.php' );
 include_once( 'includes/class-wc-paysoncheckout-wc-order.php' );
 include_once( 'includes/class-wc-paysoncheckout-create-checkout.php' );
-include_once( 'includes/class-wc-paysoncheckout-ajax-handler.php' );
+include_once( 'includes/class-wc-paysoncheckout-ajax.php' );
 include_once( 'includes/class-wc-paysoncheckout-response-handler.php' );
 include_once( 'includes/class-wc-paysoncheckout-capture.php' );
 include_once( 'includes/class-wc-paysoncheckout-cancel-reservation.php' );
