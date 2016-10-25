@@ -245,7 +245,8 @@ function init_wc_gateway_paysoncheckout_class() {
 				wp_register_script( 'wc_paysoncheckout', PAYSONCHECKOUT_URL . '/assets/js/paysoncheckout.js', array( 'jquery' ), false, true );
 				wp_localize_script( 'wc_paysoncheckout', 'wc_paysoncheckout', array(
 					'ajax_url'                   => admin_url( 'admin-ajax.php' ),
-					'select_another_method_text' => 'Select another payment method',
+					'select_another_method_text' => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
+					'debug'                      => $this->debug,
 					'wc_payson_checkout_nonce'   => wp_create_nonce( 'wc_payson_checkout_nonce' )
 				) );
 				wp_enqueue_script( 'wc_paysoncheckout' );

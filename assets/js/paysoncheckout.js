@@ -1,10 +1,8 @@
-/* global jQuery, wc_ecster, EcsterPay, console */
 (function ($) {
 	'use strict';
 
 	var wc_paysoncheckout_html = '';
 	var wc_paysoncheckout_loaded = false;
-	var wc_paysoncheckout_customer_fetched = false;
 
 	var wc_paysoncheckout_body_class = function wc_paysoncheckout_body_class() {
 		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
@@ -106,45 +104,14 @@
 	});
 
 	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
-		console.log('PaysonEmbeddedAddressChanged', data.detail);
+		if ('yes' === wc_paysoncheckout.debug) {
+			console.log('PaysonEmbeddedAddressChanged', data.detail);
+		}
 	});
 
 	$(document).on('PaysonEmbeddedCheckoutResult', function(data) {
-		console.log('PaysonEmbeddedCheckoutResult', data);
+		if ('yes' === wc_paysoncheckout.debug) {
+			console.log('PaysonEmbeddedCheckoutResult', data);
+		}
 	});
 }(jQuery));
-
-
-window.addEventListener("message", function (e) { handleMessages(e) }, false);
-function handleMessages(messageEvent) {
-	console.log('message', messageEvent);
-	var data = JSON.parse(messageEvent.data);
-
-	if (data["action"] === "checkoutResult") {
-		console.log('checkoutResult');
-		var result = data["result"];
-		// Do something based on the result.  NOTE! This can not be used as payment confirmation since Javascript event can be faked by client.
-	}
-}
-
-
-document.addEventListener("PaysonEmbeddedCheckoutResult",function(evt) {
-	var result= evt.result;
-	console.log('PaysonEmbeddedCheckoutResult', result);
-
-	if(result == 'ReadyToShip') {
-		// Do something
-	}
-
-	if(result == 'Canceled') {
-		// Do something
-	}
-
-	if(result == 'Denied') {
-		// Do something
-	}
-
-	if(result == 'Expired') {
-		// Do something
-	}
-});
