@@ -107,6 +107,30 @@
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedAddressChanged', data.detail);
 		}
+
+		$.ajax(
+			wc_paysoncheckout.ajax_url,
+			{
+				type: "POST",
+				dataType: "json",
+				async: true,
+				data: {
+					action: "wc_paysoncheckout_create_order",
+					nonce: wc_paysoncheckout.wc_payson_checkout_nonce
+				},
+				success: function(response) {
+					if ('yes' === wc_paysoncheckout.debug) {
+						console.log(response);
+					}
+
+					// Lock, update and unlock the iframe
+					var iframe = document.getElementById('paysonIframe');
+					iframe.contentWindow.postMessage('lock', '*');
+					iframe.contentWindow.postMessage('updatePage', '*');
+					// iframe.contentWindow.postMessage('release', '*');
+				}
+			}
+		);
 	});
 
 	$(document).on('PaysonEmbeddedCheckoutResult', function(data) {

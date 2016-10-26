@@ -136,10 +136,16 @@ class WC_PaysonCheckout_Response_Handler {
 	 */
 	protected function payment_status_readyToShip( $order, $checkout ) {
 		WC_Gateway_PaysonCheckout::log( 'Payment status readyToShip callback.' );
+
+		if ( ! $order instanceof WC_Order ) {
+			exit;
+		}
+
 		if ( $order->has_status( 'completed' ) ) {
 			WC_Gateway_PaysonCheckout::log( 'Aborting, Order #' . $order->id . ' is already complete.' );
 			exit;
 		}
+
 		if ( 'readyToShip' === $checkout->status ) {
 			// Add order addresses
 			$this->add_order_addresses( $order, $checkout );

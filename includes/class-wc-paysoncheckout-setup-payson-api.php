@@ -33,7 +33,8 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$customer       = $this->set_customer();
 		//$purchaseId		= $order_id;
 		// Gather
-		$checkout = new  PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
+		$checkout = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
+
 		/*
 		 * Step 2 Create checkout
 		 */
@@ -64,8 +65,15 @@ class WC_PaysonCheckout_Setup_Payson_API {
 				return new WP_Error( 'connection-error', $e->getMessage() );
 			}
 			$checkout_temp_obj = $callPaysonApi->GetCheckout( $checkoutId );
+
 			// Update notification url with the Payson Checkout ID
-			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $checkout_temp_obj->merchant->confirmationUri );
+			if ( $order_id ) {
+				$order = wc_get_order( $order_id );
+				$confirmationUri = $order->get_checkout_order_received_url();
+			} else {
+				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
+			}
+			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			$checkout_temp_obj                            = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
 			WC()->session->set( 'payson_checkout_id', $checkout_temp_obj->id );

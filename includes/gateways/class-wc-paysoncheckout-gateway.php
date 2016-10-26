@@ -145,12 +145,9 @@ function init_wc_gateway_paysoncheckout_class() {
 				include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 				$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
 				$checkout   = $payson_api->get_notification_checkout( $_GET['paysonorder'] );
-				WC_Gateway_PaysonCheckout::log( 'Posted checkout info in thankyou page: ' . var_export( $checkout, true ) );
-				/*echo '<pre>';
-				var_dump($checkout->snippet);
-				echo '</pre>';
-				*/
-				echo '<div class="paysonceckout-container" style="width:100%; margin-left:auto; margin-right:auto;">';
+				WC_Gateway_PaysonCheckout::log( 'Posted checkout info in thank you page: ' . var_export( $checkout, true ) );
+
+				echo '<div class="paysoncheckout-container" style="width:100%; margin-left:auto; margin-right:auto;">';
 				echo $checkout->snippet;
 				echo "</div>";
 				WC()->session->__unset( 'payson_checkout_id' );

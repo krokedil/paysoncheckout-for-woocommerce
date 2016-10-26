@@ -20,6 +20,9 @@ class WC_PaysonCheckout_Ajax {
 	public function __construct() {
 		add_action( 'wp_ajax_wc_paysoncheckout_iframe', array( $this, 'get_paysoncheckout_iframe' ) );
 		add_action( 'wp_ajax_nopriv_wc_paysoncheckout_iframe', array( $this, 'get_paysoncheckout_iframe' ) );
+
+		add_action( 'wp_ajax_wc_paysoncheckout_create_order', array( $this, 'create_local_order' ) );
+		add_action( 'wp_ajax_nopriv_wc_paysoncheckout_create_order', array( $this, 'create_local_order' ) );
 	}
 
 	/*
@@ -29,11 +32,11 @@ class WC_PaysonCheckout_Ajax {
 		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wc_payson_checkout_nonce' ) ) {
 			exit( 'Nonce can not be verified.' );
 		}
-		$wc_order = new WC_PaysonCheckout_WC_Order();
-		$order_id = $wc_order->update_or_create_local_order();
+
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
-		$checkout   = $payson_api->get_checkout( $order_id );
+		$checkout   = $payson_api->get_checkout();
+
 		$iframe = '<div class="paysoncheckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
 		if ( is_wp_error( $checkout ) ) {
 			$iframe .= $checkout->get_error_message();
@@ -42,6 +45,22 @@ class WC_PaysonCheckout_Ajax {
 		}
 		$iframe .= '</div>';
 		wp_send_json_success( $iframe );
+		wp_die();
+	}
+
+	public function create_local_order() {
+		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wc_payson_checkout_nonce' ) ) {
+			exit( 'Nonce can not be verified.' );
+		}
+
+		$wc_order = new WC_PaysonCheckout_WC_Order();
+		$order_id = $wc_order->update_or_create_local_order();
+
+		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
+		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
+		$checkout = $payson_api->get_checkout( $order_id );
+
+		wp_send_json_success( array( 'checkout' => $checkout, 'order_id' => $order_id ) );
 		wp_die();
 	}
 
