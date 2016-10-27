@@ -48,7 +48,8 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			}
 			$payson_embedded_status = $checkout_temp_obj->status;
 		}
-		if ( WC()->session->get( 'payson_checkout_id' ) && 'created' == $payson_embedded_status ) {
+
+		if ( WC()->session->get( 'payson_checkout_id' ) && 'readyToPay' == $payson_embedded_status ) {
 			// Update checkout
 			try {
 				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
@@ -56,15 +57,6 @@ class WC_PaysonCheckout_Setup_Payson_API {
 				return new WP_Error( 'connection-error', $e->getMessage() );
 			}
 			$checkout_temp_obj->payData = $this->set_pay_data( $order_id );
-			$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
-		} else {
-			// Create checkout
-			try {
-				$checkoutId = $callPaysonApi->CreateCheckout( $checkout );
-			} catch ( Exception $e ) {
-				return new WP_Error( 'connection-error', $e->getMessage() );
-			}
-			$checkout_temp_obj = $callPaysonApi->GetCheckout( $checkoutId );
 
 			// Update notification url with the Payson Checkout ID
 			if ( $order_id ) {
@@ -75,7 +67,30 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			}
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
+
+			$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
+		} else {
+			// Create checkout
+			try {
+				$checkoutId = $callPaysonApi->CreateCheckout( $checkout );
+			} catch ( Exception $e ) {
+				return new WP_Error( 'connection-error', $e->getMessage() );
+			}
+
+			$checkout_temp_obj = $callPaysonApi->GetCheckout( $checkoutId );
+
+			// Update notification url with the Payson Checkout ID
+			if ( $order_id ) {
+				$order = wc_get_order( $order_id );
+				$confirmationUri = $order->get_checkout_order_received_url();
+			} else {
+				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
+			}
+			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
+
+			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			$checkout_temp_obj                            = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
+
 			WC()->session->set( 'payson_checkout_id', $checkout_temp_obj->id );
 		}
 

@@ -103,10 +103,29 @@
 		wc_paysoncheckout_body_class();
 	});
 
+	/*
+	var submitAddressClicked = '';
+	$('#paysonContainer #SubmitAddress').on('click', function(e) {
+		console.log('submitAddressClicked', submitAddressClicked);
+		var clickedElement = $(this);
+		if ( 'yes' !== submitAddressClicked ) {
+			setTimeout(function() {
+				clickedElement.click();
+			}, 3000);
+			e.preventDefault();
+		}
+
+		submitAddressClicked = 'yes';
+	});
+	*/
+
 	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedAddressChanged', data.detail);
 		}
+
+		var iframe = document.getElementById('paysonIframe');
+		iframe.contentWindow.postMessage('lock', '*');
 
 		$.ajax(
 			wc_paysoncheckout.ajax_url,
@@ -124,9 +143,7 @@
 					}
 
 					// Lock, update and unlock the iframe
-					var iframe = document.getElementById('paysonIframe');
-					iframe.contentWindow.postMessage('lock', '*');
-					iframe.contentWindow.postMessage('updatePage', '*');
+					setTimeout(function(){ iframe.contentWindow.postMessage('updatePage', '*'); }, 5000);
 					// iframe.contentWindow.postMessage('release', '*');
 				}
 			}
