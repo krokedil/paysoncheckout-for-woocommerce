@@ -25,8 +25,9 @@
 						nonce: wc_paysoncheckout.wc_payson_checkout_nonce
 					},
 					success: function(response) {
-						$('div#customer_details_payson').html(response.data);
-						wc_paysoncheckout_html = response.data;
+						console.log(response.data);
+						$('div#customer_details_payson').html(response.data.iframe);
+						wc_paysoncheckout_html = response.data.iframe;
 						wc_paysoncheckout_loaded = true;
 					}
 				}
@@ -102,53 +103,16 @@
 
 		wc_paysoncheckout_body_class();
 	});
-
-	/*
-	var submitAddressClicked = '';
-	$('#paysonContainer #SubmitAddress').on('click', function(e) {
-		console.log('submitAddressClicked', submitAddressClicked);
-		var clickedElement = $(this);
-		if ( 'yes' !== submitAddressClicked ) {
-			setTimeout(function() {
-				clickedElement.click();
-			}, 3000);
-			e.preventDefault();
-		}
-
-		submitAddressClicked = 'yes';
-	});
-	*/
-
+	
 	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedAddressChanged', data.detail);
 		}
 
-		var iframe = document.getElementById('paysonIframe');
-		iframe.contentWindow.postMessage('lock', '*');
-
-		$.ajax(
-			wc_paysoncheckout.ajax_url,
-			{
-				type: "POST",
-				dataType: "json",
-				async: true,
-				data: {
-					action: "wc_paysoncheckout_create_order",
-					nonce: wc_paysoncheckout.wc_payson_checkout_nonce
-				},
-				success: function(response) {
-					if ('yes' === wc_paysoncheckout.debug) {
-						console.log(response);
-					}
-
-					// Lock, update and unlock the iframe
-					setTimeout(function(){ iframe.contentWindow.postMessage('updatePage', '*'); }, 5000);
-					iframe.contentWindow.postMessage('updatePage', '*');
-					iframe.contentWindow.postMessage('release', '*');
-				}
-			}
-		);
+		// var iframe = document.getElementById('paysonIframe');
+		// iframe.contentWindow.postMessage('lock', '*');
+		// iframe.contentWindow.postMessage('updatePage', '*');
+		// iframe.contentWindow.postMessage('release', '*');
 	});
 
 	$(document).on('PaysonEmbeddedCheckoutResult', function(data) {
