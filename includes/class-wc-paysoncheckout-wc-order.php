@@ -25,16 +25,18 @@ class WC_PaysonCheckout_WC_Order {
 	 * @return int
 	 */
 	public function update_or_create_local_order( $customer_email = '' ) {
+		WC_Gateway_PaysonCheckout::log( 'Update or create local order.' );
+
 		if ( WC()->session->get( 'ongoing_payson_order' ) && wc_get_order( WC()->session->get( 'ongoing_payson_order' ) ) ) {
 			$orderid = WC()->session->get( 'ongoing_payson_order' );
 			$order   = wc_get_order( $orderid );
 		} else {
-			// Create order in WooCommerce if we have an email
 			$order = $this->create_order();
-			//update_post_meta( $order->id, '_kco_incomplete_customer_email', $customer_email, true );
 			WC()->session->set( 'ongoing_payson_order', $order->id );
 		}
+
 		WC_Gateway_PaysonCheckout::log( 'Update local order. Order ID: ' . $order->id );
+
 		// If there's an order at this point, proceed
 		if ( isset( $order ) ) {
 			// Need to clean up the order first, to avoid duplicate items

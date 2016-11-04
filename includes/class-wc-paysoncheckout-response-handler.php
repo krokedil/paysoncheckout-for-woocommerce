@@ -20,12 +20,6 @@ class WC_PaysonCheckout_Response_Handler {
 	public function __construct() {
 		// Notification listener
 		add_action( 'woocommerce_api_wc_gateway_paysoncheckout', array( $this, 'notification_listener' ) );
-		// Ajax for Address Update JS call from Payson
-		add_action( 'wp_ajax_payson_address_changed_callback', array( $this, 'payson_address_changed_callback' ) );
-		add_action( 'wp_ajax_nopriv_payson_address_changed_callback', array(
-			$this,
-			'payson_address_changed_callback'
-		) );
 	}
 
 	/**
@@ -45,95 +39,20 @@ class WC_PaysonCheckout_Response_Handler {
 		WC_Gateway_PaysonCheckout::log( 'Posted reference: ' . var_export( $checkout->merchant->reference, true ) );
 		WC_Gateway_PaysonCheckout::log( 'Posted status: ' . var_export( $checkout->status, true ) );
 
-		if ( method_exists( $this, 'payment_status_' . $checkout->status ) ) {
-			call_user_func( array( $this, 'payment_status_' . $checkout->status ), $order, $checkout );
+		switch ( $checkout->status ) {
+			case 'ReadyToShip':
+				$this->ready_to_ship_cb( $order, $checkout );
+				break;
+			case 'PaidToAccount':
+				// $this->paid_to_account_cb( $order, $checkout );
+				break;
+			case 'Expired':
+				$this->expired_cb( $order );
+				break;
+			case 'Denied':
+				$this->denied_cb( $order );
+				break;
 		}
-	}
-
-	/**
-	 * Adds customer info to local order.
-	 *
-	 * @since  1.0.0
-	 * @access public
-	 *
-	 * @param  object $order Local WC order.
-	 * @param  object $checkout PaysonCheckout order.
-	 */
-	public function add_order_customer_info( $order, $checkout ) {
-		// Store user id in order so the user can keep track of track it in My account
-		if ( email_exists( $checkout->customer->email ) ) {
-			$user = get_user_by( 'email', $checkout->customer->email );
-			$this->customer_id = $user->ID;
-			update_post_meta( $order->id, '_customer_user', $this->customer_id );
-		} else {
-			// Create new user
-			$checkout_settings = array();
-			if ( 'yes' == $checkout_settings['create_customer_account'] ) {
-				$password     = '';
-				$new_customer = $this->create_new_customer( $checkout->customer->email, $checkout->customer->email, $password );
-				if ( 0 == $new_customer ) { // Creation failed
-					$order->add_order_note( sprintf( __( 'Customer creation failed. Check error log for more details.', 'klarna' ) ) );
-					$this->customer_id = 0;
-				} else { // Creation succeeded
-					$order->add_order_note( sprintf( __( 'New customer created (user ID %s).', 'klarna' ), $new_customer ) );
-					// Add customer billing address - retrieved from callback from Klarna
-					update_user_meta( $new_customer, 'billing_first_name', $checkout->customer->firstName );
-					update_user_meta( $new_customer, 'billing_last_name', $checkout->customer->lastName );
-					update_user_meta( $new_customer, 'billing_address_1', $checkout->customer->street );
-					update_user_meta( $new_customer, 'billing_postcode', $checkout->customer->postalCode );
-					update_user_meta( $new_customer, 'billing_city', $checkout->customer->city );
-					update_user_meta( $new_customer, 'billing_country', $checkout->customer->countryCode );
-					update_user_meta( $new_customer, 'billing_email', $checkout->customer->email );
-					update_user_meta( $new_customer, 'billing_phone', $checkout->customer->phone );
-					// Shipping
-					update_user_meta( $new_customer, 'shipping_first_name', $checkout->customer->firstName );
-					update_user_meta( $new_customer, 'shipping_last_name', $checkout->customer->lastName );
-					update_user_meta( $new_customer, 'shipping_address_1', $checkout->customer->street );
-					update_user_meta( $new_customer, 'shipping_postcode', $checkout->customer->postalCode );
-					update_user_meta( $new_customer, 'shipping_city', $checkout->customer->city );
-					update_user_meta( $new_customer, 'shipping_country', $checkout->customer->countryCode );
-					$this->customer_id = $new_customer;
-				}
-				update_post_meta( $order->id, '_customer_user', $this->customer_id );
-			}
-		}
-	}
-
-	/**
-	 * Updates local order with address received from Payson
-	 * Changes the order status to Pending
-	 *
-	 * @since  0.8.3
-	 **/
-	public function payson_address_changed_callback() {
-		if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'payson_nonce' ) ) {
-			exit( 'Nonce can not be verified.' );
-		}
-
-		$address  = $_POST['address'];
-		$order_id = WC()->session->get( 'ongoing_payson_order' );
-		$order    = wc_get_order( $order_id );
-		$order->update_status( 'pending', __( 'Address Update callback from Payson.', 'woocommerce-gateway-paysoncheckout' ) );
-
-		// Add customer billing address
-		update_post_meta( $order_id, '_billing_first_name', $address['FirstName'] );
-		update_post_meta( $order_id, '_billing_last_name', $address['LastName'] );
-		update_post_meta( $order_id, '_billing_address_1', $address['Street'] );
-		update_post_meta( $order_id, '_billing_postcode', $address['PostalCode'] );
-		update_post_meta( $order_id, '_billing_city', $address['City'] );
-		update_post_meta( $order_id, '_billing_country', $address['CountryCode'] );
-
-		// Add customer shipping address
-		update_post_meta( $order_id, '_shipping_first_name', $address['FirstName'] );
-		update_post_meta( $order_id, '_shipping_last_name', $address['LastName'] );
-		update_post_meta( $order_id, '_shipping_address_1', $address['Street'] );
-		update_post_meta( $order_id, '_shipping_postcode', $address['PostalCode'] );
-		update_post_meta( $order_id, '_shipping_city', $address['City'] );
-		update_post_meta( $order_id, '_shipping_country', $address['CountryCode'] );
-
-		$data['order_id'] = $order_id;
-		wp_send_json_success( $data );
-		wp_die();
 	}
 
 	/**
@@ -142,7 +61,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @param WC_Order $order
 	 * @param object PaysonCheckout order $checkout
 	 */
-	protected function payment_status_readyToShip( $order, $checkout ) {
+	protected function ready_to_ship_cb( $order, $checkout ) {
 		WC_Gateway_PaysonCheckout::log( 'Payment status readyToShip callback.' );
 
 		if ( ! $order instanceof WC_Order ) {
@@ -167,6 +86,26 @@ class WC_PaysonCheckout_Response_Handler {
 			// Change the order status to Processing/Completed in WooCommerce
 			$order->payment_complete( $checkout->purchaseId );
 		}
+	}
+
+	/**
+	 * Handle an expired PaysonCheckout resource.
+	 * Force deletes WooCommerce order, skipping Trash.
+	 *
+	 * @param WC_Order $order
+	 */
+	protected function expired_cb( $order ) {
+		wp_delete_post( $order->id, true );
+	}
+
+	/**
+	 * Handle a denied PaysonCheckout payment.
+	 * Marks WooCommerce order as cancelled and adds order note.
+	 *
+	 * @param WC_Order $order
+	 */
+	protected function denied_cb( $order ) {
+		$order->cancel_order( __( 'PaysonCheckout payment was denied.', 'woocommerce-gateway-paysoncheckout' ) );
 	}
 
 	/**

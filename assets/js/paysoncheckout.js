@@ -103,11 +103,35 @@
 
 		wc_paysoncheckout_body_class();
 	});
-	
+
 	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedAddressChanged', data.detail);
 		}
+
+		$.ajax(
+			wc_paysoncheckout.ajax_url,
+			{
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					action  : 'payson_address_changed_callback',
+					address : data.detail,
+					nonce   : wc_paysoncheckout.wc_payson_checkout_nonce,
+				},
+				success: function(response) {
+					console.log('Address update AJAX sucess');
+					console.log(response);
+				},
+				error: function(response) {
+					console.log('Address update AJAX error');
+					console.log(response);
+				},
+				complete: function() {
+					console.log('Address update AJAX complete');
+				}
+			}
+		);
 
 		// var iframe = document.getElementById('paysonIframe');
 		// iframe.contentWindow.postMessage('lock', '*');
