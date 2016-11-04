@@ -33,13 +33,18 @@ class WC_PaysonCheckout_Response_Handler {
 	 */
 	public function notification_listener() {
 		WC_Gateway_PaysonCheckout::log( 'Notification callback for order: ' . $_GET['checkout'] );
+
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
 		$checkout   = $payson_api->get_notification_checkout( $_GET['checkout'] );
+
 		WC_Gateway_PaysonCheckout::log( 'Posted notification info: ' . var_export( $checkout, true ) );
+
 		$order = wc_get_order( $checkout->merchant->reference );
+
 		WC_Gateway_PaysonCheckout::log( 'Posted reference: ' . var_export( $checkout->merchant->reference, true ) );
 		WC_Gateway_PaysonCheckout::log( 'Posted status: ' . var_export( $checkout->status, true ) );
+
 		if ( method_exists( $this, 'payment_status_' . $checkout->status ) ) {
 			call_user_func( array( $this, 'payment_status_' . $checkout->status ), $order, $checkout );
 		}
@@ -55,7 +60,6 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @param  object $checkout PaysonCheckout order.
 	 */
 	public function add_order_customer_info( $order, $checkout ) {
-		$order_id = $order->id;
 		// Store user id in order so the user can keep track of track it in My account
 		if ( email_exists( $checkout->customer->email ) ) {
 			$user = get_user_by( 'email', $checkout->customer->email );
@@ -105,10 +109,12 @@ class WC_PaysonCheckout_Response_Handler {
 		if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'payson_nonce' ) ) {
 			exit( 'Nonce can not be verified.' );
 		}
+
 		$address  = $_POST['address'];
 		$order_id = WC()->session->get( 'ongoing_payson_order' );
 		$order    = wc_get_order( $order_id );
 		$order->update_status( 'pending', __( 'Address Update callback from Payson.', 'woocommerce-gateway-paysoncheckout' ) );
+
 		// Add customer billing address
 		update_post_meta( $order_id, '_billing_first_name', $address['FirstName'] );
 		update_post_meta( $order_id, '_billing_last_name', $address['LastName'] );
@@ -116,6 +122,7 @@ class WC_PaysonCheckout_Response_Handler {
 		update_post_meta( $order_id, '_billing_postcode', $address['PostalCode'] );
 		update_post_meta( $order_id, '_billing_city', $address['City'] );
 		update_post_meta( $order_id, '_billing_country', $address['CountryCode'] );
+
 		// Add customer shipping address
 		update_post_meta( $order_id, '_shipping_first_name', $address['FirstName'] );
 		update_post_meta( $order_id, '_shipping_last_name', $address['LastName'] );
@@ -123,6 +130,7 @@ class WC_PaysonCheckout_Response_Handler {
 		update_post_meta( $order_id, '_shipping_postcode', $address['PostalCode'] );
 		update_post_meta( $order_id, '_shipping_city', $address['City'] );
 		update_post_meta( $order_id, '_shipping_country', $address['CountryCode'] );
+
 		$data['order_id'] = $order_id;
 		wp_send_json_success( $data );
 		wp_die();
@@ -149,10 +157,13 @@ class WC_PaysonCheckout_Response_Handler {
 		if ( 'readyToShip' === $checkout->status ) {
 			// Add order addresses
 			$this->add_order_addresses( $order, $checkout );
+
 			// Add Payson order status
 			update_post_meta( $order->id, '_paysoncheckout_order_status', $checkout->status );
+
 			// Add Payson Checkout Id
 			update_post_meta( $order->id, '_payson_checkout_id', $checkout->id );
+
 			// Change the order status to Processing/Completed in WooCommerce
 			$order->payment_complete( $checkout->purchaseId );
 		}

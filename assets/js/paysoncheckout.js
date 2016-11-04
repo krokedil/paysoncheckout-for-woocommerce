@@ -144,7 +144,8 @@
 
 					// Lock, update and unlock the iframe
 					setTimeout(function(){ iframe.contentWindow.postMessage('updatePage', '*'); }, 5000);
-					// iframe.contentWindow.postMessage('release', '*');
+					iframe.contentWindow.postMessage('updatePage', '*');
+					iframe.contentWindow.postMessage('release', '*');
 				}
 			}
 		);
