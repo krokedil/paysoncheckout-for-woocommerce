@@ -52,6 +52,9 @@ class WC_PaysonCheckout_Response_Handler {
 			case 'Denied':
 				$this->denied_cb( $order );
 				break;
+			case 'canceled':
+				$this->denied_cb( $order );
+				break;
 		}
 	}
 
@@ -73,19 +76,17 @@ class WC_PaysonCheckout_Response_Handler {
 			exit;
 		}
 
-		if ( 'readyToShip' === $checkout->status ) {
-			// Add order addresses
-			$this->add_order_addresses( $order, $checkout );
+		// Add order addresses
+		$this->add_order_addresses( $order, $checkout );
 
-			// Add Payson order status
-			update_post_meta( $order->id, '_paysoncheckout_order_status', $checkout->status );
+		// Add Payson order status
+		update_post_meta( $order->id, '_paysoncheckout_order_status', $checkout->status );
 
-			// Add Payson Checkout Id
-			update_post_meta( $order->id, '_payson_checkout_id', $checkout->id );
+		// Add Payson Checkout Id
+		update_post_meta( $order->id, '_payson_checkout_id', $checkout->id );
 
-			// Change the order status to Processing/Completed in WooCommerce
-			$order->payment_complete( $checkout->purchaseId );
-		}
+		// Change the order status to Processing/Completed in WooCommerce
+		$order->payment_complete( $checkout->purchaseId );
 	}
 
 	/**

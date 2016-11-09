@@ -86,8 +86,8 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			} else {
 				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
 			}
-			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 
+			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			$checkout_temp_obj                            = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
 
