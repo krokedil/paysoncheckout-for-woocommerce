@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 /**
@@ -16,16 +16,23 @@ class WC_PaysonCheckout_Setup_Payson_API {
 
 	/**
 	 * WC_PaysonCheckout_Setup_Payson_API constructor.
-	 *
 	 */
 	public function __construct() {
 		$this->payment_method_id = 'paysoncheckout';
 		$this->settings          = get_option( 'woocommerce_' . $this->payment_method_id . '_settings' );
 	}
 
+	/**
+	 * @param bool $order_id integer.
+	 *
+	 * Gets PaysonCheckout resource.
+	 *
+	 * @return mixed|null|\PaysonEmbedded\Checkout
+	 */
 	public function get_checkout( $order_id = false ) {
 		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
-		// Setup
+
+		// Setup.
 		$callPaysonApi  = $this->set_payson_api();
 		$paysonMerchant = $this->set_merchant( $order_id );
 		$payData        = $this->set_pay_data( $order_id );

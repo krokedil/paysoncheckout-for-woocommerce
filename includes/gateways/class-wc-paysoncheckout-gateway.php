@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 add_action( 'plugins_loaded', 'init_wc_gateway_paysoncheckout_class' );
 add_filter( 'woocommerce_payment_gateways', 'add_paysoncheckout_method' );

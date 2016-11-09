@@ -120,7 +120,8 @@ class WC_PaysonCheckout_Response_Handler {
 	 */
 	public function add_order_addresses( $order, $checkout ) {
 		$order_id = $order->id;
-		// Add customer billing address - retrieved from callback from Payson
+
+		// Add customer billing address - retrieved from callback from Payson.
 		update_post_meta( $order_id, '_billing_first_name', $checkout->customer->firstName );
 		update_post_meta( $order_id, '_billing_last_name', $checkout->customer->lastName );
 		update_post_meta( $order_id, '_billing_address_1', $checkout->customer->street );
@@ -129,14 +130,16 @@ class WC_PaysonCheckout_Response_Handler {
 		update_post_meta( $order_id, '_billing_country', $checkout->customer->countryCode );
 		update_post_meta( $order_id, '_billing_email', $checkout->customer->email );
 		update_post_meta( $order_id, '_billing_phone', $checkout->customer->phone );
-		// Add customer shipping address - retrieved from callback from Payson
+
+		// Add customer shipping address - retrieved from callback from Payson.
 		update_post_meta( $order_id, '_shipping_first_name', $checkout->customer->firstName );
 		update_post_meta( $order_id, '_shipping_last_name', $checkout->customer->lastName );
 		update_post_meta( $order_id, '_shipping_address_1', $checkout->customer->street );
 		update_post_meta( $order_id, '_shipping_postcode', $checkout->customer->postalCode );
 		update_post_meta( $order_id, '_shipping_city', $checkout->customer->city );
 		update_post_meta( $order_id, '_shipping_country', $checkout->customer->countryCode );
-		// Store PaysonCheckout locale
+		
+		// Store PaysonCheckout locale.
 		update_post_meta( $order_id, '_payson_locale', $checkout->gui->locale );
 	}
 }

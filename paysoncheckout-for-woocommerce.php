@@ -16,7 +16,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 /**
@@ -24,11 +24,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 load_plugin_textdomain( 'woocommerce-gateway-paysoncheckout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-// Define plugin paths
+// Define plugin paths.
 define( 'PAYSONCHECKOUT_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 
-// Include files
+// Include files.
 include_once( 'includes/class-wc-paysoncheckout.php' );
 include_once( 'includes/gateways/class-wc-paysoncheckout-gateway.php' );
 include_once( 'includes/class-wc-paysoncheckout-wc-order.php' );
