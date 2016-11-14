@@ -57,7 +57,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		}
 
 		if ( WC()->session->get( 'payson_checkout_id' ) && 'readyToPay' == $payson_embedded_status ) {
-			// Update checkout
+			// Update checkout.
 			try {
 				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
 			} catch ( Exception $e ) {

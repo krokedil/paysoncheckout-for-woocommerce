@@ -41,7 +41,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			// Load the settings.
 			$this->init_settings();
 
-			// Define user set variables
+			// Define user set variables.
 			$this->enabled          = $this->get_option( 'enabled' );
 			$this->title            = $this->get_option( 'title' );
 			$this->description      = $this->get_option( 'description' );

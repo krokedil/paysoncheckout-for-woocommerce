@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 /**
@@ -18,7 +18,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 * Constructor.
 	 */
 	public function __construct() {
-		// Notification listener
+		// Notification listener.
 		add_action( 'woocommerce_api_wc_gateway_paysoncheckout', array( $this, 'notification_listener' ) );
 	}
 
@@ -36,33 +36,35 @@ class WC_PaysonCheckout_Response_Handler {
 
 		$order = wc_get_order( $checkout->merchant->reference );
 
-		WC_Gateway_PaysonCheckout::log( 'Posted reference: ' . var_export( $checkout->merchant->reference, true ) );
-		WC_Gateway_PaysonCheckout::log( 'Posted status: ' . var_export( $checkout->status, true ) );
+		WC_Gateway_PaysonCheckout::log( 'Posted reference: ' . $checkout->merchant->reference );
+		WC_Gateway_PaysonCheckout::log( 'Posted status: ' . $checkout->status, true );
 
-		switch ( $checkout->status ) {
-			case 'ReadyToShip':
-				$this->ready_to_ship_cb( $order, $checkout );
-				break;
-			case 'PaidToAccount':
-				// $this->paid_to_account_cb( $order, $checkout );
-				break;
-			case 'Expired':
-				$this->expired_cb( $order );
-				break;
-			case 'Denied':
-				$this->denied_cb( $order );
-				break;
-			case 'canceled':
-				$this->denied_cb( $order );
-				break;
+		if ( $order ) {
+			switch ( $checkout->status ) {
+				case 'ReadyToShip':
+					$this->ready_to_ship_cb( $order, $checkout );
+					break;
+				case 'PaidToAccount':
+					// $this->paid_to_account_cb( $order, $checkout );
+					break;
+				case 'Expired':
+					$this->expired_cb( $order );
+					break;
+				case 'Denied':
+					$this->denied_cb( $order );
+					break;
+				case 'canceled':
+					$this->denied_cb( $order );
+					break;
+			}
 		}
 	}
 
 	/**
 	 * Handle a completed payment.
 	 *
-	 * @param WC_Order $order
-	 * @param object PaysonCheckout order $checkout
+	 * @param WC_Order $order    WooCommerce order.
+	 * @param object   $checkout PaysonCheckout resource.
 	 */
 	protected function ready_to_ship_cb( $order, $checkout ) {
 		WC_Gateway_PaysonCheckout::log( 'Payment status readyToShip callback.' );
@@ -76,16 +78,16 @@ class WC_PaysonCheckout_Response_Handler {
 			exit;
 		}
 
-		// Add order addresses
+		// Add order addresses.
 		$this->add_order_addresses( $order, $checkout );
 
-		// Add Payson order status
+		// Add Payson order status.
 		update_post_meta( $order->id, '_paysoncheckout_order_status', $checkout->status );
 
-		// Add Payson Checkout Id
+		// Add Payson Checkout Id.
 		update_post_meta( $order->id, '_payson_checkout_id', $checkout->id );
 
-		// Change the order status to Processing/Completed in WooCommerce
+		// Change the order status to Processing/Completed in WooCommerce.
 		$order->payment_complete( $checkout->purchaseId );
 	}
 
@@ -93,7 +95,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 * Handle an expired PaysonCheckout resource.
 	 * Force deletes WooCommerce order, skipping Trash.
 	 *
-	 * @param WC_Order $order
+	 * @param WC_Order $order WooCommerce order.
 	 */
 	protected function expired_cb( $order ) {
 		wp_delete_post( $order->id, true );
@@ -103,7 +105,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 * Handle a denied PaysonCheckout payment.
 	 * Marks WooCommerce order as cancelled and adds order note.
 	 *
-	 * @param WC_Order $order
+	 * @param WC_Order $order WooCommerce order.
 	 */
 	protected function denied_cb( $order ) {
 		$order->cancel_order( __( 'PaysonCheckout payment was denied.', 'woocommerce-gateway-paysoncheckout' ) );
@@ -115,7 +117,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @since  1.0.0
 	 * @access public
 	 *
-	 * @param  object $order Local WC order.
+	 * @param  object $order    Local WC order.
 	 * @param  object $checkout PaysonCheckout order.
 	 */
 	public function add_order_addresses( $order, $checkout ) {
@@ -138,7 +140,7 @@ class WC_PaysonCheckout_Response_Handler {
 		update_post_meta( $order_id, '_shipping_postcode', $checkout->customer->postalCode );
 		update_post_meta( $order_id, '_shipping_city', $checkout->customer->city );
 		update_post_meta( $order_id, '_shipping_country', $checkout->customer->countryCode );
-		
+
 		// Store PaysonCheckout locale.
 		update_post_meta( $order_id, '_payson_locale', $checkout->gui->locale );
 	}
