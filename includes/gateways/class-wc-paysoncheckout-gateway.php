@@ -52,16 +52,16 @@ function init_wc_gateway_paysoncheckout_class() {
 			$this->debug            = $this->get_option( 'debug' );
 			$this->order_management = $this->get_option( 'order_management' );
 
-			// Supports
+			// Supports.
 			$this->supports = array( 'products' );
 
-			// Actions
+			// Actions.
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-			// Scripts
+			// Scripts.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-			// Thankyou page
+			// Thank you page.
 			add_filter( 'woocommerce_thankyou_order_received_text', array( $this, 'payson_thankyou_order_received_text' ), 10, 2 );
 			add_action( 'woocommerce_thankyou_paysoncheckout', array( $this, 'payson_thankyou' ) );
 		}
