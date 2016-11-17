@@ -154,7 +154,7 @@ class WC_PaysonCheckout_WC_Order {
 	 *
 	 * @param  object $order Local WC order.
 	 *
-	 * @throws Exception
+	 * @throws Exception PHP Exception.
 	 */
 	public function add_order_fees( $order ) {
 		global $woocommerce;
@@ -165,7 +165,8 @@ class WC_PaysonCheckout_WC_Order {
 				WC_Gateway_PaysonCheckout::log( 'Unable to add order fee.' );
 				throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
 			}
-			// Allow plugins to add order item meta to fees
+
+			// Allow plugins to add order item meta to fees.
 			do_action( 'woocommerce_add_order_fee_meta', $order_id, $item_id, $fee, $fee_key );
 		}
 	}
@@ -178,7 +179,7 @@ class WC_PaysonCheckout_WC_Order {
 	 *
 	 * @param  object $order Local WC order.
 	 *
-	 * @throws Exception
+	 * @throws Exception PHP Exception.
 	 * @internal param object $klarna_order Klarna order.
 	 */
 	public function add_order_shipping( $order ) {
