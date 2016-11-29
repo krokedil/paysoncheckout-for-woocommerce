@@ -87,15 +87,12 @@ function init_wc_gateway_paysoncheckout_class() {
 		function is_available() {
 			if ( 'yes' === $this->enabled ) {
 				if ( ! is_admin() ) {
-					// Currency check
+					// Currency check.
 					if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ) ) ) {
 						return false;
 					}
 
-					// Country check
-					//if (!in_array(WC()->customer->get_country(), array('FI', 'SE'))) return false;
-
-					// Required fields check
+					// Required fields check.
 					if ( ! $this->merchant_id || ! $this->api_key ) {
 						return false;
 					}

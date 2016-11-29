@@ -1,5 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.11.29		- version 1.0
+* Tweak			- Not WooCommerce order is created only when PaysonCheckout iframe is initialized.
+* Tweak			- Improved checkout page UI when PaysonCheckout is the selected option.
+
 2016.10.24		- version 0.8.5
 * Tweak			- Added support for Flatsome 3.x. No need for specific markup for Flatsome anymore.
 * Tweak			- Removed duplicate code.
@@ -45,7 +49,7 @@
 
 2016.08.17		- version 0.3
 * Feature		- Added Cancel reservation in Payson directly from WooCommerce.
-* Feature		- Added Capture transaction in Payson directly from WooCommerce. 
+* Feature		- Added Capture transaction in Payson directly from WooCommerce.
 * Tweak			- Improved try/catch when connecting to Payson.
 * Tweak			- Store Payson checkout id as a separate post meta instead of the order transaction number.
 * Tweak			- Updated Payson SDK to latest version.

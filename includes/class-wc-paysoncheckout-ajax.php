@@ -60,16 +60,30 @@ class WC_PaysonCheckout_Ajax {
 	 * @since  0.8.3
 	 **/
 	public function payson_address_changed_callback() {
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wc_payson_checkout_nonce' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'wc_payson_checkout_nonce' ) ) { // Input var okay.
 			exit( 'Nonce can not be verified.' );
 		}
 
-		$address  = $_POST['address'];
+		$address  = $_POST['address']; // Input var okay.
 		$order_id = WC()->session->get( 'ongoing_payson_order' );
 		$order    = wc_get_order( $order_id );
+
 		$order->update_status( 'pending', __( 'Address Update callback from Payson.', 'woocommerce-gateway-paysoncheckout' ) );
 
-		// Add customer billing address
+		// Set customer session information.
+		if ( WC()->customer->get_shipping_country() !== $address['CountryCode'] || WC()->customer->get_shipping_postcode() !== $address['PostalCode'] ) {
+			WC()->customer->set_country( $address['CountryCode'] );
+			WC()->customer->set_shipping_country( $address['CountryCode'] );
+
+			WC()->customer->set_postcode( $address['PostalCode'] );
+			WC()->customer->set_shipping_postcode( $address['PostalCode'] );
+
+			WC()->cart->calculate_shipping();
+
+			WC()->customer->calculated_shipping( true );
+		}
+
+		// Add customer billing address.
 		update_post_meta( $order_id, '_billing_first_name', $address['FirstName'] );
 		update_post_meta( $order_id, '_billing_last_name', $address['LastName'] );
 		update_post_meta( $order_id, '_billing_address_1', $address['Street'] );
@@ -77,7 +91,7 @@ class WC_PaysonCheckout_Ajax {
 		update_post_meta( $order_id, '_billing_city', $address['City'] );
 		update_post_meta( $order_id, '_billing_country', $address['CountryCode'] );
 
-		// Add customer shipping address
+		// Add customer shipping address.
 		update_post_meta( $order_id, '_shipping_first_name', $address['FirstName'] );
 		update_post_meta( $order_id, '_shipping_last_name', $address['LastName'] );
 		update_post_meta( $order_id, '_shipping_address_1', $address['Street'] );

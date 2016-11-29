@@ -71,7 +71,9 @@
 
 			// Add "choose another payment method" link
 			if ($("input[name='payment_method']").length > 1) {
-				$('<p><a href="#" class="button">' + wc_paysoncheckout.select_another_method_text + '</a></p>').appendTo('form.woocommerce-checkout').addClass('paysoncheckout-choose-other');
+				if (!$(".paysoncheckout-choose-other").length) {
+					$('<p><a href="#" class="button">' + wc_paysoncheckout.select_another_method_text + '</a></p>').appendTo('form.woocommerce-checkout').addClass('paysoncheckout-choose-other');
+				}
 			}
 
 			$('form.woocommerce-checkout').append('<div id="customer_details_payson"></div>');
@@ -105,9 +107,25 @@
 	});
 
 	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
+		var should_update = false;
+
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedAddressChanged', data.detail);
 		}
+
+		// Check if new postcode and country are the same as old ones.
+		if ( data.detail.CountryCode !== $('#billing_country').val() || data.detail.PostalCode !== $('input#billing_postcode').val() ) {
+			var iframe = document.getElementById('paysonIframe');
+			iframe.contentWindow.postMessage('lock', '*');
+
+			should_update = true;
+		}
+
+		$('#billing_country').val(data.detail.CountryCode);
+		$('#shipping_country').val(data.detail.CountryCode);
+
+		$('input#billing_postcode').val(data.detail.PostalCode);
+		$('input#shipping_postcode').val(data.detail.PostalCode);
 
 		$.ajax(
 			wc_paysoncheckout.ajax_url,
@@ -117,18 +135,28 @@
 				data: {
 					action  : 'payson_address_changed_callback',
 					address : data.detail,
-					nonce   : wc_paysoncheckout.wc_payson_checkout_nonce,
+					nonce   : wc_paysoncheckout.wc_payson_checkout_nonce
 				},
 				success: function(response) {
-					console.log('Address update AJAX sucess');
-					console.log(response);
+					if ('yes' === wc_paysoncheckout.debug) {
+						console.log('Address update AJAX sucess');
+						console.log(response);
+					}
+
+					if (should_update) {
+						$("body").trigger("update_checkout")
+					}
 				},
 				error: function(response) {
-					console.log('Address update AJAX error');
-					console.log(response);
+					if ('yes' === wc_paysoncheckout.debug) {
+						console.log('Address update AJAX error');
+						console.log(response);
+					}
 				},
 				complete: function() {
-					console.log('Address update AJAX complete');
+					if ('yes' === wc_paysoncheckout.debug) {
+						console.log('Address update AJAX complete');
+					}
 				}
 			}
 		);
