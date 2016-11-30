@@ -34,23 +34,23 @@ class WC_PaysonCheckout_Response_Handler {
 
 		WC_Gateway_PaysonCheckout::log( 'Posted notification info: ' . var_export( $checkout, true ) );
 
-		$order = wc_get_order( $checkout->merchant->reference );
+		$order = wc_get_order( $_GET['wc_order'] );
 
 		WC_Gateway_PaysonCheckout::log( 'Posted reference: ' . $checkout->merchant->reference );
 		WC_Gateway_PaysonCheckout::log( 'Posted status: ' . $checkout->status, true );
 
 		if ( $order ) {
 			switch ( $checkout->status ) {
-				case 'ReadyToShip':
+				case 'readyToShip':
 					$this->ready_to_ship_cb( $order, $checkout );
 					break;
-				case 'PaidToAccount':
+				case 'paidToAccount':
 					// $this->paid_to_account_cb( $order, $checkout );
 					break;
-				case 'Expired':
+				case 'expired':
 					$this->expired_cb( $order );
 					break;
-				case 'Denied':
+				case 'denied':
 					$this->denied_cb( $order );
 					break;
 				case 'canceled':
@@ -89,6 +89,8 @@ class WC_PaysonCheckout_Response_Handler {
 
 		// Change the order status to Processing/Completed in WooCommerce.
 		$order->payment_complete( $checkout->purchaseId );
+
+		header( 'HTTP/1.0 200 OK' );
 	}
 
 	/**
@@ -99,6 +101,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 */
 	protected function expired_cb( $order ) {
 		wp_delete_post( $order->id, true );
+		header( 'HTTP/1.0 200 OK' );
 	}
 
 	/**
@@ -109,6 +112,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 */
 	protected function denied_cb( $order ) {
 		$order->cancel_order( __( 'PaysonCheckout payment was denied.', 'woocommerce-gateway-paysoncheckout' ) );
+		header( 'HTTP/1.0 200 OK' );
 	}
 
 	/**

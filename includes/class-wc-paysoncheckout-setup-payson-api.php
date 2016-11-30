@@ -123,10 +123,10 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
 		}
 		$checkoutUri     = wc_get_checkout_url();
-		$notificationUri = get_home_url() . '/wc-api/WC_Gateway_PaysonCheckout/';
+		$notificationUri = add_query_arg( 'wc_order', $order_id, get_home_url() . '/wc-api/WC_Gateway_PaysonCheckout/' );
 		$termsUri        = wc_get_page_permalink( 'terms' );
 		$partnerId       = 'Krokedil';
-		$reference       = $order_id;
+		$reference       = $order->get_order_number();
 		$paysonMerchant = new PaysonEmbedded\Merchant( $checkoutUri, $confirmationUri, $notificationUri, $termsUri, $partnerId, $reference );
 
 		return $paysonMerchant;

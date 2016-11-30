@@ -1,5 +1,8 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2016.12.01      - version 1.0.1
+* Tweak			- Adds compatibility with Sequential Order Numbers and Sequential Order Numbers Pro.
+
 2016.11.29		- version 1.0
 * Tweak			- Not WooCommerce order is created only when PaysonCheckout iframe is initialized.
 * Tweak			- Improved checkout page UI when PaysonCheckout is the selected option.

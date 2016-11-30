@@ -7,7 +7,7 @@ Requires WooCommerce at least: 2.5
 Tested WooCommerce up to: 2.6.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.0
+Stable tag: 1.0.1
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2016.12.01	- version 1.0.1 =
+* Tweak			- Adds compatibility with Sequential Order Numbers and Sequential Order Numbers Pro.
 
 = 2016.11.29	- version 1.0 =
 * Tweak			- Not WooCommerce order is created only when PaysonCheckout iframe is initialized.
