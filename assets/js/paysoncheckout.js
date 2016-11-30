@@ -13,7 +13,7 @@
 	};
 
 	var wc_paysoncheckout_get_iframe = function wc_paysoncheckout_get_iframe() {
-		if ('' === wc_paysoncheckout_html) {
+		// if ('' === wc_paysoncheckout_html) {
 			$.ajax(
 				wc_paysoncheckout.ajax_url,
 				{
@@ -25,14 +25,14 @@
 						nonce: wc_paysoncheckout.wc_payson_checkout_nonce
 					},
 					success: function(response) {
-						console.log(response.data);
+						// console.log(response.data);
 						$('div#customer_details_payson').html(response.data.iframe);
 						wc_paysoncheckout_html = response.data.iframe;
 						wc_paysoncheckout_loaded = true;
 					}
 				}
 			);
-		}
+		// }
 	};
 
 	// Set body class when DOM is ready
@@ -57,7 +57,7 @@
 	});
 
 	// When checkout gets updated
-	$(document.body).on("updated_checkout", function () {
+	$(document.body).on("updated_checkout", function (event, data) {
 		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
 			// Remove the "choose another payment method" and Payson container to prevent duplication
 			$('form.woocommerce-checkout .paysoncheckout-pay-choose-other').remove();
@@ -78,11 +78,7 @@
 
 			$('form.woocommerce-checkout').append('<div id="customer_details_payson"></div>');
 
-			if (!wc_paysoncheckout_loaded) {
-				wc_paysoncheckout_get_iframe();
-			} else {
-				$('div#customer_details_payson').html(wc_paysoncheckout_html);
-			}
+			wc_paysoncheckout_get_iframe();
 		}
 
 		wc_paysoncheckout_body_class();

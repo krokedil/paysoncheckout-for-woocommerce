@@ -23,9 +23,9 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	}
 
 	/**
-	 * @param bool $order_id integer.
-	 *
 	 * Gets PaysonCheckout resource.
+	 *
+	 * @param bool $order_id integer.
 	 *
 	 * @return mixed|null|\PaysonEmbedded\Checkout
 	 */
@@ -38,9 +38,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$payData        = $this->set_pay_data( $order_id );
 		$gui            = $this->set_gui();
 		$customer       = $this->set_customer();
-		//$purchaseId		= $order_id;
-		// Gather
-		$checkout = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
+		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
 
 		/*
 		 * Step 2 Create checkout
@@ -56,7 +54,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			$payson_embedded_status = $checkout_temp_obj->status;
 		}
 
-		if ( WC()->session->get( 'payson_checkout_id' ) && 'readyToPay' == $payson_embedded_status ) {
+		if ( WC()->session->get( 'payson_checkout_id' ) && ( 'readyToPay' === $payson_embedded_status || 'created' === $payson_embedded_status ) ) {
 			// Update checkout.
 			try {
 				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
