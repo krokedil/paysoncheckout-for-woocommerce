@@ -39,6 +39,8 @@ More information on how to get started can be found in the [plugin documentation
 
 = 2016.12.01	- version 1.0.1 =
 * Tweak			- Adds compatibility with Sequential Order Numbers and Sequential Order Numbers Pro.
+* Fix			- Fixes order statuses issue in callback handler from Payson.
+* Fix			- Fixes no PaysonCheckout resource update on shipping option change in checkout page.
 
 = 2016.11.29	- version 1.0 =
 * Tweak			- Not WooCommerce order is created only when PaysonCheckout iframe is initialized.
