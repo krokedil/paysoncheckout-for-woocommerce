@@ -151,6 +151,12 @@ function init_wc_gateway_paysoncheckout_class() {
 					wp_safe_redirect( wc_get_cart_url() );
 				} else {
 					WC_Gateway_PaysonCheckout::log( 'Posted checkout info in thank you page: ' . var_export( $checkout, true ) );
+					
+					if ( 'readyToShip' === $checkout->status ) {
+						$order = wc_get_order( WC()->session->get( 'ongoing_payson_order' ) );
+						$payson_response_handler = new WC_PaysonCheckout_Response_Handler();
+						$payson_response_handler->ready_to_ship_cb( $order, $checkout );
+					}
 					echo '<div class="paysoncheckout-container" style="width:100%; margin-left:auto; margin-right:auto;">';
 					echo $checkout->snippet;
 					echo '</div>';

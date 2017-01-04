@@ -66,14 +66,14 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @param WC_Order $order    WooCommerce order.
 	 * @param object   $checkout PaysonCheckout resource.
 	 */
-	protected function ready_to_ship_cb( $order, $checkout ) {
+	public function ready_to_ship_cb( $order, $checkout ) {
 		WC_Gateway_PaysonCheckout::log( 'Payment status readyToShip callback.' );
 
 		if ( ! $order instanceof WC_Order ) {
 			exit;
 		}
 
-		if ( $order->has_status( 'completed' ) ) {
+		if ( $order->has_status( array( 'processing', 'completed' ) ) ) {
 			WC_Gateway_PaysonCheckout::log( 'Aborting, Order #' . $order->id . ' is already complete.' );
 			exit;
 		}
