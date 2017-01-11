@@ -4,8 +4,9 @@
 .woo-shipping,
 .woo-billing,
 .checkout-sidebar,
+.checkout-row,
 .order-review {
-	display: none;
+	display: none !important;
 }
 
 .paysoncheckout-deselected #customer_details,
@@ -15,7 +16,11 @@
 .paysoncheckout-deselected .woo-billing,
 .paysoncheckout-deselected .checkout-sidebar,
 .paysoncheckout-deselected .order-review {
-	display: block;
+	display: block !important;
+}
+
+.paysoncheckout-deselected .checkout-row {
+	display: table !important;
 }
 
 .paysoncheckout-selected .woocommerce {
