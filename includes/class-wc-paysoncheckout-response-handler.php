@@ -27,7 +27,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 */
 	public function notification_listener() {
 		WC_Gateway_PaysonCheckout::log( 'Notification callback for order: ' . $_GET['checkout'] );
-
+		
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
 		$checkout   = $payson_api->get_notification_checkout( $_GET['checkout'] );
@@ -38,7 +38,7 @@ class WC_PaysonCheckout_Response_Handler {
 
 		WC_Gateway_PaysonCheckout::log( 'Posted reference: ' . $checkout->merchant->reference );
 		WC_Gateway_PaysonCheckout::log( 'Posted status: ' . $checkout->status, true );
-
+		
 		if ( $order ) {
 			switch ( $checkout->status ) {
 				case 'readyToShip':
@@ -66,16 +66,18 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @param WC_Order $order    WooCommerce order.
 	 * @param object   $checkout PaysonCheckout resource.
 	 */
-	protected function ready_to_ship_cb( $order, $checkout ) {
+	public function ready_to_ship_cb( $order, $checkout ) {
 		WC_Gateway_PaysonCheckout::log( 'Payment status readyToShip callback.' );
 
 		if ( ! $order instanceof WC_Order ) {
 			exit;
 		}
 
-		if ( $order->has_status( 'completed' ) ) {
+		if ( $order->has_status( array( 'processing', 'completed' ) ) ) {
 			WC_Gateway_PaysonCheckout::log( 'Aborting, Order #' . $order->id . ' is already complete.' );
-			exit;
+			header( 'HTTP/1.0 200 OK' );
+			return;
+			
 		}
 
 		// Add order addresses.
