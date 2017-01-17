@@ -3,14 +3,14 @@
  * Plugin Name:     PaysonCheckout 2.0 for WooCommerce
  * Plugin URI:      http://krokedil.com/
  * Description:     Provides a PaysonCheckout 2.0 payment gateway for WooCommerce.
- * Version:         1.0.1
+ * Version:         1.1
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
  * Developer:       Krokedil
  * Developer URI:   http://krokedil.com/
  * Text Domain:     woocommerce-gateway-paysoncheckout
  * Domain Path:     /languages
- * Copyright:       © 2016 Krokedil.
+ * Copyright:       © 2016-2017 Krokedil.
  * License:         GNU General Public License v3.0
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.html
  */

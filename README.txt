@@ -2,12 +2,12 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.6.1
+Tested up to: 4.7
 Requires WooCommerce at least: 2.5
-Tested WooCommerce up to: 2.6.4
+Tested WooCommerce up to: 2.6.11
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.0.1
+Stable tag: 1.1
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2017.01.17    - version 1.1 =
+* Tweak			- Only show available shipping countries (defined in WC settings) in PaysonCheckout country selector.
+* Tweak			- Change order status to Processing already from info received in thank you page. Helpful for stores where Payson server-to-server callbacks are being blocked.
+* Tweak			- Swedish translation update.
 
 = 2016.12.01	- version 1.0.1 =
 * Tweak			- Adds compatibility with Sequential Order Numbers and Sequential Order Numbers Pro.
