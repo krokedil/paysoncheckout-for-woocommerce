@@ -40,7 +40,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		$order       = new WC_Order( $order_id );
 
-		if ( 'EUR' === $order->get_order_currency() ) {
+		if ( 'EUR' === get_woocommerce_currency() ) {
 			$pay_data = new PaysonEmbedded\PayData( PaysonEmbedded\CurrencyCode::EUR );
 		} else {
 			$pay_data = new PaysonEmbedded\PayData( PaysonEmbedded\CurrencyCode::SEK );

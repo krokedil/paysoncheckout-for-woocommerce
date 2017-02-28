@@ -39,7 +39,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$gui            = $this->set_gui();
 		$customer       = $this->set_customer();
 		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
-
+		
 		/*
 		 * Step 2 Create checkout
 		 */
@@ -55,6 +55,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			
 			// Unset the payson_checkout_id session and create a new one if the currency hs been changed
 			if( strtoupper($checkout_temp_obj->payData->currency) !== get_woocommerce_currency() ) {
+				update_post_meta( $order_id, '_order_currency', get_woocommerce_currency() );
 				WC()->session->__unset( 'payson_checkout_id' );
 			}
 		}
