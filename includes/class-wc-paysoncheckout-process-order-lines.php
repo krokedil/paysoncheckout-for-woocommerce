@@ -197,7 +197,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	public function get_product_name( $product, $item ) {
 		$product_name = $product->get_title();
 					
-		$item_meta    = new WC_Order_Item_Meta( $item['item_meta'], $_product );
+		$item_meta    = new WC_Order_Item_Meta( $item['item_meta'], $product );
 		
 		// Variation
 		if ( $item_meta->display( true, true ) ) {
