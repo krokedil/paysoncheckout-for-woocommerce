@@ -39,7 +39,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$gui            = $this->set_gui();
 		$customer       = $this->set_customer();
 		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
-
+		
 		/*
 		 * Step 2 Create checkout
 		 */
@@ -52,17 +52,18 @@ class WC_PaysonCheckout_Setup_Payson_API {
 				return new WP_Error( 'connection-error', $e->getMessage() );
 			}
 			$payson_embedded_status = $checkout_temp_obj->status;
+			
+			// Unset the payson_checkout_id session and create a new one if the currency hs been changed
+			if( strtoupper($checkout_temp_obj->payData->currency) !== get_woocommerce_currency() ) {
+				update_post_meta( $order_id, '_order_currency', get_woocommerce_currency() );
+				WC()->session->__unset( 'payson_checkout_id' );
+			}
 		}
 		
 		if ( WC()->session->get( 'payson_checkout_id' ) && ( 'readyToPay' === $payson_embedded_status || 'created' === $payson_embedded_status ) ) {
 			// Update checkout.
-			try {
-				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
-			} catch ( Exception $e ) {
-				return new WP_Error( 'connection-error', $e->getMessage() );
-			}
 			$checkout_temp_obj->payData = $this->set_pay_data( $order_id );
-
+			
 			// Update notification url with the Payson Checkout ID
 			if ( $order_id ) {
 				$order = wc_get_order( $order_id );
@@ -72,8 +73,9 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			}
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
-
+			
 			$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
+			//error_log('$checkout_temp_obj, efter UpdateCheckout' . var_export($checkout_temp_obj, true));
 		} else {
 			// Create checkout
 			try {
@@ -136,7 +138,6 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-process-order-lines.php' );
 		$order_lines = new WC_PaysonCheckout_Process_Order_Lines();
 		$payData     = $order_lines->get_order_lines( $order_id );
-
 		return $payData;
 	}
 
