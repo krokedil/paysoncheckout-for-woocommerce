@@ -25,7 +25,6 @@ class WC_PaysonCheckout_WC_Order {
 	 * @return int
 	 */
 	public function update_or_create_local_order( $customer_email = '' ) {
-		WC_Gateway_PaysonCheckout::log( 'Update or create local order.' );
 
 		if ( WC()->session->get( 'ongoing_payson_order' ) && wc_get_order( WC()->session->get( 'ongoing_payson_order' ) ) ) {
 			$orderid = WC()->session->get( 'ongoing_payson_order' );
