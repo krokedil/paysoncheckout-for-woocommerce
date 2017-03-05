@@ -28,7 +28,7 @@
 					},
 					success: function(response) {
 						// console.log(response.data);
-						//console.log(wc_paysoncheckout_loaded);
+						console.log(wc_paysoncheckout_loaded);
 						$('div#customer_details_payson').html(response.data.iframe);
 						wc_paysoncheckout_html = response.data.iframe;
 						wc_paysoncheckout_loaded = true;
@@ -42,6 +42,7 @@
 	$(document).ready(function () {
 		wc_paysoncheckout_body_class();
 		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
+			// Get iframe if not fetched yet
 			if (!wc_paysoncheckout_loaded) {
 				wc_paysoncheckout_get_iframe();
 			}
@@ -53,8 +54,11 @@
 	// - Change body class (CSS uses body class to hide and show elements)
 	// - If changing to PaysonCheckout trigger update_checkout
 	$(document.body).on("change", "input[name='payment_method']", function (event) {
-		// If switching to Ecster, update checkout
 		if ("paysoncheckout" === event.target.value) {
+			// Get iframe if not fetched yet
+			if (!wc_paysoncheckout_loaded) {
+				wc_paysoncheckout_get_iframe();
+			}
 			$("body").trigger("update_checkout");
 		}
 	});
