@@ -98,7 +98,7 @@
 		$('.paysoncheckout-order-notes').detach().appendTo('.woocommerce-shipping-fields');
 		$('.paysoncheckout-choose-other').remove();
 
-		// Deselect Ecster and select the first available non-Ecster method
+		// Deselect Payson and select the first available non-Payson method
 		$("input[name='payment_method']:checked").prop('checked', false);
 		if ("paysoncheckout" === $("input[name='payment_method']:eq(0)").val()) {
 			$("input[name='payment_method']:eq(1)").prop("checked", true);
@@ -108,7 +108,8 @@
 
 		wc_paysoncheckout_body_class();
 	});
-
+	
+	// When Address update event is triggered
 	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
 		var should_update = false;
 
