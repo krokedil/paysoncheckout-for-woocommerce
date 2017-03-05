@@ -1,5 +1,8 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2017.03.05		- version 1.1.2
+* Fix			- Display PaysonCheckout iframe when switch to Payson in checkout (if not having Payson as default payment method).
+
 2017.03.01		- version 1.1.1
 * Tweak			- Updating Paysons SDK (version from 2016-11-02).
 * Tweak			- Adds product variations to product name sent to Payson.
