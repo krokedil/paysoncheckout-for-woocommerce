@@ -9,6 +9,8 @@ namespace PaysonEmbedded{
         public $verfication;
         /** @var bool $requestPhone  Can be used to require the user to fill in his phone number. */
         public $requestPhone;
+        /** @var string $countries  Uesd to send available countries to be displayed in the iframe ("SE" is default). */
+        public $countries;
         
         public function __construct($locale = "sv", $colorScheme = "gray", $verfication = "none", $requestPhone = NULL,  $countries = "SE"){
             $this->colorScheme = $colorScheme;
