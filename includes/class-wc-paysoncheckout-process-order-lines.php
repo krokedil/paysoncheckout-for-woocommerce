@@ -40,7 +40,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		$order       = new WC_Order( $order_id );
 
-		if ( 'EUR' === $order->get_order_currency() ) {
+		if ( 'EUR' === get_woocommerce_currency() ) {
 			$pay_data = new PaysonEmbedded\PayData( PaysonEmbedded\CurrencyCode::EUR );
 		} else {
 			$pay_data = new PaysonEmbedded\PayData( PaysonEmbedded\CurrencyCode::SEK );
@@ -50,7 +50,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		if ( count( $order->get_items() ) > 0 ) {
 			foreach ( $order->get_items() as $item_key => $item ) {
 				$_product = $order->get_product_from_item( $item );
-				$title    = $item['name'];
+				$title    = $this->get_product_name( $_product, $item );
 				$price    = $order->get_item_total( $item, true );
 				$qty      = $item['qty'];
 
@@ -111,7 +111,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		if ( count( WC()->cart->cart_contents ) > 0 ) {
 			foreach ( WC()->cart->cart_contents as $cart_item_key => $cart_item ) {
 				$_product      = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
-				$product_name  = apply_filters( 'woocommerce_cart_item_name', $_product->get_title(), $cart_item, $cart_item_key );
+				$product_name  = apply_filters( 'woocommerce_cart_item_name', $this->get_product_name( $_product, $item ), $cart_item, $cart_item_key );
 				$product_price = ( $cart_item['line_total'] + $cart_item['line_tax'] ) / $cart_item['quantity'];
 				$qty           = $cart_item['quantity'];
 				$sku           = $this->get_item_reference( $_product );
@@ -185,6 +185,25 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		}
 
 		return strval( $item_reference );
+	}
+	
+	/**
+	 * Returns product title + variation
+	 *
+	 * @param $product
+	 *
+	 * @return string
+	 */
+	public function get_product_name( $product, $item ) {
+		$product_name = $product->get_title();
+					
+		$item_meta    = new WC_Order_Item_Meta( $item['item_meta'], $product );
+		
+		// Variation
+		if ( $item_meta->display( true, true ) ) {
+			$product_name .= ' (' . nl2br( $item_meta->display( true, true ) ) . ')';
+		}
+		return $product_name;
 	}
 
 }
