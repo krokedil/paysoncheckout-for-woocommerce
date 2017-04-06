@@ -35,11 +35,11 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		// Setup.
 		$callPaysonApi  = $this->set_payson_api();
 		$paysonMerchant = $this->set_merchant( $order_id );
-		$payData        = $this->set_pay_data( $order_id );
+		$payData        = $this->set_pay_data();
 		$gui            = $this->set_gui();
 		$customer       = $this->set_customer();
 		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
-		
+
 		/*
 		 * Step 2 Create checkout
 		 */
@@ -59,10 +59,9 @@ class WC_PaysonCheckout_Setup_Payson_API {
 				WC()->session->__unset( 'payson_checkout_id' );
 			}
 		}
-		
 		if ( WC()->session->get( 'payson_checkout_id' ) && ( 'readyToPay' === $payson_embedded_status || 'created' === $payson_embedded_status ) ) {
 			// Update checkout.
-			$checkout_temp_obj->payData = $this->set_pay_data( $order_id );
+			$checkout_temp_obj->payData = $this->set_pay_data();
 			
 			// Update notification url with the Payson Checkout ID
 			if ( $order_id ) {
@@ -75,7 +74,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			
 			$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
-			//error_log('$checkout_temp_obj, efter UpdateCheckout' . var_export($checkout_temp_obj, true));
+			
 		} else {
 			// Create checkout
 			try {
@@ -134,7 +133,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		return $paysonMerchant;
 	}
 
-	public function set_pay_data( $order_id ) {
+	public function set_pay_data( $order_id = false ) {
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-process-order-lines.php' );
 		$order_lines = new WC_PaysonCheckout_Process_Order_Lines();
 		$payData     = $order_lines->get_order_lines( $order_id );
