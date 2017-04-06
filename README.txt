@@ -2,12 +2,12 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.7.2
+Tested up to: 4.7.3
 Requires WooCommerce at least: 2.5
-Tested WooCommerce up to: 2.6.11
+Tested WooCommerce up to: 2.6.14
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2017.04.06	- version 1.1.3 =
+* Fix			- WC 3.0 fix. Order lines sent to Payson now fetched from cart instead of local order.
+* Fix			- Improved calculate_totals.
 
 = 2017.03.05	- version 1.1.2 =
 * Fix			- Display PaysonCheckout iframe when switch to Payson in checkout (if not having Payson as default payment method).
