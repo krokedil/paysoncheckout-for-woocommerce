@@ -281,11 +281,6 @@ class WC_PaysonCheckout_WC_Order {
 		WC()->cart->calculate_fees();
 		WC()->cart->calculate_totals();
 
-		$order->set_total( WC()->cart->shipping_total, 'shipping' );
-		$order->set_total( WC()->cart->get_cart_discount_total(), 'order_discount' );
-		$order->set_total( WC()->cart->get_cart_discount_total(), 'cart_discount' );
-		$order->set_total( WC()->cart->tax_total, 'tax' );
-		$order->set_total( WC()->cart->shipping_tax_total, 'shipping_tax' );
-		$order->set_total( WC()->cart->total );
+		$order->calculate_totals();
 	}
 }
