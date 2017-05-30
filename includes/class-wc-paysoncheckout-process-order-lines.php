@@ -111,13 +111,14 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		if ( count( WC()->cart->cart_contents ) > 0 ) {
 			foreach ( WC()->cart->cart_contents as $cart_item_key => $cart_item ) {
 				$_product      = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
-				$product_name  = apply_filters( 'woocommerce_cart_item_name', $this->get_product_name( $_product, $item ), $cart_item, $cart_item_key );
+				$product_name  = apply_filters( 'woocommerce_cart_item_name', $this->get_product_name( $_product, $cart_item, true ), $cart_item, $cart_item_key );
 				$product_price = ( $cart_item['line_total'] + $cart_item['line_tax'] ) / $cart_item['quantity'];
 				$qty           = $cart_item['quantity'];
 				$sku           = $this->get_item_reference( $_product );
 				$vat           = round( $cart_item['line_tax'] / $cart_item['line_total'], 2 );
 				$permalink     = get_permalink( $_product->get_id() );
 				$image         = $_product->get_image_id() ? wp_get_attachment_url( $_product->get_image_id() ) : null;
+
 				$pay_data->AddOrderItem( new PaysonEmbedded\OrderItem(
 					$product_name,
 					$product_price,
@@ -125,31 +126,19 @@ class WC_PaysonCheckout_Process_Order_Lines {
 					$vat,
 					$sku,
 					PaysonEmbedded\OrderItemType::PHYSICAL,
-					0,
-					'ean12345',
-					$permalink,
-					$image
+					0
 				) );
 			}
 		}
 
 		// Process shipping.
-		if ( WC()->shipping->get_packages() ) {
-			foreach ( WC()->shipping->get_packages() as $shipping_package ) {
-				foreach ( $shipping_package['rates'] as $shipping_rate_key => $shipping_rate_value ) {
-					$shipping_tax = array_sum( $shipping_rate_value->taxes );
-					if ( $shipping_rate_value->cost > 0 ) {
-						$vat_percent = round( $shipping_tax / $shipping_rate_value->cost, 2 );
-					} else {
-						$vat_percent = 0;
-					}
-					$title = $shipping_rate_value->label;
-					$price = $shipping_rate_value->cost + $shipping_tax;
-					$qty   = 1;
-					$sku   = 'Shipping';
-					$pay_data->AddOrderItem( new  PaysonEmbedded\OrderItem( $title, $price, $qty, $vat_percent, $sku, PaysonEmbedded\OrderItemType::PHYSICAL, 0 ) );
-				}
-			}
+		if ( WC()->shipping->get_packages() && WC()->session->get( 'chosen_shipping_methods' ) ) {
+			$title = $this->get_shipping_name();
+			$price = $this->get_shipping_amount();
+			$qty   = 1;
+			$vat_percent = $this->get_shipping_tax_rate();
+			$sku   = $this->get_shipping_reference();
+			$pay_data->AddOrderItem( new  PaysonEmbedded\OrderItem( $title, $price, $qty, $vat_percent, $sku, PaysonEmbedded\OrderItemType::PHYSICAL, 0 ) );
 		}
 
 		// Process fees.
@@ -178,15 +167,15 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	public function get_item_reference( $_product ) {
 		if ( '' !== $_product->get_sku() ) {
 			$item_reference = $_product->get_sku();
-		} elseif ( $_product->variation_id ) {
-			$item_reference = $_product->variation_id;
+		} elseif ( krokedil_get_product_id( $_product ) ) {
+			$item_reference = krokedil_get_product_id( $_product );
 		} else {
-			$item_reference = $_product->id;
+			$item_reference = krokedil_get_product_id( $_product );
 		}
 
 		return strval( $item_reference );
 	}
-	
+
 	/**
 	 * Returns product title + variation
 	 *
@@ -194,16 +183,102 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	 *
 	 * @return string
 	 */
-	public function get_product_name( $product, $item ) {
+	public function get_product_name( $product, $item, $cart = false ) {
 		$product_name = $product->get_title();
-					
-		$item_meta    = new WC_Order_Item_Meta( $item['item_meta'], $product );
-		
+		if ( true == $cart ) {
+			$item_meta = krokedil_get_item_meta_cart( $item, $product );
+		} else {
+			$item_meta = krokedil_get_item_meta_order( $item, $product );
+		}
 		// Variation
-		if ( $item_meta->display( true, true ) ) {
-			$product_name .= ' (' . nl2br( $item_meta->display( true, true ) ) . ')';
+		if ( $item_meta ) {
+			$product_name .= ' (' . $item_meta . ')';
 		}
 		return $product_name;
+	}
+
+	/**
+	 * Get shipping method name.
+	 *
+	 * @since  2.0.0
+	 * @access public
+	 *
+	 * @return string $shipping_name Name for selected shipping method.
+	 */
+	public function get_shipping_name() {
+		$shipping_packages = WC()->shipping->get_packages();
+		foreach ( $shipping_packages as $i => $package ) {
+			$chosen_method = isset( WC()->session->chosen_shipping_methods[ $i ] ) ? WC()->session->chosen_shipping_methods[ $i ] : '';
+			if ( '' != $chosen_method ) {
+				$package_rates = $package['rates'];
+				foreach ( $package_rates as $rate_key => $rate_value ) {
+					if ( $rate_key == $chosen_method ) {
+						$shipping_name = $rate_value->label;
+					}
+				}
+			}
+		}
+		if ( ! isset( $shipping_name ) ) {
+			$shipping_name = __( 'Shipping', 'woocommerce-gateway-klarna' );
+		}
+		return $shipping_name;
+	}
+	/**
+	 * Get shipping reference.
+	 *
+	 * @since  2.0.0
+	 * @access public
+	 *
+	 * @return string $shipping_reference Reference for selected shipping method.
+	 */
+	public function get_shipping_reference() {
+		$shipping_packages = WC()->shipping->get_packages();
+		foreach ( $shipping_packages as $i => $package ) {
+			$chosen_method = isset( WC()->session->chosen_shipping_methods[ $i ] ) ? WC()->session->chosen_shipping_methods[ $i ] : '';
+			if ( '' != $chosen_method ) {
+				$package_rates = $package['rates'];
+				foreach ( $package_rates as $rate_key => $rate_value ) {
+					if ( $rate_key == $chosen_method ) {
+						$shipping_reference = $rate_value->id;
+					}
+				}
+			}
+		}
+		if ( ! isset( $shipping_reference ) ) {
+			$shipping_reference = __( 'Shipping', 'woocommerce-gateway-klarna' );
+		}
+		return strval( $shipping_reference );
+	}
+
+	/**
+	 * Get shipping method amount.
+	 *
+	 * @since  2.0.0
+	 * @access public
+	 *
+	 * @return integer $shipping_amount Amount for selected shipping method.
+	 */
+	public function get_shipping_amount() {
+
+		$shipping_amount = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
+		return $shipping_amount;
+	}
+
+	/**
+	 * Get shipping method tax rate.
+	 *
+	 * @since  2.0.0
+	 * @access public
+	 *
+	 * @return integer $shipping_tax_rate Tax rate for selected shipping method.
+	 */
+	public function get_shipping_tax_rate() {
+		if ( WC()->cart->shipping_tax_total > 0 ) {
+			$shipping_tax_rate = round( WC()->cart->shipping_tax_total / WC()->cart->shipping_total );
+		} else {
+			$shipping_tax_rate = 00;
+		}
+		return intval( $shipping_tax_rate );
 	}
 
 }

@@ -72,15 +72,15 @@ class WC_PaysonCheckout_Ajax {
 
 		// Set customer session information.
 		if ( WC()->customer->get_shipping_country() !== $address['CountryCode'] || WC()->customer->get_shipping_postcode() !== $address['PostalCode'] ) {
-			WC()->customer->set_country( $address['CountryCode'] );
+			WC()->customer->set_billing_country( $address['CountryCode'] );
 			WC()->customer->set_shipping_country( $address['CountryCode'] );
 
-			WC()->customer->set_postcode( $address['PostalCode'] );
+			WC()->customer->set_billing_postcode( $address['PostalCode'] );
 			WC()->customer->set_shipping_postcode( $address['PostalCode'] );
 
 			WC()->cart->calculate_shipping();
 
-			WC()->customer->calculated_shipping( true );
+			WC()->customer->set_calculated_shipping( true );
 		}
 
 		// Add customer billing address.

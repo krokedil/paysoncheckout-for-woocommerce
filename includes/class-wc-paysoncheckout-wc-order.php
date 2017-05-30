@@ -31,10 +31,10 @@ class WC_PaysonCheckout_WC_Order {
 			$order   = wc_get_order( $orderid );
 		} else {
 			$order = $this->create_order();
-			WC()->session->set( 'ongoing_payson_order', $order->id );
+			WC()->session->set( 'ongoing_payson_order', krokedil_get_order_id( $order ) );
 		}
 
-		WC_Gateway_PaysonCheckout::log( 'Update local order. Order ID: ' . $order->id );
+		WC_Gateway_PaysonCheckout::log( 'Update local order. Order ID: ' . krokedil_get_order_id( $order ) );
 
 		// If there's an order at this point, proceed.
 		if ( isset( $order ) ) {
@@ -66,14 +66,14 @@ class WC_PaysonCheckout_WC_Order {
 			if ( email_exists( $customer_email ) ) {
 				$user    = get_user_by( 'email', $customer_email );
 				$user_id = $user->ID;
-				update_post_meta( $order->id, '_customer_user', $user_id );
+				update_post_meta( krokedil_get_order_id( $order ), '_customer_user', $user_id );
 			}
 
 			// Let plugins add meta.
-			do_action( 'woocommerce_checkout_update_order_meta', $order->id, array() );
+			do_action( 'woocommerce_checkout_update_order_meta', krokedil_get_order_id( $order ), array() );
 
-			return $order->id;
-		}
+			return krokedil_get_order_id( $order );
+		} // End if().
 
 		return false;
 	}
@@ -157,7 +157,7 @@ class WC_PaysonCheckout_WC_Order {
 	 */
 	public function add_order_fees( $order ) {
 		global $woocommerce;
-		$order_id = $order->id;
+		$order_id = krokedil_get_order_id( $order );
 		foreach ( $woocommerce->cart->get_fees() as $fee_key => $fee ) {
 			$item_id = $order->add_fee( $fee );
 			if ( ! $item_id ) {
@@ -186,7 +186,7 @@ class WC_PaysonCheckout_WC_Order {
 			define( 'WOOCOMMERCE_CART', true );
 		}
 
-		$order_id              = $order->id;
+		$order_id              = krokedil_get_order_id( $order );
 		$this_shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
 
 		WC()->cart->calculate_shipping();
@@ -281,11 +281,6 @@ class WC_PaysonCheckout_WC_Order {
 		WC()->cart->calculate_fees();
 		WC()->cart->calculate_totals();
 
-		$order->set_total( WC()->cart->shipping_total, 'shipping' );
-		$order->set_total( WC()->cart->get_cart_discount_total(), 'order_discount' );
-		$order->set_total( WC()->cart->get_cart_discount_total(), 'cart_discount' );
-		$order->set_total( WC()->cart->tax_total, 'tax' );
-		$order->set_total( WC()->cart->shipping_tax_total, 'shipping_tax' );
-		$order->set_total( WC()->cart->total );
+		$order->calculate_totals();
 	}
 }

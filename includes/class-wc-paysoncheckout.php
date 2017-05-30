@@ -120,7 +120,7 @@ class WC_PaysonCheckout {
 		foreach ( $payson_mails as $payson_mail ) {
 			$order = new WC_Order( $orderid );
 			if ( 'new_order' == $payson_mail->id || 'customer_processing_order' == $payson_mail->id ) {
-				$payson_mail->trigger( $order->id );
+				$payson_mail->trigger( krokedil_get_order_id( $order ) );
 			}
 		}
 	}
