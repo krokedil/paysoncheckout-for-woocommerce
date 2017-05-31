@@ -176,4 +176,23 @@
 			console.log('PaysonEmbeddedCheckoutResult', data);
 		}
 	});
+
+	$('#order_comments').focusout(function(){
+		var text = $('#order_comments').val();
+		if( text.length > 0 ) {
+            $.ajax(
+                wc_paysoncheckout.ajax_url,
+                {
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action  : 'payson_customer_order_note',
+                        order_note : text,
+                    },
+                    success: function(response) {
+                    }
+                }
+            );
+        }
+	});
 }(jQuery));

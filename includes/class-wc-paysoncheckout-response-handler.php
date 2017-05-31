@@ -74,20 +74,24 @@ class WC_PaysonCheckout_Response_Handler {
 		}
 
 		if ( $order->has_status( array( 'processing', 'completed' ) ) ) {
-			WC_Gateway_PaysonCheckout::log( 'Aborting, Order #' . $order->id . ' is already complete.' );
+			WC_Gateway_PaysonCheckout::log( 'Aborting, Order #' . krokedil_get_order_id( $order ) . ' is already complete.' );
 			header( 'HTTP/1.0 200 OK' );
 			return;
-			
+
 		}
 
 		// Add order addresses.
 		$this->add_order_addresses( $order, $checkout );
 
 		// Add Payson order status.
-		update_post_meta( $order->id, '_paysoncheckout_order_status', $checkout->status );
+		update_post_meta( krokedil_get_order_id( $order ), '_paysoncheckout_order_status', $checkout->status );
 
 		// Add Payson Checkout Id.
-		update_post_meta( $order->id, '_payson_checkout_id', $checkout->id );
+		update_post_meta( krokedil_get_order_id( $order ), '_payson_checkout_id', $checkout->id );
+
+		// Set status to pending
+		$order->update_status( 'pending' );
+		error_log( 'pending' );
 
 		// Change the order status to Processing/Completed in WooCommerce.
 		$order->payment_complete( $checkout->purchaseId );
@@ -102,7 +106,7 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @param WC_Order $order WooCommerce order.
 	 */
 	protected function expired_cb( $order ) {
-		wp_delete_post( $order->id, true );
+		wp_delete_post( krokedil_get_order_id( $order ), true );
 		header( 'HTTP/1.0 200 OK' );
 	}
 
@@ -127,7 +131,8 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @param  object $checkout PaysonCheckout order.
 	 */
 	public function add_order_addresses( $order, $checkout ) {
-		$order_id = $order->id;
+		$order_id = krokedil_get_order_id( $order );
+
 
 		// Add customer billing address - retrieved from callback from Payson.
 		update_post_meta( $order_id, '_billing_first_name', $checkout->customer->firstName );

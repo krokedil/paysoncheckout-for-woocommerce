@@ -43,7 +43,7 @@ class WC_PaysonCheckout_Capture {
 		$order          = wc_get_order( $this->order_id );
 
 		// If this order wasn't created using PaysonCheckout payment method, bail.
-		if ( 'paysoncheckout' != $order->payment_method ) {
+		if ( 'paysoncheckout' != krokedil_get_payment_method( $order ) ) {
 			return;
 		}
 
@@ -70,7 +70,7 @@ class WC_PaysonCheckout_Capture {
 				// Add time stamp, used to prevent duplicate cancellations for the same order.
 				update_post_meta( $this->order_id, '_paysoncheckout_reservation_captured', current_time( 'mysql' ) );
 				// Add Payson order status
-				update_post_meta( $order->id, '_paysoncheckout_order_status', $response->status );
+				update_post_meta( krokedil_get_order_id( $order ), '_paysoncheckout_order_status', $response->status );
 				$order->add_order_note( sprintf( __( 'PaysonCheckout reservation was successfully captured.', 'woocommerce-gateway-paysoncheckout' ), '' ) );
 			} else {
 				$order->add_order_note( __( 'PaysonCheckout reservation could not be captured.', 'woocommerce-gateway-paysoncheckout' ) );

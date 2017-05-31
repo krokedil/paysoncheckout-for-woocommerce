@@ -3,7 +3,7 @@
  * Plugin Name:     PaysonCheckout 2.0 for WooCommerce
  * Plugin URI:      http://krokedil.com/
  * Description:     Provides a PaysonCheckout 2.0 payment gateway for WooCommerce.
- * Version:         1.1.3
+ * Version:         1.1.4
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
  * Developer:       Krokedil
@@ -37,3 +37,4 @@ include_once( 'includes/class-wc-paysoncheckout-response-handler.php' );
 include_once( 'includes/class-wc-paysoncheckout-capture.php' );
 include_once( 'includes/class-wc-paysoncheckout-cancel-reservation.php' );
 include_once( 'includes/class-wc-paysoncheckout-admin-notices.php' );
+include_once( 'krokedil-wc-compatability.php' );
