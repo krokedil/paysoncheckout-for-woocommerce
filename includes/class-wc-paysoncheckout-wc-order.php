@@ -286,7 +286,6 @@ class WC_PaysonCheckout_WC_Order {
 
 		$order->calculate_totals();
 	}
-
 	public function add_order_customer_note( $order ) {
 		if ( WC()->session->get( 'payson_customer_order_note' ) ) {
 			$order->set_customer_note( WC()->session->get( 'payson_customer_order_note' ) );
