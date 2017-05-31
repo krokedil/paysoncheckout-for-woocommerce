@@ -288,7 +288,6 @@ class WC_PaysonCheckout_WC_Order {
 	}
 
 	public function add_order_customer_note( $order ) {
-		error_log( 'In function' );
 		if ( WC()->session->get( 'payson_customer_order_note' ) ) {
 			$order->set_customer_note( WC()->session->get( 'payson_customer_order_note' ) );
 			$order->save();

@@ -142,7 +142,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 
 	public function set_gui() {
 		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
-		$gui = new  PaysonEmbedded\Gui( $this->get_payson_language(), $this->settings['color_scheme'], 'none', $this->get_request_phone() );
+		$gui = new  PaysonEmbedded\Gui( $this->get_payson_language(), $this->settings['color_scheme'], 'none', $this->get_request_phone(), $this->get_shipping_countries() );
 
 		return $gui;
 	}
@@ -213,5 +213,12 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		} catch ( Exception $ex ) {
 			return new WP_Error( 'error', __( 'The entered Payson Merchant ID, API Key or test/live mode is not correct.', 'woocommerce-gateway-paysoncheckout' ) );
 		}
+	}
+
+	public function get_shipping_countries() {
+		// Add shipping countries
+		$wc_countries = new WC_Countries();
+		$countries = array_keys( $wc_countries->get_shipping_countries() );
+		return $countries;
 	}
 }
