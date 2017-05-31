@@ -24,6 +24,10 @@ class WC_PaysonCheckout_Ajax {
 		// Ajax for Address Update JS call from Payson
 		add_action( 'wp_ajax_payson_address_changed_callback', array( $this, 'payson_address_changed_callback' ) );
 		add_action( 'wp_ajax_nopriv_payson_address_changed_callback', array( $this, 'payson_address_changed_callback' ) );
+
+		// Ajax to add order notes as a session for the customer
+		add_action( 'wp_ajax_payson_customer_order_note', array( $this, 'payson_add_customer_order_note' ) );
+		add_action( 'wp_ajax_nopriv_payson_customer_order_note', array( $this, 'payson_add_customer_order_note' ) );
 	}
 
 	/*
@@ -104,6 +108,11 @@ class WC_PaysonCheckout_Ajax {
 		wp_die();
 	}
 
+	public function payson_add_customer_order_note() {
+		WC()->session->set( 'payson_customer_order_note', $_POST['order_note'] );
+		wp_send_json_success();
+		wp_die();
+	}
 }
 
 $wc_paysoncheckout_ajax = new WC_PaysonCheckout_Ajax();

@@ -62,6 +62,9 @@ class WC_PaysonCheckout_WC_Order {
 			// Calculate order totals.
 			$this->set_order_totals( $order );
 
+			// Add order note to order
+			$this->add_order_customer_note( $order );
+
 			// Tie this order to a user.
 			if ( email_exists( $customer_email ) ) {
 				$user    = get_user_by( 'email', $customer_email );
@@ -282,5 +285,13 @@ class WC_PaysonCheckout_WC_Order {
 		WC()->cart->calculate_totals();
 
 		$order->calculate_totals();
+	}
+
+	public function add_order_customer_note( $order ) {
+		error_log( 'In function' );
+		if ( WC()->session->get( 'payson_customer_order_note' ) ) {
+			$order->set_customer_note( WC()->session->get( 'payson_customer_order_note' ) );
+			$order->save();
+		}
 	}
 }
