@@ -72,15 +72,10 @@ function krokedil_get_order_id( $order ) {
 // Get item meta
 function krokedil_get_item_meta_cart( $item, $product ) {
 	if ( krokedil_wc_gte_3_0() ) {
-		$variation = new WC_Product_Variation( $product->get_id() );
-		$item_metas = $variation->get_variation_attributes();
-		foreach ( $item_metas as $item_meta ) {
-			return $item_meta;
-		}
+		$item_meta = '';
 	} else {
 		$item_meta = new WC_Order_Item_Meta( $item['item_meta'], $product );
 		$item_meta = nl2br( $item_meta->display( true, true ) );
-
 		return $item_meta;
 	}
 }

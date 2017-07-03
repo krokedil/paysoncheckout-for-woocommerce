@@ -118,8 +118,9 @@ class WC_PaysonCheckout_Process_Order_Lines {
 				$vat           = round( $cart_item['line_tax'] / $cart_item['line_total'], 2 );
 				$permalink     = get_permalink( $_product->get_id() );
 				$image         = $_product->get_image_id() ? wp_get_attachment_url( $_product->get_image_id() ) : null;
+				
 				$pay_data->AddOrderItem( new PaysonEmbedded\OrderItem(
-					$product_name,
+					'gg',
 					$product_price,
 					$qty,
 					$vat,
@@ -183,15 +184,17 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	 * @return string
 	 */
 	public function get_product_name( $product, $item, $cart = false ) {
-		$product_name = $product->get_title();
-		if ( true == $cart ) {
-			$item_meta = krokedil_get_item_meta_cart( $item, $product );
+		
+		if ( krokedil_wc_gte_3_0() ) {
+			$product_name = $product->get_name();
 		} else {
-			$item_meta = krokedil_get_item_meta_order( $item, $product );
-		}
-		// Variation
-		if ( $item_meta ) {
-			$product_name .= ' (' . $item_meta . ')';
+			$product_name = $product->get_title();
+			$item_meta = krokedil_get_item_meta_cart( $item, $product );
+			// Variation
+			if ( $item_meta ) {
+				$product_name .= ' (' . $item_meta . ')';
+			}
+			
 		}
 		return $product_name;
 	}
