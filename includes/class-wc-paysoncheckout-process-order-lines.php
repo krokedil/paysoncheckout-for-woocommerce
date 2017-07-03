@@ -120,7 +120,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 				$image         = $_product->get_image_id() ? wp_get_attachment_url( $_product->get_image_id() ) : null;
 				
 				$pay_data->AddOrderItem( new PaysonEmbedded\OrderItem(
-					'gg',
+					$product_name,
 					$product_price,
 					$qty,
 					$vat,
@@ -153,7 +153,6 @@ class WC_PaysonCheckout_Process_Order_Lines {
 				$pay_data->AddOrderItem( new  PaysonEmbedded\OrderItem( $title, $price, $qty, $vat, $sku, PaysonEmbedded\OrderItemType::PHYSICAL, 0 ) );
 			}
 		}
-
 		return $pay_data;
 	}
 
@@ -263,7 +262,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	public function get_shipping_amount() {
 		
 		$shipping_amount = WC()->cart->shipping_total + WC()->cart->shipping_tax_total;
-		return round( $shipping_amount );
+		return round( $shipping_amount, 2 );
 	}
 	
 	/**
@@ -276,10 +275,10 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	 */
 	public function get_shipping_tax_rate() {
 		if ( WC()->cart->shipping_tax_total > 0 ) {
-			$shipping_tax_rate = round( WC()->cart->shipping_tax_total / WC()->cart->shipping_total );
+			$shipping_tax_rate = WC()->cart->shipping_tax_total / WC()->cart->shipping_total;
 		} else {
 			$shipping_tax_rate = 00;
 		}
-		return intval( $shipping_tax_rate );
+		return round( $shipping_tax_rate, 2 );
 	}
 }
