@@ -2,9 +2,9 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.7.5
+Tested up to: 4.8
 Requires WooCommerce at least: 2.5
-Tested WooCommerce up to: 3.0.7
+Tested WooCommerce up to: 3.1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: 1.1.5
