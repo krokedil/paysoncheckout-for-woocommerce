@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 == CHANGELOG ==
 
+= 2017.07.03    - version 1.1.5 = 
+* Fix			- Updated get_product_name() function (product name sent to Payson). Caused bug with WooCommerce 3.1.
+
 = 2017.05.31    - version 1.1.4 =
 * Fix           - Added customer note to an order made with PaysonCheckout 2.0.
 * Fix           - Added support to limit countries that can be chosen under "OTHER".
