@@ -94,6 +94,7 @@ class WC_PaysonCheckout_Ajax {
 		update_post_meta( $order_id, '_billing_postcode', $address['PostalCode'] );
 		update_post_meta( $order_id, '_billing_city', $address['City'] );
 		update_post_meta( $order_id, '_billing_country', $address['CountryCode'] );
+		update_post_meta( $order_id, '_billing_email', $address['Email'] );
 
 		// Add customer shipping address.
 		update_post_meta( $order_id, '_shipping_first_name', $address['FirstName'] );
