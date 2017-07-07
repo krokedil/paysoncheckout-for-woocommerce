@@ -1,5 +1,8 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2017.07.07      - version 1.1.7
+* Fix			- Adds customer email to local order in payson_address_changed_callback() callback. Fixes bug where customer confirmation email not being sent.
+
 2017.07.03      - version 1.1.6
 * Fix			- Shipping tax sent correctly to Payson.
 
