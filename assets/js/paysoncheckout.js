@@ -67,7 +67,7 @@
 	$(document.body).on("updated_checkout", function (event, data) {
 		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
 			// Remove the "choose another payment method" and Payson container to prevent duplication
-			$('form.woocommerce-checkout .paysoncheckout-pay-choose-other').remove();
+			$('form.woocommerce-checkout .paysoncheckout-choose-other').remove();
 			$('div#customer_details_payson').remove();
 
 			// Move order review table
