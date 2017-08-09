@@ -31,3 +31,10 @@
 .paysoncheckout-selected #customer_details_payson {
 	display: block;
 }
+
+#customer_details_payson {
+	background-image: url('../images/spinner.svg');
+	background-position: center top;
+	background-repeat: no-repeat;
+	min-height: 537px;
+}
