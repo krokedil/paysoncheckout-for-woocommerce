@@ -24,7 +24,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 load_plugin_textdomain( 'woocommerce-gateway-paysoncheckout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-// Define plugin paths.
+// Define plugin constants.
+define( 'PAYSONCHECKOUT_VERSION', '1.1.7' );
 define( 'PAYSONCHECKOUT_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 

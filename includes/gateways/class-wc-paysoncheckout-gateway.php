@@ -252,7 +252,7 @@ function init_wc_gateway_paysoncheckout_class() {
 			if ( is_checkout() ) {
 				$theme            = wp_get_theme();
 				$theme_name       = $theme->name;
-				wp_register_script( 'wc_paysoncheckout', PAYSONCHECKOUT_URL . '/assets/js/paysoncheckout.js', array( 'jquery' ), false, true );
+				wp_register_script( 'wc_paysoncheckout', PAYSONCHECKOUT_URL . '/assets/js/paysoncheckout.js', array( 'jquery' ), PAYSONCHECKOUT_VERSION, true );
 				wp_localize_script( 'wc_paysoncheckout', 'wc_paysoncheckout', array(
 					'ajax_url'                   => admin_url( 'admin-ajax.php' ),
 					'select_another_method_text' => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
@@ -260,7 +260,7 @@ function init_wc_gateway_paysoncheckout_class() {
 					'wc_payson_checkout_nonce'   => wp_create_nonce( 'wc_payson_checkout_nonce' )
 				) );
 				wp_enqueue_script( 'wc_paysoncheckout' );
-				wp_register_style( 'wc_paysoncheckout', PAYSONCHECKOUT_URL . '/assets/css/paysoncheckout.css' );
+				wp_register_style( 'wc_paysoncheckout', PAYSONCHECKOUT_URL . '/assets/css/paysoncheckout.css', array(), PAYSONCHECKOUT_VERSION );
 				wp_enqueue_style( 'wc_paysoncheckout' );
 			}
 		}
