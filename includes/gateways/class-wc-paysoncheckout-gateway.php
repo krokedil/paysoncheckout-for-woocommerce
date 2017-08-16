@@ -20,6 +20,9 @@ function init_wc_gateway_paysoncheckout_class() {
 	 * @version     0.1
 	 * @author      Krokedil
 	 */
+	if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+		return;
+	}
 	class WC_Gateway_PaysonCheckout extends WC_Payment_Gateway {
 
 		/** @var WC_Logger Logger instance */
@@ -138,12 +141,12 @@ function init_wc_gateway_paysoncheckout_class() {
 		 */
 		public function payson_thankyou( $order_id ) {
 			if ( $_GET['paysonorder'] ) {
-				
+
 				remove_action( 'woocommerce_thankyou', 'woocommerce_order_details_table', 10 );
 				include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 				$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
 				$checkout   = $payson_api->get_notification_checkout( $_GET['paysonorder'] );
-				
+
 				if ( 'canceled' === $checkout->status ) {
 					WC()->session->__unset( 'payson_checkout_id' );
 					WC()->session->__unset( 'ongoing_payson_order' );
@@ -152,13 +155,13 @@ function init_wc_gateway_paysoncheckout_class() {
 					wp_safe_redirect( wc_get_cart_url() );
 				} else {
 					WC_Gateway_PaysonCheckout::log( 'Posted checkout info in thank you page: ' . var_export( $checkout, true ) );
-					
+
 					if ( 'readyToShip' === $checkout->status ) {
 						$order = wc_get_order( $order_id );
 						$payson_response_handler = new WC_PaysonCheckout_Response_Handler();
 						$payson_response_handler->ready_to_ship_cb( $order, $checkout );
 					}
-					
+
 					echo '<div class="paysoncheckout-container" style="width:100%; margin-left:auto; margin-right:auto;">';
 					echo $checkout->snippet;
 					echo '</div>';
