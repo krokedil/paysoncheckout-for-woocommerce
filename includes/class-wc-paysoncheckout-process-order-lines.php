@@ -195,7 +195,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 			}
 			
 		}
-		return $product_name;
+		return substr( $product_name, 0, 199 );
 	}
 	
 	/**
