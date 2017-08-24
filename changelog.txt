@@ -2,6 +2,8 @@
 
 2017.xx.xx      - version 1.1.8
 * Tweak			- Adds loading spinner when waiting for the Payson iframe to render.
+* Tweak			- Restrict product names sent to Payson to be max 199 characters.
+* Tweak			- Added check to make sure that WC Gateway is loaded.
 * Fix			- Adds fix that moves "Select another payment method" button to above order review section when checkout is updated via ajax.
  
 
