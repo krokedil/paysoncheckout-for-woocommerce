@@ -2,12 +2,12 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.8
+Tested up to: 4.8.1
 Requires WooCommerce at least: 2.5
-Tested WooCommerce up to: 3.1.0
+Tested WooCommerce up to: 3.1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,13 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2017.08.25   	- version 1.1.8 =
+* Tweak			- Adds loading spinner when waiting for the Payson iframe to render.
+* Tweak			- Restrict product names sent to Payson to be max 199 characters.
+* Tweak			- Added check to make sure that WC Gateway is loaded.
+* Tweak			- Removed apply_filters woocommerce_cart_item_name when sending cart items to Payson. This filter can be used by themes to add html.
+* Fix			- Adds fix that moves "Select another payment method" button to above order review section when checkout is updated via ajax.
 
 = 2017.07.07    - version 1.1.7 =
 * Fix			- Adds customer email to local order in payson_address_changed_callback() callback. Fixes bug where customer confirmation email not being sent.
