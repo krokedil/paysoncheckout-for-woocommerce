@@ -1,5 +1,8 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2017.09.25      - version 1.1.9
+* Fix           - Changed how we get the name of fees from $fee->label to $fee->name.
+
 2017.08.25      - version 1.1.8
 * Tweak			- Adds loading spinner when waiting for the Payson iframe to render.
 * Tweak			- Restrict product names sent to Payson to be max 199 characters.

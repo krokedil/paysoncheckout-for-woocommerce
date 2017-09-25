@@ -145,7 +145,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		if ( WC()->cart->fee_total > 0 ) {
 			foreach ( WC()->cart->get_fees() as $cart_fee ) {
 				$cart_fee_tax = array_sum( $cart_fee->tax_data );
-				$title        = $cart_fee->label;
+				$title        = $cart_fee->name;
 				$price        = round( ( $cart_fee->amount + $cart_fee_tax ), 2 );
 				$qty          = 1;
 				$vat          = round( $cart_fee_tax / $cart_fee->amount, 2 );
