@@ -37,7 +37,6 @@ More information on how to get started can be found in the [plugin documentation
 
 == CHANGELOG ==
 
-= 2017.09.25    - version 1.1.9 =
 * Fix           - Changed how we get the name of fees from $fee->label to $fee->name.
 
 = 2017.08.25   	- version 1.1.8 =
