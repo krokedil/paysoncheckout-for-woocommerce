@@ -115,10 +115,13 @@ class WC_PaysonCheckout_Process_Order_Lines {
 				$product_price = ( $cart_item['line_total'] + $cart_item['line_tax'] ) / $cart_item['quantity'];
 				$qty           = $cart_item['quantity'];
 				$sku           = $this->get_item_reference( $_product );
-				$vat           = round( $cart_item['line_tax'] / $cart_item['line_total'], 2 );
+				if( 0 === $cart_item['line_total'] ) {
+					$vat = 0.0;
+				} else {
+					$vat = round( $cart_item['line_tax'] / $cart_item['line_total'], 2 );
+				}
 				$permalink     = get_permalink( $_product->get_id() );
 				$image         = $_product->get_image_id() ? wp_get_attachment_url( $_product->get_image_id() ) : null;
-				
 				$pay_data->AddOrderItem( new PaysonEmbedded\OrderItem(
 					$product_name,
 					$product_price,

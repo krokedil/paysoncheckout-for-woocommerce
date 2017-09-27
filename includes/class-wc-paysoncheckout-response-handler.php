@@ -91,7 +91,6 @@ class WC_PaysonCheckout_Response_Handler {
 
 		// Set status to pending
 		$order->update_status( 'pending' );
-		error_log( 'pending' );
 
 		// Change the order status to Processing/Completed in WooCommerce.
 		$order->payment_complete( $checkout->purchaseId );
