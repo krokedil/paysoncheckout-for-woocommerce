@@ -39,3 +39,6 @@ include_once( 'includes/class-wc-paysoncheckout-capture.php' );
 include_once( 'includes/class-wc-paysoncheckout-cancel-reservation.php' );
 include_once( 'includes/class-wc-paysoncheckout-admin-notices.php' );
 include_once( 'krokedil-wc-compatability.php' );
+include_once( PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php' );
+
+

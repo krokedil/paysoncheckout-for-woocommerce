@@ -39,6 +39,7 @@ More information on how to get started can be found in the [plugin documentation
 
 * Fix           - Changed how we get the name of fees from $fee->label to $fee->name.
 * Fix           - No longer possible for division by zero on Product vat.
+* Fix           - Changed where we get allowed countries from.
 
 = 2017.08.25   	- version 1.1.8 =
 * Tweak			- Adds loading spinner when waiting for the Payson iframe to render.

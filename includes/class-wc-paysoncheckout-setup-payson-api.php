@@ -30,7 +30,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	 * @return mixed|null|\PaysonEmbedded\Checkout
 	 */
 	public function get_checkout( $order_id = false ) {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 
 		// Setup.
 		$callPaysonApi  = $this->set_payson_api();
@@ -39,7 +39,6 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$gui            = $this->set_gui();
 		$customer       = $this->set_customer();
 		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
-
 		/*
 		 * Step 2 Create checkout
 		 */
@@ -99,12 +98,11 @@ class WC_PaysonCheckout_Setup_Payson_API {
 
 			WC()->session->set( 'payson_checkout_id', $checkout_temp_obj->id );
 		}
-
 		return $checkout_temp_obj;
 	}
 
 	public function set_payson_api() {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		// Your merchant ID and apikey. Information about the merchant and the integration.
 		$environment = ( 'yes' == $this->settings['testmode'] ) ? true : false;
 		$merchant_id = $this->settings['merchant_id'];
@@ -115,7 +113,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	}
 
 	public function set_merchant( $order_id ) {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		// URLs used by payson for redirection after a completed/canceled/notification purchase.
 		$order = wc_get_order( $order_id );
 		if ( $order ) {
@@ -141,9 +139,8 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	}
 
 	public function set_gui() {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		$gui = new  PaysonEmbedded\Gui( $this->get_payson_language(), $this->settings['color_scheme'], 'none', $this->get_request_phone(), $this->get_shipping_countries() );
-
 		return $gui;
 	}
 
@@ -173,7 +170,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	}
 
 	public function set_customer() {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		$email        = '';
 		$postcode     = '';
 		$current_user = wp_get_current_user();
@@ -190,7 +187,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	}
 
 	public function get_notification_checkout( $order_id = false ) {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		$merchant_id = $this->settings['merchant_id'];
 		$api_key     = $this->settings['api_key'];
 		$environment = ( 'yes' == $this->settings['testmode'] ) ? true : false;
@@ -201,7 +198,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	}
 
 	public function get_validate_account() {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		$merchant_id = $this->settings['merchant_id'];
 		$api_key     = $this->settings['api_key'];
 		$environment = ( 'yes' == $this->settings['testmode'] ) ? true : false;
@@ -218,7 +215,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 	public function get_shipping_countries() {
 		// Add shipping countries
 		$wc_countries = new WC_Countries();
-		$countries = array_keys( $wc_countries->get_shipping_countries() );
+		$countries = array_keys( $wc_countries->get_allowed_countries() );
 		return $countries;
 	}
 }

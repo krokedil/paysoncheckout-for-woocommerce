@@ -37,7 +37,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	 * @return \PaysonEmbedded\PayData
 	 */
 	private function get_order_lines_from_order( $order_id ) {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		$order       = new WC_Order( $order_id );
 
 		if ( 'EUR' === get_woocommerce_currency() ) {
@@ -100,7 +100,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	 * @return array
 	 */
 	public function get_order_lines_from_cart() {
-		require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
+		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		if ( 'EUR' === get_woocommerce_currency() ) {
 			$pay_data = new  PaysonEmbedded\PayData( PaysonEmbedded\CurrencyCode::EUR );
 		} else {
