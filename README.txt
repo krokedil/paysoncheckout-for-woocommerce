@@ -7,7 +7,7 @@ Requires WooCommerce at least: 2.5
 Tested WooCommerce up to: 3.1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.8
+Stable tag: 1.1.9
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -37,9 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 == CHANGELOG ==
 
+= 2017.09.29   	- version 1.1.9 =
 * Fix           - Changed how we get the name of fees from $fee->label to $fee->name.
 * Fix           - No longer possible for division by zero on Product vat.
-* Fix           - Changed where we get allowed countries from.
+* Fix           - Allowed countries sent to Payson changed from WC allowed shipping countries to WC allowed countries.
 
 = 2017.08.25   	- version 1.1.8 =
 * Tweak			- Adds loading spinner when waiting for the Payson iframe to render.
