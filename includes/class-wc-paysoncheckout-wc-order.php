@@ -98,7 +98,6 @@ class WC_PaysonCheckout_WC_Order {
 			'customer_id' => $customer_id,
 			'created_via' => 'payson_checkout',
 		);
-
 		// Create the order.
 		$order = wc_create_order( $order_data );
 		if ( is_wp_error( $order ) ) {

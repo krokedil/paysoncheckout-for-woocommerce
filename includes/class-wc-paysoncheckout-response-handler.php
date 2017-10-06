@@ -105,7 +105,9 @@ class WC_PaysonCheckout_Response_Handler {
 	 * @param WC_Order $order WooCommerce order.
 	 */
 	protected function expired_cb( $order ) {
-		wp_delete_post( krokedil_get_order_id( $order ), true );
+		if( $order->has_status( 'payson-incomplete' ) ) {
+			wp_delete_post( krokedil_get_order_id( $order ), true );
+		}
 		header( 'HTTP/1.0 200 OK' );
 	}
 
