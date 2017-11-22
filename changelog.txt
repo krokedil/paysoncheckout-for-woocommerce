@@ -1,5 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2017.11.22      - version 1.1.11
+* Fix			- Don’t send items to Payson with price set to 0. Product Bundles compatibility fix.
+* Tweak			- Improved logging.
+
 2017.10.09      - version 1.1.10
 * Fix			- Only delete WC order on expired callback from Payson if WC order has status payson-incomplete.
 

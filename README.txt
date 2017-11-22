@@ -2,12 +2,12 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.8.1
-Requires WooCommerce at least: 2.5
-Tested WooCommerce up to: 3.1.2
+Tested up to: 4.9
+Requires WooCommerce at least: 2.6
+Tested WooCommerce up to: 3.2.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 1.1.10
+Stable tag: trunk
 
 PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
@@ -36,6 +36,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2017.11.22	- version 1.1.11 =
+* Fix			- Don’t send items to Payson with price set to 0. Product Bundles compatibility fix.
+* Tweak			- Improved logging.
 
 = 2017.10.09    - version 1.1.10 =
 * Fix			- Only delete WC order on expired callback from Payson if WC order has status payson-incomplete.
