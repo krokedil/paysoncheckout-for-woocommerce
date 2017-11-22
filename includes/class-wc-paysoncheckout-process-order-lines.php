@@ -110,6 +110,11 @@ class WC_PaysonCheckout_Process_Order_Lines {
 		// Process order lines.
 		if ( count( WC()->cart->cart_contents ) > 0 ) {
 			foreach ( WC()->cart->cart_contents as $cart_item_key => $cart_item ) {
+				
+				if( 0 == $cart_item['line_total'] ) {
+					continue;
+				}
+			
 				$_product      = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
 				$product_name  = $this->get_product_name( $_product, $cart_item, true );
 				$product_price = ( $cart_item['line_total'] + $cart_item['line_tax'] ) / $cart_item['quantity'];
