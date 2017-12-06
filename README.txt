@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 == CHANGELOG ==
 
+= 2017.12.06    - version 1.1.13 =
+* Tweak			- Save order after adding customer data in ready to ship callback.
+
 = 2017.12.06    - version 1.1.12 =
 * Fix			- Re-add possibility to send items to Payson with price set to 0. 
 * Fix           - Only include Krokedil compatibility functions if they don't already exist (compat w other plugins).
