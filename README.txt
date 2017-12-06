@@ -4,7 +4,7 @@ Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
 Tested up to: 4.9
 Requires WooCommerce at least: 2.6
-Tested WooCommerce up to: 3.2.4
+Tested WooCommerce up to: 3.2.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2017.12.06    - version 1.1.12 =
+* Fix			- Re-add possibility to send items to Payson with price set to 0. 
+* Fix           - Only include Krokedil compatibility functions if they don't already exist (compat w other plugins).
+
 
 = 2017.11.22	- version 1.1.11 =
 * Fix			- Don’t send items to Payson with price set to 0. Product Bundles compatibility fix.
