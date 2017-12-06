@@ -92,6 +92,10 @@ class WC_PaysonCheckout_Response_Handler {
 		// Set status to pending
 		$order->update_status( 'pending' );
 
+		if ( krokedil_wc_gte_3_0() ) {
+			$order->save();
+		}
+
 		// Change the order status to Processing/Completed in WooCommerce.
 		$order->payment_complete( $checkout->purchaseId );
 
