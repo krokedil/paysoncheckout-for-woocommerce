@@ -1,5 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2017.12.06      - version 1.1.12
+* Fix			- Re-add possibility to send items to Payson with price set to 0. 
+* Fix           - Only include Krokedil compatibility functions if they don't already exist (compat w other plugins).
+
 2017.11.22      - version 1.1.11
 * Fix			- Don’t send items to Payson with price set to 0. Product Bundles compatibility fix.
 * Tweak			- Improved logging.
