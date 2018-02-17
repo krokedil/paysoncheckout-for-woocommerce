@@ -38,3 +38,8 @@
 	background-repeat: no-repeat;
 	min-height: 537px;
 }
+
+/* Flatsome */
+.paysoncheckout-selected .row.pt-0 {
+	display: none;
+}
