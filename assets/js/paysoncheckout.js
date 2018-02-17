@@ -102,9 +102,9 @@
 		$("input[name='payment_method']:checked").prop('checked', false);
 		if ("paysoncheckout" === $("input[name='payment_method']:eq(0)").val()) {
 			$("input[name='payment_method']:eq(1)").prop("checked", true);
+		} else {
+			$("input[name='payment_method']:eq(0)").prop("checked", true);
 		}
-
-		$("body").trigger("update_checkout");
 
 		wc_paysoncheckout_body_class();
 	});
