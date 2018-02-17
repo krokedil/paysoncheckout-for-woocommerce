@@ -2,9 +2,9 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.9
-Requires WooCommerce at least: 2.6
-Tested WooCommerce up to: 3.2.5
+Tested up to: 4.9.4
+WC requires at least: 3.6
+WC tested up to: 3.3.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2018.02.18    - version 1.1.14 =
+* Fix			- WC 3.3 switch payment method bug fix (not being able to switch from Payson to other gateway).
+* Fix			- Flatesome theme css compatibility fix.
 
 = 2017.12.06    - version 1.1.13 =
 * Tweak			- Save order after adding customer data in ready to ship callback.
