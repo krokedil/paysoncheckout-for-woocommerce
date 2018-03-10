@@ -28,6 +28,10 @@ class WC_PaysonCheckout_Ajax {
 		// Ajax to add order notes as a session for the customer
 		add_action( 'wp_ajax_payson_customer_order_note', array( $this, 'payson_add_customer_order_note' ) );
 		add_action( 'wp_ajax_nopriv_payson_customer_order_note', array( $this, 'payson_add_customer_order_note' ) );
+
+		// Ajax to change payment method
+		add_action( 'wp_ajax_payson_change_payment_method', array( $this, 'payson_change_payment_method' ) );
+		add_action( 'wp_ajax_nopriv_payson_change_payment_method', array( $this, 'payson_change_payment_method' ) );
 	}
 
 	/*
@@ -114,6 +118,37 @@ class WC_PaysonCheckout_Ajax {
 		wp_send_json_success();
 		wp_die();
 	}
+
+	public static function payson_change_payment_method() {
+		
+		WC()->cart->calculate_shipping();
+		WC()->cart->calculate_fees();
+		WC()->cart->calculate_totals();
+		
+		$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+		if ( 'false' === $_POST['paysoncheckout'] ) {
+			// Set chosen payment method to first gateway that is not Klarna Checkout for WooCommerce.
+			$first_gateway = reset( $available_gateways );
+			if ( 'paysoncheckout' !== $first_gateway->id ) {
+				WC()->session->set( 'chosen_payment_method', $first_gateway->id );
+			} else {
+				$second_gateway = next( $available_gateways );
+				WC()->session->set( 'chosen_payment_method', $second_gateway->id );
+			}
+		} else {
+			WC()->session->set( 'chosen_payment_method', 'paysoncheckout' );
+		}
+		WC()->payment_gateways()->set_current_gateway( $available_gateways );
+		
+		$redirect = wc_get_checkout_url();
+		$data = array(
+			'redirect' => $redirect,
+		);
+		
+		wp_send_json_success( $data );
+		wp_die();
+	}
+
 }
 
 $wc_paysoncheckout_ajax = new WC_PaysonCheckout_Ajax();

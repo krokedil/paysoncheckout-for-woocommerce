@@ -44,7 +44,7 @@
 		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
 			// Get iframe if not fetched yet
 			if (!wc_paysoncheckout_loaded) {
-				wc_paysoncheckout_get_iframe();
+				//wc_paysoncheckout_get_iframe();
 			}
 		}
 	});
@@ -55,16 +55,48 @@
 	// - If changing to PaysonCheckout trigger update_checkout
 	$(document.body).on("change", "input[name='payment_method']", function (event) {
 		if ("paysoncheckout" === event.target.value) {
-			// Get iframe if not fetched yet
-			if (!wc_paysoncheckout_loaded) {
-				wc_paysoncheckout_get_iframe();
-			}
-			$("body").trigger("update_checkout");
+			
+			$('form.checkout').block({
+                message: "",
+                baseZ: 99999,
+                overlayCSS:
+                    {
+                        background: "#fff",
+                        opacity: 0.6
+                    },
+                css: {
+                    padding:        "20px",
+                    zindex:         "9999999",
+                    textAlign:      "center",
+                    color:          "#555",
+                    backgroundColor:"#fff",
+                    cursor:         "wait",
+                    lineHeight:		"24px",
+                }
+            });
+           
+            $.ajax(
+                wc_paysoncheckout.ajax_url,
+                {
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action  		: 'payson_change_payment_method',
+						paysoncheckout 	: true,
+						nonce   		: wc_paysoncheckout.wc_payson_checkout_nonce
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        window.location.href = data.data.redirect;
+                    }
+            	}
+            );
 		}
 	});
 
 	// When checkout gets updated
 	$(document.body).on("updated_checkout", function (event, data) {
+		/*
 		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
 			// Remove the "choose another payment method" and Payson container to prevent duplication
 			$('form.woocommerce-checkout .paysoncheckout-choose-other').remove();
@@ -87,13 +119,13 @@
 
 			wc_paysoncheckout_get_iframe();
 		}
-
+		*/
 		wc_paysoncheckout_body_class();
 	});
 
-	$(document.body).on('click', '.paysoncheckout-choose-other a', function (e) {
+	$(document.body).on('click', '#payson-checkout-select-other', function (e) {
 		e.preventDefault();
-
+		/*
 		$('.paysoncheckout-cart').detach().prependTo('#order_review');
 		$('.paysoncheckout-order-notes').detach().appendTo('.woocommerce-shipping-fields');
 		$('.paysoncheckout-choose-other').remove();
@@ -105,8 +137,38 @@
 		} else {
 			$("input[name='payment_method']:eq(0)").prop("checked", true);
 		}
+		*/
+		$.ajax(
+			wc_paysoncheckout.ajax_url,
+			{
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					action  		: 'payson_change_payment_method',
+					paysoncheckout 	: false,
+					nonce   		: wc_paysoncheckout.wc_payson_checkout_nonce
+				},
+				success: function(response) {
+					if ('yes' === wc_paysoncheckout.debug) {
+						console.log('Change payment method sucess');
+					}
 
-		wc_paysoncheckout_body_class();
+					$('body').removeClass('paysoncheckout-selected');
+					window.location.href = response.data.redirect;
+				},
+				error: function(response) {
+					if ('yes' === wc_paysoncheckout.debug) {
+						console.log('Change payment method error');
+						console.log(response);
+					}
+				},
+				complete: function() {
+					if ('yes' === wc_paysoncheckout.debug) {
+						console.log('Change payment method complete');
+					}
+				}
+			}
+		);
 	});
 	
 	// When Address update event is triggered
