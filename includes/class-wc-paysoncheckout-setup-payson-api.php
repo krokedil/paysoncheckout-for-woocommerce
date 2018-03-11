@@ -76,16 +76,16 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			
 		} else {
 			// Create checkout
-			WC_Gateway_PaysonCheckout::log( 'Create checkout call sent to Payson: ' . var_export( $checkout, true ) );
+			WC_Gateway_PaysonCheckout::log( 'Create checkout call sent to Payson: ' . stripslashes_deep( json_encode( $checkout ) ) );
 			try {
 				$checkoutId = $callPaysonApi->CreateCheckout( $checkout );
 			} catch ( Exception $e ) {
-				WC_Gateway_PaysonCheckout::log( 'Create checkout error response from Payson: ' . var_export( $e->getMessage(), true ) );
+				WC_Gateway_PaysonCheckout::log( 'Create checkout error response from Payson: ' . stripslashes_deep( json_encode( $e->getMessage() ) ) );
 				return new WP_Error( 'connection-error', $e->getMessage() );
 			}
 			
 			$checkout_temp_obj = $callPaysonApi->GetCheckout( $checkoutId );
-			WC_Gateway_PaysonCheckout::log( 'Create checkout response from Payson: ' . var_export( $checkout_temp_obj, true ) );
+			WC_Gateway_PaysonCheckout::log( 'Create checkout response from Payson: ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
 
 			// Update notification url with the Payson Checkout ID
 			if ( $order_id ) {
@@ -127,7 +127,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			try {
 				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
 			} catch ( Exception $e ) {
-				WC_Gateway_PaysonCheckout::log( 'Failed to get checkout in update_checkout request: ' . var_export( $e->getMessage(), true ) );
+				WC_Gateway_PaysonCheckout::log( 'Failed to get checkout in update_checkout request: ' . stripslashes_deep( json_encode( $e->getMessage() ) ) );
 				WC()->session->__unset( 'payson_checkout_id' );
 				return new WP_Error( 'connection-error', $e->getMessage() );
 			}
@@ -154,13 +154,14 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			
+			WC_Gateway_PaysonCheckout::log( 'Update checkout call sent to Payson: ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
 			$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
 			// @todo - check that the update request was ok
 			return $checkout_temp_obj;
 			
 		} else {
 
-			WC_Gateway_PaysonCheckout::log( 'Something was wrong with the status in update_checkout request: ' . var_export( $checkout_temp_obj, true ) );
+			WC_Gateway_PaysonCheckout::log( 'Something was wrong with the status in update_checkout request: ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
 			WC()->session->__unset( 'payson_checkout_id' );
 			return new WP_Error( 'order-error', 'Status or payson_checkout_id problem' );
 		}
