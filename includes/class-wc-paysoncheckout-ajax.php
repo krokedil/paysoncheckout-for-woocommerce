@@ -32,6 +32,11 @@ class WC_PaysonCheckout_Ajax {
 		// Ajax to change payment method
 		add_action( 'wp_ajax_payson_change_payment_method', array( $this, 'payson_change_payment_method' ) );
 		add_action( 'wp_ajax_nopriv_payson_change_payment_method', array( $this, 'payson_change_payment_method' ) );
+
+		// Ajax to update checkout
+		add_action( 'wp_ajax_payson_update_checkout', array( $this, 'update_checkout' ) );
+		add_action( 'wp_ajax_nopriv_payson_update_checkout', array( $this, 'update_checkout' ) );
+		
 	}
 
 	/*
@@ -147,6 +152,28 @@ class WC_PaysonCheckout_Ajax {
 		
 		wp_send_json_success( $data );
 		wp_die();
+	}
+
+	public static function update_checkout() {
+		WC()->cart->calculate_shipping();
+		WC()->cart->calculate_fees();
+		WC()->cart->calculate_totals();
+
+		$wc_order = new WC_PaysonCheckout_WC_Order();
+		$order_id = $wc_order->update_or_create_local_order();
+
+		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
+		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
+		$checkout   = $payson_api->update_checkout( $order_id );
+		if( is_wp_error( $checkout ) ) {
+			$return = array();
+			$return['redirect_url'] = wc_get_checkout_url();
+			wp_send_json_error( $return );
+			wp_die();
+		} else {
+			wp_send_json_success();
+			wp_die();
+		}
 	}
 
 }

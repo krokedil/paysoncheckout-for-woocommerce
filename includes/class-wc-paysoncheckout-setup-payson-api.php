@@ -104,6 +104,68 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		return $checkout_temp_obj;
 	}
 
+	/**
+	 * Updates PaysonCheckout resource.
+	 *
+	 * @param bool $order_id integer.
+	 *
+	 * @return mixed|null|\PaysonEmbedded\Checkout
+	 */
+	public function update_checkout( $order_id = false ) {
+
+		// Setup.
+		$callPaysonApi  = $this->set_payson_api();
+		$paysonMerchant = $this->set_merchant( $order_id );
+		$payData        = $this->set_pay_data();
+		$gui            = $this->set_gui();
+		$customer       = $this->set_customer();
+		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
+		
+		$payson_embedded_status = '';
+		$checkout_temp_obj      = null;
+		if ( WC()->session->get( 'payson_checkout_id' ) ) {
+			try {
+				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
+			} catch ( Exception $e ) {
+				WC_Gateway_PaysonCheckout::log( 'Failed to get checkout in update_checkout request: ' . var_export( $e->getMessage(), true ) );
+				WC()->session->__unset( 'payson_checkout_id' );
+				return new WP_Error( 'connection-error', $e->getMessage() );
+			}
+			$payson_embedded_status = $checkout_temp_obj->status;
+			
+			// Unset the payson_checkout_id session and return error if the currency hs been changed
+			if( strtoupper($checkout_temp_obj->payData->currency) !== get_woocommerce_currency() ) {
+				update_post_meta( $order_id, '_order_currency', get_woocommerce_currency() );
+				WC()->session->__unset( 'payson_checkout_id' );
+				return new WP_Error( 'order-error', 'Currency mismatch' );
+			}
+		}
+		if ( WC()->session->get( 'payson_checkout_id' ) && ( 'readyToPay' === $payson_embedded_status || 'created' === $payson_embedded_status ) ) {
+			// Update checkout.
+			$checkout_temp_obj->payData = $this->set_pay_data();
+			
+			// Update notification url with the Payson Checkout ID
+			if ( $order_id ) {
+				$order = wc_get_order( $order_id );
+				$confirmationUri = $order->get_checkout_order_received_url();
+			} else {
+				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
+			}
+			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
+			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
+			
+			$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
+			// @todo - check that the update request was ok
+			return $checkout_temp_obj;
+			
+		} else {
+
+			WC_Gateway_PaysonCheckout::log( 'Something was wrong with the status in update_checkout request: ' . var_export( $checkout_temp_obj, true ) );
+			WC()->session->__unset( 'payson_checkout_id' );
+			return new WP_Error( 'order-error', 'Status or payson_checkout_id problem' );
+		}
+	}
+
 	public function set_payson_api() {
 		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		// Your merchant ID and apikey. Information about the merchant and the integration.

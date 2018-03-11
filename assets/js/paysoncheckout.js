@@ -1,6 +1,8 @@
 (function ($) {
 	'use strict';
 
+	var checkout_initiated = wc_paysoncheckout.checkout_initiated;
+
 	var wc_paysoncheckout_html = '';
 	var wc_paysoncheckout_loaded = false;
 
@@ -38,6 +40,50 @@
 		}
 	};
 
+	function update_checkout() {
+        if( checkout_initiated == 'yes' && wc_paysoncheckout.payment_successful == 0 ) {
+			
+			//sendLockDown();
+            var data = {
+                'action': 'payson_update_checkout'
+            };
+            jQuery.post(wc_paysoncheckout.ajax_url, data, function (data) {
+                if (true === data.success) {
+					console.log('update success');
+                    sendUpdate();
+					sendRelease();
+                } else {
+                    console.log('update error');
+                    window.location.href = data.data.redirect_url;
+                }
+
+			});
+			
+			
+        } else {
+            checkout_initiated = 'yes';
+        }
+	}
+	
+	// Lock the iframe object during updates
+	function sendLockDown() {
+        var iframe = document.getElementById('paysonIframe');
+		iframe.contentWindow.postMessage('lock', '*');
+		console.log('sendLockDown');
+	}
+	
+	// Release the iframe object after update
+	function sendRelease() {
+        var iframe = document.getElementById('paysonIframe');
+		iframe.contentWindow.postMessage('release', '*');
+		console.log('sendRelease');
+	}
+	// Update the iframe after update
+	function sendUpdate() {
+        var iframe = document.getElementById('paysonIframe');
+        iframe.contentWindow.postMessage('updatePage', '*');
+    }
+
 	// Set body class when DOM is ready
 	$(document).ready(function () {
 		wc_paysoncheckout_body_class();
@@ -48,6 +94,13 @@
 			}
 		}
 	});
+
+	// Suspend Payson Checkout during WooCommerce checkout update
+    $(document).on('update_checkout', function () {
+        if ("paysoncheckout" === $("input[name='payment_method']:checked").val() && checkout_initiated == 'yes') {
+            sendLockDown();
+        }
+    });
 
 	// When payment method is changed:
 	//
@@ -96,48 +149,15 @@
 
 	// When checkout gets updated
 	$(document.body).on("updated_checkout", function (event, data) {
-		/*
 		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
-			// Remove the "choose another payment method" and Payson container to prevent duplication
-			$('form.woocommerce-checkout .paysoncheckout-choose-other').remove();
-			$('div#customer_details_payson').remove();
-
-			// Move order review table
-			$('table.woocommerce-checkout-review-order-table').addClass('paysoncheckout-cart').detach().appendTo('form.woocommerce-checkout');
-
-			// Move order notes
-			$('#order_comments_field').addClass('paysoncheckout-order-notes').detach().appendTo('form.woocommerce-checkout');
-
-			// Add "choose another payment method" link
-			if ($("input[name='payment_method']").length > 1) {
-				if (!$(".paysoncheckout-choose-other").length) {
-					$('<p><a href="#" class="button">' + wc_paysoncheckout.select_another_method_text + '</a></p>').appendTo('form.woocommerce-checkout').addClass('paysoncheckout-choose-other');
-				}
-			}
-
-			$('form.woocommerce-checkout').append('<div id="customer_details_payson"></div>');
-
-			wc_paysoncheckout_get_iframe();
+			update_checkout();
 		}
-		*/
 		wc_paysoncheckout_body_class();
 	});
 
 	$(document.body).on('click', '#payson-checkout-select-other', function (e) {
 		e.preventDefault();
-		/*
-		$('.paysoncheckout-cart').detach().prependTo('#order_review');
-		$('.paysoncheckout-order-notes').detach().appendTo('.woocommerce-shipping-fields');
-		$('.paysoncheckout-choose-other').remove();
-
-		// Deselect Payson and select the first available non-Payson method
-		$("input[name='payment_method']:checked").prop('checked', false);
-		if ("paysoncheckout" === $("input[name='payment_method']:eq(0)").val()) {
-			$("input[name='payment_method']:eq(1)").prop("checked", true);
-		} else {
-			$("input[name='payment_method']:eq(0)").prop("checked", true);
-		}
-		*/
+		
 		$.ajax(
 			wc_paysoncheckout.ajax_url,
 			{
@@ -226,11 +246,6 @@
 				}
 			}
 		);
-
-		// var iframe = document.getElementById('paysonIframe');
-		// iframe.contentWindow.postMessage('lock', '*');
-		// iframe.contentWindow.postMessage('updatePage', '*');
-		// iframe.contentWindow.postMessage('release', '*');
 	});
 
 	$(document).on('PaysonEmbeddedCheckoutResult', function(data) {
