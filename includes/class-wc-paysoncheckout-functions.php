@@ -14,8 +14,9 @@ function wc_payson_show_snippet() {
     $order_id = $wc_order->update_or_create_local_order();
     include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
     $payson_api = new WC_PaysonCheckout_Setup_Payson_API();
-    $checkout   = $payson_api->get_checkout( $order_id );
-
+	$checkout   = $payson_api->get_checkout( $order_id );
+	echo("<script>console.log('Payson Checkout ID: ".json_encode($checkout->id)."');</script>");
+	
     $iframe = '<div class="paysoncheckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
     if ( is_wp_error( $checkout ) ) {
         $iframe .= $checkout->get_error_message();
