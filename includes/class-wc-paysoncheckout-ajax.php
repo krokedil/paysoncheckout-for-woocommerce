@@ -36,6 +36,10 @@ class WC_PaysonCheckout_Ajax {
 		// Ajax to update checkout
 		add_action( 'wp_ajax_payson_update_checkout', array( $this, 'update_checkout' ) );
 		add_action( 'wp_ajax_nopriv_payson_update_checkout', array( $this, 'update_checkout' ) );
+
+		// Ajax to get customer data
+		add_action( 'wp_ajax_payson_get_customer_data', array( $this, 'get_customer_data' ) );
+		add_action( 'wp_ajax_nopriv_payson_get_customer_data', array( $this, 'get_customer_data' ) );
 		
 	}
 
@@ -174,6 +178,76 @@ class WC_PaysonCheckout_Ajax {
 			wp_send_json_success();
 			wp_die();
 		}
+	}
+
+	public static function get_customer_data() {
+
+		$payson_checkout_id = WC()->session->get( 'payson_checkout_id' );
+		WC_Gateway_PaysonCheckout::log( '$payson_checkout_id: ' . stripslashes_deep( json_encode( $payson_checkout_id ) ) );
+		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
+		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
+		$checkout   = $payson_api->get_notification_checkout( $payson_checkout_id );
+		WC_Gateway_PaysonCheckout::log( '$checkout: ' . stripslashes_deep( json_encode( $checkout ) ) );
+		if( is_wp_error( $checkout ) ) {
+			$return = array();
+			$return['redirect_url'] = wc_get_checkout_url();
+			wp_send_json_error( $return );
+			wp_die();
+		} else {
+			$order_id = WC()->session->get( 'ongoing_payson_order' );
+			$this->prepare_local_order_before_form_processing( $order_id, $payson_checkout_id );
+
+			$return = array();
+			$return['customer_data'] = $this->verify_customer_data( $checkout );
+			$return['nonce'] = wp_create_nonce( 'woocommerce-process_checkout' );
+			$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
+			$return['shipping'] = $shipping_methods[0];
+			
+			wp_send_json_success( $return );
+			wp_die();
+		}
+	}
+
+	// Helper function to prepare the local order before processing the order form
+	public function prepare_local_order_before_form_processing( $order_id, $payson_checkout_id ) {
+		WC_Gateway_PaysonCheckout::log( 'order_id in prepare_local_order_before_form_processing: ' . $order_id);
+		// Update cart hash
+		update_post_meta( $order_id, '_cart_hash', md5( json_encode( wc_clean( WC()->cart->get_cart_for_session() ) ) . WC()->cart->total ) );
+		// Set the paymentID as a meta value to be used later for reference
+		update_post_meta( $order_id, '_payson_checkout_id2', $payson_checkout_id );
+		
+		// Order ready for processing
+		WC()->session->set( 'order_awaiting_payment', $order_id );
+	}
+
+	public function verify_customer_data( $checkout ) {
+		//error_log('$checkout ' . var_export($checkout, true));
+		$billing_first_name     = isset( $checkout->customer->firstName ) ? $checkout->customer->firstName : '.';
+		$billing_last_name      = isset( $checkout->customer->lastName ) ? $checkout->customer->lastName : '.';
+		$billing_address     = isset( $checkout->customer->street ) ? $checkout->customer->street : '.';
+		$billing_postal_code      = isset( $checkout->customer->postalCode ) ? $checkout->customer->postalCode : '11111';
+		$billing_city     = isset( $checkout->customer->city ) ? $checkout->customer->city : '.';
+		$billing_country      = isset( $checkout->customer->countryCode ) ? $checkout->customer->countryCode : '.';
+		$billing_phone      = isset( $checkout->customer->phone ) ? $checkout->customer->phone : '0700000000';
+		$billing_email      = isset( $checkout->customer->email ) ? $checkout->customer->email : 'test@test.se';
+
+		$customer_information = array(
+			'billingFirstName'      =>  $billing_first_name,
+			'billingLastName'       =>  $billing_last_name,
+			'billingAddress'        =>  $billing_address,
+			'billingPostalCode'     =>  $billing_postal_code,
+			'billingCity'           =>  $billing_city,
+			'billingCounry'           =>  $billing_country,
+			'shippingFirstName'     =>  $billing_first_name,
+			'shippingLastName'      =>  $billing_last_name,
+			'shippingAddress'       =>  $billing_address,
+			'shippingPostalCode'    =>  $billing_postal_code,
+			'shippingCity'          =>  $billing_city,
+			'shippingCounry'           =>  $billing_country,
+			'phone'                 =>  $billing_phone,
+			'email'                 =>  $billing_email,
+		);
+		return $customer_information;
 	}
 
 }

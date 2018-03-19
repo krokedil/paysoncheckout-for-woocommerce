@@ -42,6 +42,7 @@ include_once( 'krokedil-wc-compatability.php' );
 
 include_once( 'includes/class-wc-paysoncheckout-templates.php' );
 include_once( 'includes/class-wc-paysoncheckout-functions.php' );
+include_once( 'includes/class-wc-paysoncheckout-confirmation.php' );
 
 include_once( PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php' );
 

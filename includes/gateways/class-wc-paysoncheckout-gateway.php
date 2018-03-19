@@ -120,6 +120,14 @@ function init_wc_gateway_paysoncheckout_class() {
 			return apply_filters( 'wc_payson_icon_html', $icon_html );
 		}
 
+		public function process_payment( $order_id ) {
+			$order = wc_get_order( $order_id );
+			return array(
+				'result'   => 'success',
+				'redirect' => $this->get_return_url( $order ),
+			);
+		}
+
 		/**
 		 * Remove thank you page order received text if PaysonCheckout is the selected payment method.
 		 *
@@ -261,7 +269,7 @@ function init_wc_gateway_paysoncheckout_class() {
 				} else {
 					$checkout_initiated = 'no';
 				}
-				if( isset( $_GET['payment_successful'] ) && '1' == $_GET['payment_successful'] ) {
+				if( isset( $_GET['payson_payment_successful'] ) && '1' == $_GET['payson_payment_successful'] ) {
 					$payment_successful = '1';
 				} else {
 					$payment_successful = '0';

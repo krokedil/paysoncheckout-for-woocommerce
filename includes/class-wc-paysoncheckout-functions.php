@@ -9,7 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 function wc_payson_show_snippet() {
 	//$klarna_order = KCO_WC()->api->get_order();
     //echo KCO_WC()->api->get_snippet( $klarna_order );
-    
+    if( isset( $_GET['payson_payment_successful'] ) && '1' == $_GET['payson_payment_successful'] ) {
+		return;
+	}
     $wc_order = new WC_PaysonCheckout_WC_Order();
     $order_id = $wc_order->update_or_create_local_order();
     include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );

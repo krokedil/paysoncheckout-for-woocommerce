@@ -63,12 +63,15 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			$checkout_temp_obj->payData = $this->set_pay_data();
 			
 			// Update notification url with the Payson Checkout ID
+			/*
 			if ( $order_id ) {
 				$order = wc_get_order( $order_id );
 				$confirmationUri = $order->get_checkout_order_received_url();
 			} else {
 				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
 			}
+			*/
+			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			
@@ -88,12 +91,16 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			WC_Gateway_PaysonCheckout::log( 'Create checkout response from Payson: ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
 
 			// Update notification url with the Payson Checkout ID
+			/*
 			if ( $order_id ) {
 				$order = wc_get_order( $order_id );
 				$confirmationUri = $order->get_checkout_order_received_url();
 			} else {
 				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
 			}
+			*/
+			
+			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
@@ -145,12 +152,15 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			$checkout_temp_obj->payData = $this->set_pay_data();
 			
 			// Update notification url with the Payson Checkout ID
+			/*
 			if ( $order_id ) {
 				$order = wc_get_order( $order_id );
 				$confirmationUri = $order->get_checkout_order_received_url();
 			} else {
 				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
 			}
+			*/
+			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			
@@ -182,11 +192,14 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		// URLs used by payson for redirection after a completed/canceled/notification purchase.
 		$order = wc_get_order( $order_id );
+		/*
 		if ( $order ) {
 			$confirmationUri = $order->get_checkout_order_received_url();
 		} else {
 			$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
 		}
+		*/
+		$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 		$checkoutUri     = wc_get_checkout_url();
 		$notificationUri = add_query_arg( 'wc_order', $order_id, get_home_url() . '/wc-api/WC_Gateway_PaysonCheckout/' );
 		$termsUri        = wc_get_page_permalink( 'terms' );
@@ -254,12 +267,12 @@ class WC_PaysonCheckout_Setup_Payson_API {
 
 	public function get_notification_checkout( $order_id = false ) {
 		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
-		$merchant_id = $this->settings['merchant_id'];
-		$api_key     = $this->settings['api_key'];
-		$environment = ( 'yes' == $this->settings['testmode'] ) ? true : false;
-		$callPaysonApi = new  PaysonEmbedded\PaysonApi( $merchant_id, $api_key, $environment );
-		$checkout      = $callPaysonApi->GetCheckout( $order_id );
-
+		$merchant_id 	= $this->settings['merchant_id'];
+		$api_key     	= $this->settings['api_key'];
+		$environment 	= ( 'yes' == $this->settings['testmode'] ) ? true : false;
+		$callPaysonApi 	= new  PaysonEmbedded\PaysonApi( $merchant_id, $api_key, $environment );
+		$checkout      	= $callPaysonApi->GetCheckout( $order_id );
+		$checkout 		= $this->verify_customer_data( $checkout );
 		return $checkout;
 	}
 
@@ -283,5 +296,36 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$wc_countries = new WC_Countries();
 		$countries = array_keys( $wc_countries->get_allowed_countries() );
 		return $countries;
+	}
+
+	public function verify_customer_data( $checkout ) {
+		//error_log('$checkout ' . var_export($checkout, true));
+		$billing_first_name     = isset( $checkout->customer->firstName ) ? $checkout->customer->firstName : '.';
+		$billing_last_name      = isset( $checkout->customer->lastName ) ? $checkout->customer->lastName : '.';
+		$billing_address     	= isset( $checkout->customer->street ) ? $checkout->customer->street : '.';
+		$billing_postal_code    = isset( $checkout->customer->postalCode ) ? $checkout->customer->postalCode : '11111';
+		$billing_city     		= isset( $checkout->customer->city ) ? $checkout->customer->city : '.';
+		$billing_country      	= isset( $checkout->customer->countryCode ) ? $checkout->customer->countryCode : '.';
+		$billing_phone      	= isset( $checkout->customer->phone ) ? $checkout->customer->phone : '0700000000';
+		$billing_email      	= isset( $checkout->customer->email ) ? $checkout->customer->email : 'test@test.se';
+
+		$customer_information = array(
+			'billingFirstName'      =>  $billing_first_name,
+			'billingLastName'       =>  $billing_last_name,
+			'billingAddress'        =>  $billing_address,
+			'billingPostalCode'     =>  $billing_postal_code,
+			'billingCity'           =>  $billing_city,
+			'billingCounry'           =>  $billing_country,
+			'shippingFirstName'     =>  $billing_first_name,
+			'shippingLastName'      =>  $billing_last_name,
+			'shippingAddress'       =>  $billing_address,
+			'shippingPostalCode'    =>  $billing_postal_code,
+			'shippingCity'          =>  $billing_city,
+			'shippingCounry'           =>  $billing_country,
+			'phone'                 =>  $billing_phone,
+			'email'                 =>  $billing_email,
+		);
+		//error_log('customer_information ' . var_export($customer_information, true));
+		return $customer_information;
 	}
 }

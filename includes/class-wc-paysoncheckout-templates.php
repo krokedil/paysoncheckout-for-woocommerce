@@ -67,7 +67,7 @@ class WC_PaysonCheckout_Templates {
 				if ( array_key_exists( 'paysoncheckout', $available_gateways ) ) {
 					// If chosen payment method exists.
 					if ( 'paysoncheckout' === WC()->session->get( 'chosen_payment_method' ) ) {
-						if ( ! isset( $_GET['confirm'] ) ) {
+						if ( ! isset( $_GET['payson_payment_successful'] ) ) {
 							$template = $klarna_checkout_template;
 						}
 					}
@@ -77,7 +77,7 @@ class WC_PaysonCheckout_Templates {
 						reset( $available_gateways );
 
 						if ( 'paysoncheckout' === key( $available_gateways ) ) {
-							if ( ! isset( $_GET['confirm'] ) ) {
+							if ( ! isset( $_GET['payson_payment_successful'] ) ) {
 								$template = $klarna_checkout_template;
 							}
 						}
@@ -89,7 +89,7 @@ class WC_PaysonCheckout_Templates {
 							reset( $available_gateways );
 
 							if ( 'paysoncheckout' === key( $available_gateways ) ) {
-								if ( ! isset( $_GET['confirm'] ) ) {
+								if ( ! isset( $_GET['payson_payment_successful'] ) ) {
 									$template =  $klarna_checkout_template;
 								}
 							}
