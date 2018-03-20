@@ -272,7 +272,9 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		$environment 	= ( 'yes' == $this->settings['testmode'] ) ? true : false;
 		$callPaysonApi 	= new  PaysonEmbedded\PaysonApi( $merchant_id, $api_key, $environment );
 		$checkout      	= $callPaysonApi->GetCheckout( $order_id );
-		$checkout 		= $this->verify_customer_data( $checkout );
+		//$checkout 		= $this->verify_customer_data( $checkout );
+		WC_Gateway_PaysonCheckout::log( 'Payson GetCheckout request: ' . stripslashes_deep( json_encode( $callPaysonApi ) ) );
+		WC_Gateway_PaysonCheckout::log( 'Payson GetCheckout response (for id ' . $order_id . '): ' . stripslashes_deep( json_encode( $checkout ) ) );
 		return $checkout;
 	}
 

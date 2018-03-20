@@ -187,12 +187,13 @@ class WC_PaysonCheckout_Ajax {
 	public static function get_customer_data() {
 
 		$payson_checkout_id = WC()->session->get( 'payson_checkout_id' );
-		WC_Gateway_PaysonCheckout::log( '$payson_checkout_id: ' . stripslashes_deep( json_encode( $payson_checkout_id ) ) );
+		WC_Gateway_PaysonCheckout::log( 'Payment successful triggered for payson id: ' . $payson_checkout_id . '. Starting WooCommerce checkout form processing...' );
 		include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 		$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
 		$checkout   = $payson_api->get_notification_checkout( $payson_checkout_id );
-		WC_Gateway_PaysonCheckout::log( '$checkout: ' . stripslashes_deep( json_encode( $checkout ) ) );
+		
 		if( is_wp_error( $checkout ) ) {
+			WC_Gateway_PaysonCheckout::log( 'Payment successful triggered for payson id: ' . $payson_checkout_id . ' but request to Payson failed.' );
 			$return = array();
 			$return['redirect_url'] = wc_get_checkout_url();
 			wp_send_json_error( $return );
@@ -225,7 +226,6 @@ class WC_PaysonCheckout_Ajax {
 	}
 
 	public function verify_customer_data( $checkout ) {
-		//error_log('$checkout ' . var_export($checkout, true));
 		$billing_first_name     = isset( $checkout->customer->firstName ) ? $checkout->customer->firstName : '.';
 		$billing_last_name      = isset( $checkout->customer->lastName ) ? $checkout->customer->lastName : '.';
 		$billing_address     = isset( $checkout->customer->street ) ? $checkout->customer->street : '.';
@@ -258,7 +258,7 @@ class WC_PaysonCheckout_Ajax {
 	 * Handles WooCommerce checkout error, after Payson order has already been created.
 	 */
 	public function on_checkout_error() {
-		
+		WC_Gateway_PaysonCheckout::log( 'Starting order finalization after order submission failure...' );
 		$wc_order = new WC_PaysonCheckout_WC_Order();
 		$order_id = $wc_order->update_or_create_local_order();
 		$order = wc_get_order( $order_id );
