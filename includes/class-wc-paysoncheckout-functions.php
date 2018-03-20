@@ -7,8 +7,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Echoes Klarna Checkout iframe snippet.
  */
 function wc_payson_show_snippet() {
-	//$klarna_order = KCO_WC()->api->get_order();
-    //echo KCO_WC()->api->get_snippet( $klarna_order );
     if( isset( $_GET['payson_payment_successful'] ) && '1' == $_GET['payson_payment_successful'] ) {
 		return;
 	}
@@ -30,93 +28,21 @@ function wc_payson_show_snippet() {
     echo $iframe;
 }
 
-/**
- * Shows order notes field in Klarna Checkout page.
- */
-function wc_payson_show_order_notes() {
-	$order_fields = WC()->checkout()->get_checkout_fields( 'order' );
-	$key          = 'order_comments';
-	if ( array_key_exists( $key, $order_fields ) ) {
-		$order_notes_field = $order_fields[ $key ];
-		woocommerce_form_field( $key, $order_notes_field, WC()->checkout()->get_value( $key ) );
-	}
-}
 
 /**
  * Shows extra fields in Payson Checkout page.
  */
 function wc_payson_show_extra_fields() {
-	// Clear extra fields session values on reload.
-	// WC()->session->__unset( 'kco_wc_extra_fields_values' );
 
 	echo '<div id="paysoncheckout-extra-fields">';
-
-	$extra_fields_values          = WC()->session->get( 'kco_wc_extra_fields_values', array() );
-	$kco_wc_extra_checkout_fields = new Klarna_Checkout_For_WooCommerce_Extra_Checkout_Fields;
-	$extra_fields                 = $kco_wc_extra_checkout_fields->get_remaining_checkout_fields();
-
-	// Billing.
-	do_action( 'woocommerce_before_checkout_billing_form', WC()->checkout() );
-	foreach ( $extra_fields['billing'] as $key => $field ) {
-		if ( isset( $field['country_field'], $default_billing_fields[ $field['country_field'] ] ) ) {
-			$field['country'] = WC()->checkout()->get_value( $field['country_field'] );
-		}
-		$key_value = array_key_exists( $key, $extra_fields_values ) ? $extra_fields_values[ $key ] : '';
-		woocommerce_form_field( $key, $field, $key_value );
-	}
-	do_action( 'woocommerce_after_checkout_billing_form', WC()->checkout() );
-
-	if ( ! is_user_logged_in() && WC()->checkout()->is_registration_enabled() ) { ?>
-		<div class="woocommerce-account-fields">
-			<?php if ( ! WC()->checkout()->is_registration_required() ) { ?>
-				<p class="form-row form-row-wide create-account">
-					<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
-						<input class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox"
-						       id="createaccount" <?php checked( ( true === WC()->checkout()->get_value( 'createaccount' ) || ( true === apply_filters( 'woocommerce_create_account_default_checked', false ) ) ), true ) ?>
-						       type="checkbox" name="createaccount" value="1"/>
-						<span><?php _e( 'Create an account?', 'klarna-checkout-for-woocommerce' ); ?></span>
-					</label>
-				</p>
-			<?php } ?>
-
-			<?php do_action( 'woocommerce_before_checkout_registration_form', WC()->checkout() ); ?>
-
-			<?php if ( WC()->checkout()->get_checkout_fields( 'account' ) ) { ?>
-
-				<div class="create-account">
-					<?php foreach ( WC()->checkout()->get_checkout_fields( 'account' ) as $key => $field ) { ?>
-						<?php woocommerce_form_field( $key, $field, WC()->checkout()->get_value( $key ) ); ?>
-					<?php } ?>
-					<div class="clear"></div>
-				</div>
-
-			<?php } ?>
-
-			<?php do_action( 'woocommerce_after_checkout_registration_form', WC()->checkout() ); ?>
-		</div>
-		<?php
-	}
-
-	// Shipping.
-	do_action( 'woocommerce_before_checkout_shipping_form', WC()->checkout() );
-	foreach ( $extra_fields['shipping'] as $key => $field ) {
-		if ( isset( $field['country_field'], $default_shipping_fields[ $field['country_field'] ] ) ) {
-			$field['country'] = WC()->checkout()->get_value( $field['country_field'] );
-		}
-		$key_value = array_key_exists( $key, $extra_fields_values ) ? $extra_fields_values[ $key ] : '';
-		woocommerce_form_field( $key, $field, $key_value );
-	}
-	do_action( 'woocommerce_after_checkout_shipping_form', WC()->checkout() );
-
-	// Order.
-	do_action( 'woocommerce_before_order_notes', WC()->checkout() );
+	
+	// Order note
+	//do_action( 'woocommerce_before_order_notes', WC()->checkout() );
 	if ( apply_filters( 'woocommerce_enable_order_notes_field', true ) ) {
-		foreach ( $extra_fields['order'] as $key => $field ) {
-			$key_value = array_key_exists( $key, $extra_fields_values ) ? $extra_fields_values[ $key ] : '';
-			woocommerce_form_field( $key, $field, $key_value );
-		}
+		$form_field = WC()->checkout()->get_checkout_fields( 'order' );
+		woocommerce_form_field( 'order_comments', $form_field['order_comments'] );
 	}
-	do_action( 'woocommerce_after_order_notes', WC()->checkout() );
+	//do_action( 'woocommerce_after_order_notes', WC()->checkout() );
 
 	echo '</div>';
 }
@@ -128,7 +54,7 @@ function wc_payson_show_another_gateway_button() {
 	$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 
 	if ( count( $available_gateways ) > 1 ) {
-		$settings                   = get_option( 'woocommerce_kco_settings' );
+		$settings                   = get_option( 'woocommerce_payson_settings' );
 		$select_another_method_text = isset( $settings['select_another_method_text'] ) && '' !== $settings['select_another_method_text'] ? $settings['select_another_method_text'] : __( 'Select another payment method', 'klarna-checkout-for-woocommerce' );
 
 		?>
