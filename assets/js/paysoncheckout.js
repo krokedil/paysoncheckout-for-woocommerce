@@ -95,7 +95,7 @@
 				$("form.checkout #terms").prop("checked", true);
 			}
 			console.log( 'post form' );
-			//payson_post_form();
+			payson_post_form();
             
         }
     }
@@ -345,33 +345,11 @@
 				if(data.data.customer_data.shippingAddress2 != null) {
 					datastring = datastring + '&shipping_address_2=' + data.data.customer_data.shippingAddress2;
 				}
-				
-
-				// Temp
-				/*
-				$("form.checkout #billing_first_name").val(data.data.customer_data.billingFirstName);
-				$("form.checkout #billing_last_name").val(data.data.customer_data.billingLastName);
-				$("form.checkout #billing_email").val(data.data.customer_data.email);
-				$("form.checkout #billing_country").val(data.data.customer_data.billingCounry);
-				$("form.checkout #billing_address_1").val(data.data.customer_data.billingAddress);
-				$("form.checkout #billing_city").val(data.data.customer_data.billingCity);
-				$("form.checkout #billing_postcode").val(data.data.customer_data.billingPostalCode);
-				$("form.checkout #billing_phone").val(data.data.customer_data.phone);
-				$("form.checkout #shipping_first_name").val(data.data.customer_data.billingFirstName);
-				$("form.checkout #shipping_last_name").val(data.data.customer_data.billingLastName);
-				$("form.checkout #shipping_country").val(data.data.customer_data.billingCounry);
-				$("form.checkout #shipping_address_1").val(data.data.customer_data.billingAddress);
-				$("form.checkout #shipping_city").val(data.data.customer_data.billingCity);
-				$("form.checkout #shipping_postcode").val(data.data.customer_data.billingPostalCode);
-				*/
                  
                 if(data.data.order_note != 'undefined'){
                     datastring = datastring + '&order_comments=' + data.data.order_note;
                 }
-                /*
-			   	$('.validate-required').removeClass('validate-required');
-			   	$('form.woocommerce-checkout').submit();
-				*/
+               
                     jQuery.ajax({
                     type: 'POST',
                     url: wc_checkout_params.checkout_url,
@@ -407,7 +385,7 @@
                             } else {
                                 console.log(wc_checkout_params.i18n_checkout_error);
                             }
-                            //checkout_error();
+                            checkout_error();
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -422,5 +400,33 @@
             }
         });
 	}
+
+	function checkout_error() {
+		console.log('checkout error');
+		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
+			$.ajax(
+	            wc_paysoncheckout.ajax_url,
+	            {
+	                type: "POST",
+	                dataType: "json",
+	                async: true,
+	                data: {
+	                    action:		"payson_on_checkout_error",
+	                },
+	                success: function (data) {
+					},
+					error: function (data) {
+					},
+					complete: function (data) {
+						console.log('paysoncheckout checkout error');
+						console.log(data.responseJSON);
+						window.location.href = data.responseJSON.data.redirect;
+					}
+	            }
+	        );
+		}
+	}
+
+
 	
 }(jQuery));
