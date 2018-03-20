@@ -37,7 +37,7 @@ class WC_PaysonCheckout_Templates {
 		add_action( 'wc_payson_before_checkout_form', 'wc_payson_calculate_totals', 1 );
 		add_action( 'wc_payson_before_checkout_form', 'woocommerce_checkout_login_form', 10 );
 		add_action( 'wc_payson_before_checkout_form', 'woocommerce_checkout_coupon_form', 20 );
-		//add_action( 'wc_payson_after_order_review', 'wc_payson_show_extra_fields', 10 );
+		add_action( 'wc_payson_after_order_review', 'wc_payson_show_extra_fields', 10 );
 		add_action( 'wc_payson_after_order_review', 'wc_payson_show_another_gateway_button', 20 );
 		add_action( 'wc_payson_after_snippet', 'wc_payson_show_payment_method_field', 10 );
 	}
