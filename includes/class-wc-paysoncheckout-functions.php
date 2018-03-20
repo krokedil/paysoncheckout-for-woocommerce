@@ -157,6 +157,14 @@ function wc_payson_show_payment_method_field() {
 	<?php
 }
 
+/**
+ * Unset Payson session
+ */
+function wc_payson_unset_sessions() {
+	WC()->session->__unset( 'payson_checkout_id' );
+	WC()->session->__unset( 'ongoing_payson_order' );
+}
+
 
 
 /**
