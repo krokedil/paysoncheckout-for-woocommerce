@@ -67,11 +67,11 @@
 
 	function maybe_post_form() {
         if ( wc_paysoncheckout.payment_successful == '1' ) {
-            //$('.entry-content').css("display", "none");
+            $('form.woocommerce-checkout').css("display", "none");
             // Block the body to prevent customers from doing something
-		   /*
+		   
 			$('body').block({
-                message: "Whait for it...",
+                message: "",
                 baseZ: 99999,
                 overlayCSS:
                     {
@@ -88,7 +88,7 @@
                     lineHeight:		"24px",
                 }
 			});
-			*/
+			
             
 			// Check Terms checkbox, if it exists
 			if ($("form.checkout #terms").length > 0) {
@@ -291,6 +291,7 @@
 	});
 
 	$('#order_comments').focusout(function(){
+		console.log('order comment update');
 		var text = $('#order_comments').val();
 		if( text.length > 0 ) {
             $.ajax(
@@ -345,11 +346,11 @@
 				if(data.data.customer_data.shippingAddress2 != null) {
 					datastring = datastring + '&shipping_address_2=' + data.data.customer_data.shippingAddress2;
 				}
-                 
+                /*
                 if(data.data.order_note != 'undefined'){
                     datastring = datastring + '&order_comments=' + data.data.order_note;
                 }
-               
+				*/
                     jQuery.ajax({
                     type: 'POST',
                     url: wc_checkout_params.checkout_url,
@@ -426,7 +427,5 @@
 	        );
 		}
 	}
-
-
 	
 }(jQuery));
