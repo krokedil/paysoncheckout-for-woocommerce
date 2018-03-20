@@ -40,6 +40,10 @@ class WC_PaysonCheckout_Ajax {
 		// Ajax to get customer data
 		add_action( 'wp_ajax_payson_get_customer_data', array( $this, 'get_customer_data' ) );
 		add_action( 'wp_ajax_nopriv_payson_get_customer_data', array( $this, 'get_customer_data' ) );
+
+		// Ajax to get customer data
+		add_action( 'wp_ajax_payson_on_checkout_error', array( $this, 'on_checkout_error' ) );
+		add_action( 'wp_ajax_nopriv_payson_on_checkout_error', array( $this, 'on_checkout_error' ) );
 		
 	}
 
@@ -214,7 +218,7 @@ class WC_PaysonCheckout_Ajax {
 		// Update cart hash
 		update_post_meta( $order_id, '_cart_hash', md5( json_encode( wc_clean( WC()->cart->get_cart_for_session() ) ) . WC()->cart->total ) );
 		// Set the paymentID as a meta value to be used later for reference
-		update_post_meta( $order_id, '_payson_checkout_id2', $payson_checkout_id );
+		update_post_meta( $order_id, '_payson_checkout_id', $payson_checkout_id );
 		
 		// Order ready for processing
 		WC()->session->set( 'order_awaiting_payment', $order_id );
@@ -248,6 +252,31 @@ class WC_PaysonCheckout_Ajax {
 			'email'                 =>  $billing_email,
 		);
 		return $customer_information;
+	}
+
+	/**
+	 * Handles WooCommerce checkout error, after Payson order has already been created.
+	 */
+	public function on_checkout_error() {
+		
+		$wc_order = new WC_PaysonCheckout_WC_Order();
+		$order_id = $wc_order->update_or_create_local_order();
+		$order = wc_get_order( $order_id );
+
+		$order->add_order_note( sprintf(
+			__( 'WooCommerce order finalized via submission backup.', 'krokedil-ecster-pay-for-woocommerce' ),
+			$order_id
+		) );
+		update_post_meta( $order_id, '_payson_osf', true );
+		
+		$redirect_url = $order->get_checkout_order_received_url();
+		//$redirect_url 	= wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
+		$redirect_url = add_query_arg( array(
+						    'payson-osf' => 'true',
+						), $redirect_url );
+		
+		wp_send_json_success( array( 'redirect' => $redirect_url ) );
+		wp_die();
 	}
 
 }
