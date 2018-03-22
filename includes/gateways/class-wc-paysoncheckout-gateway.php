@@ -67,6 +67,9 @@ function init_wc_gateway_paysoncheckout_class() {
 			// Thank you page.
 			add_filter( 'woocommerce_thankyou_order_received_text', array( $this, 'payson_thankyou_order_received_text' ), 10, 2 );
 			add_action( 'woocommerce_thankyou_paysoncheckout', array( $this, 'payson_thankyou' ) );
+
+			// Change the title when processing the WooCommerce order in checkout
+			add_filter( 'the_title', array( $this, 'confirm_page_title' ) );
 		}
 
 		/**
@@ -158,16 +161,18 @@ function init_wc_gateway_paysoncheckout_class() {
 				$checkout   = $payson_api->get_notification_checkout( $payson_id );
 
 				if ( 'canceled' === $checkout->status ) {
-					
 
 					wc_add_notice( __( 'Order was cancelled.', 'woocommerce-gateway-paysoncheckout' ), 'error' );
 					wp_safe_redirect( wc_get_cart_url() );
+				
 				} else {
 
 					if ( 'readyToShip' === $checkout->status ) {
 						$order = wc_get_order( $order_id );
-						$payson_response_handler = new WC_PaysonCheckout_Response_Handler();
-						$payson_response_handler->ready_to_ship_cb( $order, $checkout );
+						// Add Payson order status.
+						update_post_meta( $order_id, '_paysoncheckout_order_status', $checkout->status );
+						// Payment complete
+						$order->payment_complete( $checkout->purchaseId );
 					}
 
 					echo '<div class="paysoncheckout-container" style="width:100%; margin-left:auto; margin-right:auto;">';
@@ -178,6 +183,7 @@ function init_wc_gateway_paysoncheckout_class() {
 
 				// Unset sessions
 				wc_payson_unset_sessions();
+
 			} else {
 				WC_Gateway_PaysonCheckout::log('payson_thankyou page hit but payson_checkout_id session not existing.');
 			}
@@ -302,6 +308,20 @@ function init_wc_gateway_paysoncheckout_class() {
 					wp_add_inline_style( 'wc_paysoncheckout', $custom_css );
 				}
 			}
+		}
+
+		/**
+		 * Filter Checkout page title in confirmation page.
+		 *
+		 * @param $title
+		 *
+		 * @return string
+		 */
+		public function confirm_page_title( $title ) {
+			if ( ! is_admin() && is_main_query() && in_the_loop() && is_page() && is_checkout() && isset( $_GET['payson_payment_successful'] ) && 1 == $_GET['payson_payment_successful'] ) {
+				$title = __( 'Please wait while we process your order.', 'woocommerce-gateway-paysoncheckout' );
+			}
+			return $title;
 		}
 
 	}
