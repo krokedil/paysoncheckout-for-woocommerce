@@ -232,7 +232,7 @@ class WC_PaysonCheckout_Ajax {
 		$billing_postal_code      = isset( $checkout->customer->postalCode ) ? $checkout->customer->postalCode : '11111';
 		$billing_city     = isset( $checkout->customer->city ) ? $checkout->customer->city : '.';
 		$billing_country      = isset( $checkout->customer->countryCode ) ? $checkout->customer->countryCode : '.';
-		$billing_phone      = isset( $checkout->customer->phone ) ? $checkout->customer->phone : '0700000000';
+		$billing_phone      = isset( $checkout->customer->phone ) ? $checkout->customer->phone : '';
 		$billing_email      = isset( $checkout->customer->email ) ? $checkout->customer->email : 'test@test.se';
 
 		$customer_information = array(
