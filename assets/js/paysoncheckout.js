@@ -32,8 +32,7 @@
                 }
 
 			});
-			
-			
+				
         } else {
             checkout_initiated = 'yes';
         }
@@ -62,7 +61,6 @@
                     lineHeight:		"24px",
                 }
 			});
-			
             
 			// Check Terms checkbox, if it exists
 			if ($("form.checkout #terms").length > 0) {
