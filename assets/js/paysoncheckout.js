@@ -14,32 +14,6 @@
 		}
 	};
 
-	var wc_paysoncheckout_get_iframe = function wc_paysoncheckout_get_iframe() {
-		if ( !wc_paysoncheckout_loaded ) {
-			wc_paysoncheckout_loaded = true;
-		} else {
-			$.ajax(
-				wc_paysoncheckout.ajax_url,
-				{
-					type: "POST",
-					dataType: "json",
-					async: true,
-					data: {
-						action: "wc_paysoncheckout_iframe",
-						nonce: wc_paysoncheckout.wc_payson_checkout_nonce
-					},
-					success: function(response) {
-						// console.log(response.data);
-						console.log(wc_paysoncheckout_loaded);
-						$('div#customer_details_payson').html(response.data.iframe);
-						wc_paysoncheckout_html = response.data.iframe;
-						wc_paysoncheckout_loaded = true;
-					}
-				}
-			);
-		}
-	};
-
 	function update_checkout() {
         if( checkout_initiated == 'yes' && wc_paysoncheckout.payment_successful == 0 ) {
 			
