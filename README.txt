@@ -3,8 +3,8 @@ Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
 Tested up to: 4.9.4
-WC requires at least: 3.6
-WC tested up to: 3.3.1
+WC requires at least: 3.0
+WC tested up to: 3.3.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,15 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2018.03.23    - version 1.2.0 =
+* Feature       - Use template file for displaying Payson Checkout. Making it possible to overwrite via theme.
+* Tweak         - Make initial call to Payson before the checkout page is rendered. Reusluts in a faster loading Payson Checkout iframe.
+* Tweak         - Submit WC checkout form when purchase is finalized in Payson iframe. Making it possible to save more order/cart data.
+* Tweak         - Pause and resume current iframe on update_checkout event instead of re-rendering the html/iframe.
+* Tweak         - Logging improvements.
+* Tweak         - Schedule readyToShip notification callback to be executed in WC 2 minutes after purchase. For better order status control.
+* Fix           - Avoid order status updates to be executed in a way so that new order email is missing customer address data.
 
 = 2018.02.18    - version 1.1.14 =
 * Fix			- WC 3.3 switch payment method bug fix (not being able to switch from Payson to other gateway).
