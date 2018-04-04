@@ -200,10 +200,10 @@ class WC_PaysonCheckout_Ajax {
 			wp_die();
 		} else {
 			$order_id = WC()->session->get( 'ongoing_payson_order' );
-			$this->prepare_local_order_before_form_processing( $order_id, $payson_checkout_id );
+			self::prepare_local_order_before_form_processing( $order_id, $payson_checkout_id );
 
 			$return = array();
-			$return['customer_data'] = $this->verify_customer_data( $checkout );
+			$return['customer_data'] = self::verify_customer_data( $checkout );
 			$return['nonce'] = wp_create_nonce( 'woocommerce-process_checkout' );
 			$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
 			$return['shipping'] = $shipping_methods[0];
