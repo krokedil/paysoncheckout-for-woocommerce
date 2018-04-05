@@ -1,5 +1,10 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2018.04.05    	- version 1.2.2
+* Tweak         - Improved error logging/handling.
+* Tweak         - Display error message in checkout if Payson iframe doesnt load.
+* Fix           - Unset payson_checkout_id session if communication error happens.
+
 2018.04.05    	- version 1.2.1
 * Fix           - Refer to self in static function to avoid issues when processing order in WooCommerce checkout. 
 * Fix           - Logging improvements.
