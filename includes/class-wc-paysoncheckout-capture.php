@@ -73,7 +73,7 @@ class WC_PaysonCheckout_Capture {
 				update_post_meta( krokedil_get_order_id( $order ), '_paysoncheckout_order_status', $response->status );
 				$order->add_order_note( sprintf( __( 'PaysonCheckout reservation was successfully captured.', 'woocommerce-gateway-paysoncheckout' ), '' ) );
 			} else {
-				$order->add_order_note( __( 'PaysonCheckout reservation could not be captured.', 'woocommerce-gateway-paysoncheckout' ) );
+				$order->add_order_note( __( 'PaysonCheckout reservation could not be captured. Payson reservation status: ' . $response->status, 'woocommerce-gateway-paysoncheckout' ) );
 			}
 		} catch ( Exception $e ) {
 			WC_Gateway_PaysonCheckout::log( $e->getMessage() );
