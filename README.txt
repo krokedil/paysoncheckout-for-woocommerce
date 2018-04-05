@@ -2,7 +2,7 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
-Tested up to: 4.9.4
+Tested up to: 4.9.5
 WC requires at least: 3.0
 WC tested up to: 3.3.4
 License: GPLv3
@@ -36,6 +36,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2018.04.05    - version 1.2.1 =
+* Fix           - Refer to self in static function to avoid issues when processing order in WooCommerce checkout. 
+* Fix           - Logging improvements.
+* Tweak         - Don't rely on session data in thank you page when trigger payment_complete().
 
 = 2018.03.23    - version 1.2.0 =
 * Feature       - Use template file for displaying Payson Checkout. Making it possible to overwrite via theme.
