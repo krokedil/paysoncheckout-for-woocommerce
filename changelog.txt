@@ -1,5 +1,10 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2018.04.05    	- version 1.2.1
+* Fix           - Refer to self in static function to avoid issues when processing order in WooCommerce checkout. 
+* Fix           - Logging improvements.
+* Tweak         - Don't rely on session data in thank you page when trigger payment_complete().
+
 2018.03.23    	- version 1.2.0
 * Feature       - Use template file for displaying Payson Checkout. Making it possible to overwrite via theme.
 * Tweak         - Make initial call to Payson before the checkout page is rendered. Reusluts in a faster loading Payson Checkout iframe.

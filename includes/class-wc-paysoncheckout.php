@@ -42,6 +42,23 @@ class WC_PaysonCheckout {
 
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'unrequire_fields' ), 99 );
 		add_filter( 'woocommerce_checkout_posted_data', array( $this, 'unrequire_posted_data' ), 99 );
+
+		// Order pay fix
+		add_action( 'init', array( $this, 'set_ongoing_payson_order_for_order_pay' ) );
+	}
+
+	/**
+	 * set_ongoing_payson_order_for_order_pay
+	 *
+	 * @since  1.2.1
+	 **/
+	public function set_ongoing_payson_order_for_order_pay() {
+		if ( isset( $_GET['pay_for_order'], $_GET['key'] ) ) {
+			$order_id = wc_get_order_id_by_order_key( sanitize_text_field( $_GET['key'] ) );
+			if( $order_id ) {
+				WC()->session->set( 'ongoing_payson_order', $order_id );
+			}
+		}
 	}
 
 	/**

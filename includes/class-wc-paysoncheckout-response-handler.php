@@ -36,9 +36,6 @@ class WC_PaysonCheckout_Response_Handler {
 		//WC_Gateway_PaysonCheckout::log( 'Posted notification info: ' . var_export( $checkout, true ) );
 
 		$order = wc_get_order( $_GET['wc_order'] );
-
-		WC_Gateway_PaysonCheckout::log( 'Posted reference: ' . $checkout->merchant->reference );
-		WC_Gateway_PaysonCheckout::log( 'Posted status: ' . $checkout->status, true );
 		
 		if ( $order ) {
 			switch ( $checkout->status ) {
