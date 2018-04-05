@@ -49,6 +49,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 				$checkout_temp_obj = $callPaysonApi->GetCheckout( WC()->session->get( 'payson_checkout_id' ) );
 			} catch ( Exception $e ) {
 				return new WP_Error( 'connection-error', $e->getMessage() );
+				WC()->session->__unset( 'payson_checkout_id' );
 			}
 			$payson_embedded_status = $checkout_temp_obj->status;
 			
@@ -59,46 +60,36 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			}
 		}
 		if ( WC()->session->get( 'payson_checkout_id' ) && ( 'readyToPay' === $payson_embedded_status || 'created' === $payson_embedded_status ) ) {
-			// Update checkout.
+			// Update checkout (if reloading checkout page when a payson_checkout_id session exist).
 			$checkout_temp_obj->payData = $this->set_pay_data();
 			
-			// Update notification url with the Payson Checkout ID
-			/*
-			if ( $order_id ) {
-				$order = wc_get_order( $order_id );
-				$confirmationUri = $order->get_checkout_order_received_url();
-			} else {
-				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
-			}
-			*/
 			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			
-			$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
+			WC_Gateway_PaysonCheckout::log( 'Update checkout call sent to Payson (in get_checkout() function): ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
 			
+			try {
+				$checkout_temp_obj          = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
+			} catch ( Exception $e ) {
+				WC_Gateway_PaysonCheckout::log( 'Update checkout error response from Payson: ' . stripslashes_deep( json_encode( $e->getMessage() ) ) );
+				WC()->session->__unset( 'payson_checkout_id' );
+				return new WP_Error( 'connection-error', $e->getMessage() );
+			}
 		} else {
 			// Create checkout
 			WC_Gateway_PaysonCheckout::log( 'Create checkout call sent to Payson: ' . stripslashes_deep( json_encode( $checkout ) ) );
+			
 			try {
 				$checkoutId = $callPaysonApi->CreateCheckout( $checkout );
 			} catch ( Exception $e ) {
 				WC_Gateway_PaysonCheckout::log( 'Create checkout error response from Payson: ' . stripslashes_deep( json_encode( $e->getMessage() ) ) );
+				WC()->session->__unset( 'payson_checkout_id' );
 				return new WP_Error( 'connection-error', $e->getMessage() );
 			}
 			
 			$checkout_temp_obj = $callPaysonApi->GetCheckout( $checkoutId );
 			WC_Gateway_PaysonCheckout::log( 'Create checkout response from Payson: ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
-
-			// Update notification url with the Payson Checkout ID
-			/*
-			if ( $order_id ) {
-				$order = wc_get_order( $order_id );
-				$confirmationUri = $order->get_checkout_order_received_url();
-			} else {
-				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
-			}
-			*/
 			
 			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 
