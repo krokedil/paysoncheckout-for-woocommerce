@@ -151,14 +151,15 @@ function init_wc_gateway_paysoncheckout_class() {
 		 * Add PaysonCheckout iframe to thankyou page.
 		 */
 		public function payson_thankyou( $order_id ) {
-			if ( WC()->session->get( 'payson_checkout_id' ) ) {
+			$payson_id 	= get_post_meta( $order_id, '_payson_checkout_id', true );
+			if ( $payson_id ) {
 				
-				$payson_id 	= get_post_meta( $order_id, '_payson_checkout_id', true );
-				WC_Gateway_PaysonCheckout::log('payson_thankyou page hit for payson_checkout_id ' . $payson_id );
+				WC_Gateway_PaysonCheckout::log('payson_thankyou page hit for payson_checkout_id ' . $payson_id . ' (order ID ' . $order_id . ').' );
 				remove_action( 'woocommerce_thankyou', 'woocommerce_order_details_table', 10 );
 				include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
 				$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
 				$checkout   = $payson_api->get_notification_checkout( $payson_id );
+				$order = wc_get_order( $order_id );
 
 				if ( 'canceled' === $checkout->status ) {
 
@@ -168,11 +169,16 @@ function init_wc_gateway_paysoncheckout_class() {
 				} else {
 
 					if ( 'readyToShip' === $checkout->status ) {
-						$order = wc_get_order( $order_id );
-						// Add Payson order status.
-						update_post_meta( $order_id, '_paysoncheckout_order_status', $checkout->status );
-						// Payment complete
-						$order->payment_complete( $checkout->purchaseId );
+						
+						if ( is_object( $order ) && ! $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {
+							// Add Payson order status.
+							update_post_meta( $order_id, '_paysoncheckout_order_status', $checkout->status );
+							$order->add_order_note( __( 'Thankyou page hit.', 'woocommerce-gateway-paysoncheckout' ) );
+							// Payment complete
+							$order->payment_complete( $checkout->purchaseId );
+						} else {
+							WC_Gateway_PaysonCheckout::log('payson_thankyou page hit for order ID ' . $order_id . ' but orderstatus already set to On hold, Processing or Completed.' );
+						}
 					}
 
 					echo '<div class="paysoncheckout-container" style="width:100%; margin-left:auto; margin-right:auto;">';
@@ -185,7 +191,7 @@ function init_wc_gateway_paysoncheckout_class() {
 				wc_payson_unset_sessions();
 
 			} else {
-				WC_Gateway_PaysonCheckout::log('payson_thankyou page hit but payson_checkout_id session not existing.');
+				WC_Gateway_PaysonCheckout::log('payson_thankyou page hit but _payson_checkout_id does not exist in order ID ' . $order_id );
 			}
 		}
 
