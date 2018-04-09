@@ -31,7 +31,7 @@ class WC_PaysonCheckout_Templates {
 	 */
 	public function __construct() {
 		// Override template if Payson Checkout page.
-		add_filter( 'woocommerce_locate_template', array( $this, 'override_template' ), 10, 3 );
+		add_filter( 'woocommerce_locate_template', array( $this, 'override_template' ), 999, 3 );
 
 		// Template hooks.
 		add_action( 'wc_payson_before_checkout_form', 'wc_payson_calculate_totals', 1 );
