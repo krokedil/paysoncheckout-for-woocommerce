@@ -39,7 +39,7 @@ More information on how to get started can be found in the [plugin documentation
 
 = 2018.04.09    - version 1.2.3 =
 * Tweak			- Change priority to 999 for filter woocommerce_locate_template so that PaysonCheckout template file doesn't get overwritten by other plugins/themes.
-* fix			- Changed text domain for "Select another payment method" label so it uses translation files in plugin.
+* Fix			- Changed text domain for "Select another payment method" label so it uses translation files in plugin.
 
 = 2018.04.05    - version 1.2.2 =
 * Tweak         - Improved error logging/handling.
