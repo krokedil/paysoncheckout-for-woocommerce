@@ -58,9 +58,9 @@ class WC_PaysonCheckout_Templates {
 				$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 
 				if ( locate_template( 'woocommerce/payson-checkout.php' ) ) {
-					$klarna_checkout_template = locate_template( 'woocommerce/payson-checkout.php' );
+					$payson_checkout_template = locate_template( 'woocommerce/payson-checkout.php' );
 				} else {
-					$klarna_checkout_template = PAYSONCHECKOUT_PATH . '/templates/payson-checkout.php';
+					$payson_checkout_template = PAYSONCHECKOUT_PATH . '/templates/payson-checkout.php';
 				}
 
 				// Payson checkout page.
@@ -68,7 +68,7 @@ class WC_PaysonCheckout_Templates {
 					// If chosen payment method exists.
 					if ( 'paysoncheckout' === WC()->session->get( 'chosen_payment_method' ) ) {
 						if ( ! isset( $_GET['payson_payment_successful'] ) ) {
-							$template = $klarna_checkout_template;
+							$template = $payson_checkout_template;
 						}
 					}
 
@@ -78,7 +78,7 @@ class WC_PaysonCheckout_Templates {
 
 						if ( 'paysoncheckout' === key( $available_gateways ) ) {
 							if ( ! isset( $_GET['payson_payment_successful'] ) ) {
-								$template = $klarna_checkout_template;
+								$template = $payson_checkout_template;
 							}
 						}
 					}
@@ -90,19 +90,12 @@ class WC_PaysonCheckout_Templates {
 
 							if ( 'paysoncheckout' === key( $available_gateways ) ) {
 								if ( ! isset( $_GET['payson_payment_successful'] ) ) {
-									$template =  $klarna_checkout_template;
+									$template =  $payson_checkout_template;
 								}
 							}
 						}
 					}
 				}
-			}
-		}
-
-		// Fallback Klarna Order Received, used when WooCommerce checkout form submission fails.
-		if ( 'checkout/thankyou.php' === $template_name ) {
-			if ( isset( $_GET['wc_payson'] ) && 'true' === $_GET['wc_payson'] ) {
-				$template = PAYSONCHECKOUT_PATH . '/templates/klarna-checkout-order-received.php';
 			}
 		}
 
