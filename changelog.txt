@@ -1,5 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2018.04.09    	- version 1.2.3
+* Tweak			- Change priority to 999 for filter woocommerce_locate_template so that PaysonCheckout template file doesn't get overwritten by other plugins/themes.
+* fix			- Changed text domain for "Select another payment method" label so it uses translation files in plugin.
+
 2018.04.05    	- version 1.2.2
 * Tweak         - Improved error logging/handling.
 * Tweak         - Display error message in checkout if Payson iframe doesnt load.
