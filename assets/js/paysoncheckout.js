@@ -95,11 +95,11 @@
 	$(document).ready(function () {
 		wc_paysoncheckout_body_class();
 		maybe_post_form();
-		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
-			// Get iframe if not fetched yet
-			if (!wc_paysoncheckout_loaded) {
-				//wc_paysoncheckout_get_iframe();
-			}
+
+		// Hide pay for order button and terms checkbox if this is a pay for order page and PCO is selected payment method
+		if ( "paysoncheckout" === $("input[name='payment_method']:checked").val() && 'yes' == wc_paysoncheckout.pay_for_order ) {
+			$('.wc-terms-and-conditions').hide();
+			$('#place_order').hide();
 		}
 	});
 
@@ -115,6 +115,23 @@
 	// - Change body class (CSS uses body class to hide and show elements)
 	// - If changing to PaysonCheckout trigger update_checkout
 	$(document.body).on("change", "input[name='payment_method']", function (event) {
+
+		// Is this a pay for order page?
+		if( 'yes' == wc_paysoncheckout.pay_for_order ) {
+
+			// Show/Hide pay for order button and terms checkbox depending on what payment method that is selected
+			if ( "paysoncheckout" === $("input[name='payment_method']:checked").val() ) {
+				$('.wc-terms-and-conditions').hide();
+				$('#place_order').hide();
+			} else {
+				$('.wc-terms-and-conditions').show();
+				$('#place_order').show();
+			}
+
+			// Don't update adress in WC since we're on a pay for order page
+			return;
+		}
+
 		if ("paysoncheckout" === event.target.value) {
 			
 			$('form.checkout').block({
@@ -202,6 +219,11 @@
 	// When Address update event is triggered
 	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
 		var should_update = false;
+
+		// Don't update if we're on a pay for order page
+		if( 'yes' == wc_paysoncheckout.pay_for_order ) {
+			return;
+		}
 
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedAddressChanged', data.detail);

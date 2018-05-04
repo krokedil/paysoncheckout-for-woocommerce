@@ -4,7 +4,7 @@ Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.3
 Tested up to: 4.9.5
 WC requires at least: 3.0
-WC tested up to: 3.3.4
+WC tested up to: 3.3.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2018.05.04    - version 1.3.0 =
+* Feature       - Added support for handling payments of manually created orders (via Pay for order page).
+* Tweak         - Save _payson_checkout_id to WC order in thank you page if it hasn't been saved earlier. 
 
 = 2018.04.09    - version 1.2.3 =
 * Tweak			- Change priority to 999 for filter woocommerce_locate_template so that PaysonCheckout template file doesn't get overwritten by other plugins/themes.

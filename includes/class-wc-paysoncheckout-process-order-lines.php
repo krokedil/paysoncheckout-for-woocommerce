@@ -22,7 +22,7 @@ class WC_PaysonCheckout_Process_Order_Lines {
 	 * @return array $order_lines
 	 */
 	public function get_order_lines( $order_id = false ) {
-		if ( $order_id ) {
+		if ( $order_id && isset( $_GET['pay_for_order'] ) )  {
 			return $this->get_order_lines_from_order( $order_id );
 		} else {
 			return $this->get_order_lines_from_cart();

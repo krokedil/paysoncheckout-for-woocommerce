@@ -10,15 +10,27 @@ function wc_payson_show_snippet() {
     if( isset( $_GET['payson_payment_successful'] ) && '1' == $_GET['payson_payment_successful'] ) {
 		return;
 	}
-    $wc_order = new WC_PaysonCheckout_WC_Order();
-    $order_id = $wc_order->update_or_create_local_order();
+
+	// Check if this is an pay for order or a regular purchase
+	if ( isset( $_GET['pay_for_order'], $_GET['key'] ) ) {
+		$order_id = wc_get_order_id_by_order_key( sanitize_text_field( $_GET['key'] ) );
+		if( $order_id ) {
+			WC()->session->set( 'ongoing_payson_order', $order_id );
+			$order = wc_get_order( $order_id );
+			$order->set_payment_method( 'paysoncheckout' );
+			$order->save();
+		}
+	} else {
+		$wc_order = new WC_PaysonCheckout_WC_Order();
+		$order_id = $wc_order->update_or_create_local_order();
+	}
+    
     include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
     $payson_api = new WC_PaysonCheckout_Setup_Payson_API();
 	$checkout   = $payson_api->get_checkout( $order_id );
 	
     $iframe = '<div class="paysoncheckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
     if ( is_wp_error( $checkout ) ) {
-		//$iframe .= $checkout->get_error_message();
 		$iframe =  '<ul class="woocommerce-error"><li>' . sprintf( '%s <a href="%s" class="button wc-forward">%s</a>', __( 'There was a problem in the communication with Payson.', 'woocommerce-gateway-paysoncheckout' ), wc_get_checkout_url(), __( 'Try again', 'woocommerce-gateway-paysoncheckout' ) ) . '</li></ul>';
     } else {
 		echo("<script>console.log('Payson Checkout ID: ".json_encode($checkout->id)."');</script>");
