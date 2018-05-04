@@ -35,10 +35,11 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		// Setup.
 		$callPaysonApi  = $this->set_payson_api();
 		$paysonMerchant = $this->set_merchant( $order_id );
-		$payData        = $this->set_pay_data();
+		$payData        = $this->set_pay_data( $order_id );
 		$gui            = $this->set_gui();
 		$customer       = $this->set_customer();
 		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
+
 		/*
 		 * Step 2 Create checkout
 		 */
@@ -61,12 +62,17 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		}
 		if ( WC()->session->get( 'payson_checkout_id' ) && ( 'readyToPay' === $payson_embedded_status || 'created' === $payson_embedded_status ) ) {
 			// Update checkout (if reloading checkout page when a payson_checkout_id session exist).
-			$checkout_temp_obj->payData = $this->set_pay_data();
-			
-			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
-			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
+			$checkout_temp_obj->payData = $this->set_pay_data( $order_id );
+
+			// Check if this is an pay for order or a regular purchase 
+			if ( isset( $_GET['pay_for_order'], $_GET['key'] ) ) {
+				$order = wc_get_order( $order_id );
+				$confirmationUri = add_query_arg( array( 'pay_for_order' =>'true', 'paysonorder' => $checkout_temp_obj->id ), $order->get_checkout_order_received_url() );
+			} else {
+				$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id, 'paysonorder' => $checkout_temp_obj->id ), wc_get_checkout_url() );
+			}
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
-			
+
 			WC_Gateway_PaysonCheckout::log( 'Update checkout call sent to Payson (in get_checkout() function): ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
 			
 			try {
@@ -91,9 +97,14 @@ class WC_PaysonCheckout_Setup_Payson_API {
 			$checkout_temp_obj = $callPaysonApi->GetCheckout( $checkoutId );
 			WC_Gateway_PaysonCheckout::log( 'Create checkout response from Payson: ' . stripslashes_deep( json_encode( $checkout_temp_obj ) ) );
 			
-			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
-
-			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
+			// Check if this is an pay for order or a regular purchase 
+			if ( isset( $_GET['pay_for_order'], $_GET['key'] ) ) {
+				$order = wc_get_order( $order_id );
+				$confirmationUri = add_query_arg( array( 'pay_for_order' =>'true', 'paysonorder' => $checkout_temp_obj->id ), $order->get_checkout_order_received_url() );
+			} else {
+				$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id, 'paysonorder' => $checkout_temp_obj->id ), wc_get_checkout_url() );
+			}
+			
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
 			$checkout_temp_obj                            = $callPaysonApi->UpdateCheckout( $checkout_temp_obj );
 
@@ -114,7 +125,7 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		// Setup.
 		$callPaysonApi  = $this->set_payson_api();
 		$paysonMerchant = $this->set_merchant( $order_id );
-		$payData        = $this->set_pay_data();
+		$payData        = $this->set_pay_data( $order_id );
 		$gui            = $this->set_gui();
 		$customer       = $this->set_customer();
 		$checkout       = new PaysonEmbedded\Checkout( $paysonMerchant, $payData, $gui, $customer );
@@ -140,17 +151,9 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		}
 		if ( WC()->session->get( 'payson_checkout_id' ) && ( 'readyToPay' === $payson_embedded_status || 'created' === $payson_embedded_status ) ) {
 			// Update checkout.
-			$checkout_temp_obj->payData = $this->set_pay_data();
+			$checkout_temp_obj->payData = $this->set_pay_data( $order_id );
 			
 			// Update notification url with the Payson Checkout ID
-			/*
-			if ( $order_id ) {
-				$order = wc_get_order( $order_id );
-				$confirmationUri = $order->get_checkout_order_received_url();
-			} else {
-				$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
-			}
-			*/
 			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 			$confirmationUri                              = add_query_arg( array( 'paysonorder' => $checkout_temp_obj->id ), $confirmationUri );
 			$checkout_temp_obj->merchant->confirmationUri = $confirmationUri;
@@ -183,14 +186,14 @@ class WC_PaysonCheckout_Setup_Payson_API {
 		//require_once PAYSONCHECKOUT_PATH . '/includes/lib/paysonapi.php';
 		// URLs used by payson for redirection after a completed/canceled/notification purchase.
 		$order = wc_get_order( $order_id );
-		/*
-		if ( $order ) {
-			$confirmationUri = $order->get_checkout_order_received_url();
+
+		// Check if this is an pay for order or a regular purchase 
+		if ( isset( $_GET['pay_for_order'], $_GET['key'] ) ) {
+			$confirmationUri = add_query_arg( array( 'pay_for_order' =>'true' ), $order->get_checkout_order_received_url() );
 		} else {
-			$confirmationUri = wc_get_endpoint_url( 'order-received', '', wc_get_page_permalink( 'checkout' ) );
+			$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
 		}
-		*/
-		$confirmationUri = add_query_arg( array( 'payson_payment_successful' =>'1', 'wc_order' => $order_id ), wc_get_checkout_url() );
+		
 		$checkoutUri     = wc_get_checkout_url();
 		$notificationUri = add_query_arg( 'wc_order', $order_id, get_home_url() . '/wc-api/WC_Gateway_PaysonCheckout/' );
 		$termsUri        = wc_get_page_permalink( 'terms' );
