@@ -1,5 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2018.05.04    	- version 1.3.0
+* Feature       - Added support for handling payments of manually created orders (via Pay for order page).
+* Tweak         - Save _payson_checkout_id to WC order in thank you page if it hasn't been saved earlier. 
+
 2018.04.09    	- version 1.2.3
 * Tweak			- Change priority to 999 for filter woocommerce_locate_template so that PaysonCheckout template file doesn't get overwritten by other plugins/themes.
 * fix			- Changed text domain for "Select another payment method" label so it uses translation files in plugin.
