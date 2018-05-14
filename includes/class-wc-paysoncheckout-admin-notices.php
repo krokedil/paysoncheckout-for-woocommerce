@@ -54,7 +54,7 @@ class WC_PaysonCheckout_Admin_Notices {
 	 * Validate entered Payson credentials
 	 */
 	public function validate_account() {
-		if ( 'yes' != $this->enabled ) {
+		if ( 'yes' != $this->enabled || 'paysoncheckout' != $_GET['section'] ) {
 			return;
 		}
 		// Account check
