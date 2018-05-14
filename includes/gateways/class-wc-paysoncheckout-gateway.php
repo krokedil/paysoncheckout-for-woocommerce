@@ -102,6 +102,13 @@ function init_wc_gateway_paysoncheckout_class() {
 					if ( ! $this->merchant_id || ! $this->api_key ) {
 						return false;
 					}
+					// Don't display the payment method if we have an order with to low amount
+					if( WC()->cart->total < 4 && 'SEK' == get_woocommerce_currency() ) {
+						return false;
+					}
+					if( WC()->cart->total == 0 && 'EUR' == get_woocommerce_currency() ) {
+						return false;
+					}
 				}
 
 				return true;

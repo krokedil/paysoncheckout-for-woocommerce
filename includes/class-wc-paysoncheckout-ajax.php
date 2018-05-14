@@ -167,6 +167,14 @@ class WC_PaysonCheckout_Ajax {
 		WC()->cart->calculate_fees();
 		WC()->cart->calculate_totals();
 
+		// If update checkout changed cart total to below 4 SEK or 0 EUR reload the checkout page
+		if( ( WC()->cart->total < 4 && 'SEK' == get_woocommerce_currency() ) ||  WC()->cart->total == 0 && 'EUR' == get_woocommerce_currency() ) {
+			$return = array();
+			$return['redirect_url'] = wc_get_checkout_url();
+			wp_send_json_error( $return );
+			wp_die();
+		}
+
 		$wc_order = new WC_PaysonCheckout_WC_Order();
 		$order_id = $wc_order->update_or_create_local_order();
 
