@@ -213,6 +213,11 @@ class WC_PaysonCheckout_Ajax {
 			$return = array();
 			$return['customer_data'] = self::verify_customer_data( $checkout );
 			$return['nonce'] = wp_create_nonce( 'woocommerce-process_checkout' );
+			if ( null != WC()->session->get( 'payson_customer_order_note' ) ) {
+				$return['order_note'] = WC()->session->get( 'payson_customer_order_note' );
+			} else {
+				$return['order_note'] = '';
+			}
 			$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
 			$return['shipping'] = $shipping_methods[0];
 			
