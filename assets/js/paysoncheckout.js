@@ -340,11 +340,11 @@
 				if(data.data.customer_data.shippingAddress2 != null) {
 					datastring = datastring + '&shipping_address_2=' + data.data.customer_data.shippingAddress2;
 				}
-                /*
+                
                 if(data.data.order_note != 'undefined'){
                     datastring = datastring + '&order_comments=' + data.data.order_note;
                 }
-				*/
+				
                     jQuery.ajax({
                     type: 'POST',
                     url: wc_checkout_params.checkout_url,
