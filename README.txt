@@ -37,6 +37,11 @@ More information on how to get started can be found in the [plugin documentation
 
 == CHANGELOG ==
 
+= 2018.05.15    - version 1.3.1 =
+* Tweak			- Only make merchant account validation request to Payson on PaysonCheckout 2.0 settings page.
+* Fix			- Don’t display Payson as an available payment method if cart total is too low (below 4 SEK or 0 EUR).
+* Fix			- Save customer order note correctly when processing WC checkout/order.
+
 = 2018.05.04    - version 1.3.0 =
 * Feature       - Added support for handling payments of manually created orders (via Pay for order page).
 * Tweak         - Save _payson_checkout_id to WC order in thank you page if it hasn't been saved earlier. 
