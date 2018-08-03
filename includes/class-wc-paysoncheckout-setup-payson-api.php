@@ -283,7 +283,8 @@ class WC_PaysonCheckout_Setup_Payson_API {
 
 			return $account;
 		} catch ( Exception $ex ) {
-			return new WP_Error( 'error', __( 'The entered Payson Merchant ID, API Key or test/live mode is not correct.', 'woocommerce-gateway-paysoncheckout' ) );
+			WC_Gateway_PaysonCheckout::log( 'Validate account error: ' . $ex->getMessage() . '. Merchant id: ' . $merchant_id . '. API-key: ' . $api_key . '. Testmode: ' . $this->settings['testmode'] );
+			return new WP_Error( 'error', __( 'The entered Payson Merchant ID, API Key or test/live mode is not correct. Returned respons from Payson: ' . $ex->getMessage(), 'woocommerce-gateway-paysoncheckout' ) );
 		}
 	}
 
