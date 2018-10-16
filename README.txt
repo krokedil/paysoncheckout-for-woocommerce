@@ -1,10 +1,10 @@
 === PaysonCheckout 2.0 for WooCommerce ===
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
-Requires at least: 4.3
-Tested up to: 4.9.5
+Requires at least: 4.5
+Tested up to: 4.9.8
 WC requires at least: 3.0
-WC tested up to: 3.3.5
+WC tested up to: 3.4.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,15 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2018.10.16    - version 1.4.0 =
+* Feature		- Added support for wp_add_privacy_policy_content (for GDPR compliance). More info: https://core.trac.wordpress.org/attachment/ticket/43473/PRIVACY-POLICY-CONTENT-HOOK.md.
+* Tweak			- Improved error messaging in Payson account check request.
+* Fix			- Updated compatability functions to prevent error.
+* Tweak			- Added filters payson_pay_data, payson_gui & payson_customer to allow merchants to modify order data sent to Payson.
+* Tweak			- Added company name to WooCommerce order if purchase is a B2B order.
+* Fix			- Changed how JS eventlistener PaysonEmbeddedAddressChanged was implemented. Some websites was not able to retrieve customer address data.
+* Fix			- Submission failure process bug fix. Order is now created in Woo and customer redirected to thankyou page even if original checkout form submission fails.
 
 = 2018.05.15    - version 1.3.1 =
 * Tweak			- Only make merchant account validation request to Payson on PaysonCheckout 2.0 settings page.
