@@ -403,7 +403,7 @@
 
 	function checkout_error() {
 		console.log('checkout error');
-		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
+		if ( wc_paysoncheckout.payment_successful == '1') {
 			$.ajax(
 	            wc_paysoncheckout.ajax_url,
 	            {
