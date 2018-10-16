@@ -217,7 +217,7 @@
 	});
 	
 	// When Address update event is triggered
-	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
+	document.addEventListener("PaysonEmbeddedAddressChanged",function(data) {
 		var should_update = false;
 
 		// Don't update if we're on a pay for order page
@@ -278,7 +278,7 @@
 		);
 	});
 
-	$(document).on('PaysonEmbeddedCheckoutResult', function(data) {
+	document.addEventListener("PaysonEmbeddedCheckoutResult",function(data) {
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedCheckoutResult', data);
 		}
@@ -340,6 +340,11 @@
 				if(data.data.customer_data.shippingAddress2 != null) {
 					datastring = datastring + '&shipping_address_2=' + data.data.customer_data.shippingAddress2;
 				}
+
+				if(data.data.customer_data.type == 'business') {
+					datastring = datastring + '&billing_company=' + data.data.customer_data.billingFirstName;
+					datastring = datastring + '&shipping_company=' + data.data.customer_data.shippingFirstName;
+				}
                 
                 if(data.data.order_note != 'undefined'){
                     datastring = datastring + '&order_comments=' + data.data.order_note;
@@ -398,7 +403,7 @@
 
 	function checkout_error() {
 		console.log('checkout error');
-		if ("paysoncheckout" === $("input[name='payment_method']:checked").val()) {
+		if ( wc_paysoncheckout.payment_successful == '1') {
 			$.ajax(
 	            wc_paysoncheckout.ajax_url,
 	            {

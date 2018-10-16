@@ -1,5 +1,19 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2018.10.16    	- version 1.4.0
+* Feature		- Added support for wp_add_privacy_policy_content (for GDPR compliance). More info: https://core.trac.wordpress.org/attachment/ticket/43473/PRIVACY-POLICY-CONTENT-HOOK.md.
+* Tweak			- Improved error messaging in Payson account check request.
+* Fix			- Updated compatability functions to prevent error.
+* Tweak			- Added filters payson_pay_data, payson_gui & payson_customer to allow merchants to modify order data sent to Payson.
+* Tweak			- Added company name to WooCommerce order if purchase is a B2B order.
+* Fix			- Changed how JS eventlistener PaysonEmbeddedAddressChanged was implemented. Some websites was not able to retrieve customer address data.
+* Fix			- Submission failure process bug fix. Order is now created in Woo and customer redirected to thankyou page even if original checkout form submission fails.
+
+= 2018.05.15    - version 1.3.1 =
+* Tweak			- Only make merchant account validation request to Payson on PaysonCheckout 2.0 settings page.
+* Fix			- Don’t display Payson as an available payment method if cart total is too low (below 4 SEK or 0 EUR).
+* Fix			- Save customer order note correctly when processing WC checkout/order.
+
 2018.05.04    	- version 1.3.0
 * Feature       - Added support for handling payments of manually created orders (via Pay for order page).
 * Tweak         - Save _payson_checkout_id to WC order in thank you page if it hasn't been saved earlier. 
