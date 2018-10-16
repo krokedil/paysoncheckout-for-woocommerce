@@ -340,6 +340,11 @@
 				if(data.data.customer_data.shippingAddress2 != null) {
 					datastring = datastring + '&shipping_address_2=' + data.data.customer_data.shippingAddress2;
 				}
+
+				if(data.data.customer_data.type == 'business') {
+					datastring = datastring + '&billing_company=' + data.data.customer_data.billingFirstName;
+					datastring = datastring + '&shipping_company=' + data.data.customer_data.shippingFirstName;
+				}
                 
                 if(data.data.order_note != 'undefined'){
                     datastring = datastring + '&order_comments=' + data.data.order_note;

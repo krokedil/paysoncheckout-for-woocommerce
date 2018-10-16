@@ -254,15 +254,16 @@ class WC_PaysonCheckout_Ajax {
 			'billingAddress'        =>  $billing_address,
 			'billingPostalCode'     =>  $billing_postal_code,
 			'billingCity'           =>  $billing_city,
-			'billingCounry'           =>  $billing_country,
+			'billingCounry'			=>  $billing_country,
 			'shippingFirstName'     =>  $billing_first_name,
 			'shippingLastName'      =>  $billing_last_name,
 			'shippingAddress'       =>  $billing_address,
 			'shippingPostalCode'    =>  $billing_postal_code,
 			'shippingCity'          =>  $billing_city,
-			'shippingCounry'           =>  $billing_country,
+			'shippingCounry'		=>  $billing_country,
 			'phone'                 =>  $billing_phone,
 			'email'                 =>  $billing_email,
+			'type'                 	=>  $checkout->customer->type,
 		);
 		return $customer_information;
 	}
