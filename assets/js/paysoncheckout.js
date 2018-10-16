@@ -217,7 +217,7 @@
 	});
 	
 	// When Address update event is triggered
-	$(document).on('PaysonEmbeddedAddressChanged', function(data) {
+	document.addEventListener("PaysonEmbeddedAddressChanged",function(data) {
 		var should_update = false;
 
 		// Don't update if we're on a pay for order page
@@ -278,7 +278,7 @@
 		);
 	});
 
-	$(document).on('PaysonEmbeddedCheckoutResult', function(data) {
+	document.addEventListener("PaysonEmbeddedCheckoutResult",function(data) {
 		if ('yes' === wc_paysoncheckout.debug) {
 			console.log('PaysonEmbeddedCheckoutResult', data);
 		}
