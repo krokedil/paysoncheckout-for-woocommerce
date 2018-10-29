@@ -7,14 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Echoes Klarna Checkout iframe snippet.
  */
 function wc_payson_show_snippet() {
-    if( isset( $_GET['payson_payment_successful'] ) && '1' == $_GET['payson_payment_successful'] ) {
+	if ( isset( $_GET['payson_payment_successful'] ) && '1' == $_GET['payson_payment_successful'] ) {
 		return;
 	}
 
 	// Check if this is an pay for order or a regular purchase
 	if ( isset( $_GET['pay_for_order'], $_GET['key'] ) ) {
 		$order_id = wc_get_order_id_by_order_key( sanitize_text_field( $_GET['key'] ) );
-		if( $order_id ) {
+		if ( $order_id ) {
 			WC()->session->set( 'ongoing_payson_order', $order_id );
 			$order = wc_get_order( $order_id );
 			$order->set_payment_method( 'paysoncheckout' );
@@ -24,21 +24,21 @@ function wc_payson_show_snippet() {
 		$wc_order = new WC_PaysonCheckout_WC_Order();
 		$order_id = $wc_order->update_or_create_local_order();
 	}
-    
-    include_once( PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php' );
-    $payson_api = new WC_PaysonCheckout_Setup_Payson_API();
-	$checkout   = $payson_api->get_checkout( $order_id );
-	
-    $iframe = '<div class="paysoncheckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
-    if ( is_wp_error( $checkout ) ) {
-		$iframe =  '<ul class="woocommerce-error"><li>' . sprintf( '%s <a href="%s" class="button wc-forward">%s</a>', __( 'There was a problem in the communication with Payson.', 'woocommerce-gateway-paysoncheckout' ), wc_get_checkout_url(), __( 'Try again', 'woocommerce-gateway-paysoncheckout' ) ) . '</li></ul>';
-    } else {
-		echo("<script>console.log('Payson Checkout ID: ".json_encode($checkout->id)."');</script>");
-        $iframe .= $checkout->snippet;
-    }
-    $iframe .= '</div>';
 
-    echo $iframe;
+	include_once PAYSONCHECKOUT_PATH . '/includes/class-wc-paysoncheckout-setup-payson-api.php';
+	$payson_api = new WC_PaysonCheckout_Setup_Payson_API();
+	$checkout   = $payson_api->get_checkout( $order_id );
+
+	$iframe = '<div class="paysoncheckout-container" style="width:100%;  margin-left:auto; margin-right:auto;">';
+	if ( is_wp_error( $checkout ) ) {
+		$iframe = '<ul class="woocommerce-error"><li>' . sprintf( '%s <a href="%s" class="button wc-forward">%s</a>', __( 'There was a problem in the communication with Payson.', 'woocommerce-gateway-paysoncheckout' ), wc_get_checkout_url(), __( 'Try again', 'woocommerce-gateway-paysoncheckout' ) ) . '</li></ul>';
+	} else {
+		echo( "<script>console.log('Payson Checkout ID: " . json_encode( $checkout->id ) . "');</script>" );
+		$iframe .= $checkout->snippet;
+	}
+	$iframe .= '</div>';
+
+	echo $iframe;
 }
 
 
@@ -48,15 +48,14 @@ function wc_payson_show_snippet() {
 function wc_payson_show_extra_fields() {
 
 	echo '<div id="paysoncheckout-extra-fields">';
-	
+
 	// Order note
-	//do_action( 'woocommerce_before_order_notes', WC()->checkout() );
+	// do_action( 'woocommerce_before_order_notes', WC()->checkout() );
 	if ( apply_filters( 'woocommerce_enable_order_notes_field', true ) ) {
 		$form_field = WC()->checkout()->get_checkout_fields( 'order' );
 		woocommerce_form_field( 'order_comments', $form_field['order_comments'] );
 	}
-	//do_action( 'woocommerce_after_order_notes', WC()->checkout() );
-
+	// do_action( 'woocommerce_after_order_notes', WC()->checkout() );
 	echo '</div>';
 }
 
@@ -87,6 +86,7 @@ function wc_payson_show_another_gateway_button() {
 function wc_payson_calculate_totals() {
 	WC()->cart->calculate_fees();
 	WC()->cart->calculate_shipping();
+	WC()->customer->set_calculated_shipping();
 	WC()->cart->calculate_totals();
 }
 
