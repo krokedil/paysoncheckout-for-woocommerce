@@ -71,7 +71,7 @@ class PaysonCheckout_For_WooCommerce_Logger {
 		// Unset the snippet to prevent issues in the request body.
 		if ( isset( $request_args['body'] ) ) {
 			$request_body = json_decode( $request_args['body'], true );
-			if ( $request_body['snippet'] ) {
+			if ( isset( $request_body['snippet'] ) && $request_body['snippet'] ) {
 				unset( $request_body['snippet'] );
 				$request_args['body'] = wp_json_encode( $request_body );
 			}

@@ -44,7 +44,7 @@ function pco_wc_maybe_create_payson_order() {
 	} else {
 		// Else create the order and maybe set payment id.
 		$payson_order = PCO_WC()->create_order->request();
-		if ( isset( $payson_order['id'] ) ) {
+		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
 			WC()->session->set( 'payson_payment_id', $payson_order['id'] );
 		}
 	}

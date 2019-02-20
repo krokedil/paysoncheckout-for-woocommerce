@@ -64,10 +64,14 @@ class PaysonCheckout_For_WooCommerce_Request {
 	public function process_response( $response, $request_args = array(), $request_url = '' ) {
 		// Check the status code.
 		if ( wp_remote_retrieve_response_code( $response ) < 200 || wp_remote_retrieve_response_code( $response ) > 299 ) {
-			$data = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
-			return new WP_Error( wp_remote_retrieve_response_code( $response ), $response['response']['message'], $data );
+			$data          = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
+			$error_message = ' ';
+			// Get the error messages.
+			foreach ( json_decode( $response['body'], true )['errors'] as $error ) {
+				$error_message = $error_message . '<br>' . $error['message'];
+			}
+			return new WP_Error( wp_remote_retrieve_response_code( $response ), $response['response']['message'] . $error_message, $data );
 		}
-
 		return json_decode( wp_remote_retrieve_body( $response ), true );
 	}
 }
