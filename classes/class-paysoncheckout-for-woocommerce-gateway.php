@@ -21,7 +21,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$this->id                 = 'paysoncheckout';
 		$this->method_title       = __( 'Payson', 'woocommerce-gateway-paysoncheckout' );
 		$this->icon               = '';
-		$this->has_fields         = true;
 		$this->method_description = __( 'Allows payments through ' . $this->method_title . '.', 'woocommerce-gateway-paysoncheckout' ); // phpcs:ignore
 
 		// Load the form fields.
@@ -131,7 +130,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function init_form_fields() {
-		$this->form_fields = include_once PAYSONCHECKOUT_PATH . '/includes/paysoncheckout-for-woocommerce-form-fields.php';
+		$this->form_fields = include PAYSONCHECKOUT_PATH . '/includes/paysoncheckout-for-woocommerce-form-fields.php';
 	}
 
 	/**
