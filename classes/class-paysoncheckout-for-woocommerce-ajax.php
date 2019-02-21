@@ -28,6 +28,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			'pco_wc_address_changed' => true,
 			'pco_wc_update_checkout' => true,
 			'pco_wc_get_order'       => true,
+			'pco_wc_checkout_error'  => true,
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_woocommerce_' . $ajax_event, array( __CLASS__, $ajax_event ) );
@@ -166,6 +167,32 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		}
 		wp_send_json_success( $payson_order );
 		wp_die();
+	}
+
+	/**
+	 * Creates a fallback order on Checkout error JS event.
+	 *
+	 * @return void
+	 */
+	public static function pco_wc_checkout_error() {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_get_order' ) ) { // phpcs: ignore.
+			wp_send_json_error( 'bad_nonce' );
+			exit;
+		}
+
+		// Get the payson order.
+		$payson_order = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
+		if ( is_wp_error( $payson_order ) ) {
+			// If error return error message.
+			$code          = $payson_order->get_error_code();
+			$message       = $payson_order->get_error_message();
+			$text          = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
+			$formated_text = sprintf( $text, $code, $message );
+			wp_send_json_error( $formated_text );
+			wp_die();
+		}
+
+		PCO_WC()->backup_order->checkout_error( $payson_order );
 	}
 }
 PaysonCheckout_For_WooCommerce_AJAX::init();

@@ -65,6 +65,8 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 			WC()->customer->set_billing_phone( sanitize_text_field( $address['phone'] ) );
 			// Email.
 			WC()->customer->set_billing_email( sanitize_text_field( $address['email'] ) );
+
+			// Save customer.
 			WC()->customer->save();
 		}
 	}

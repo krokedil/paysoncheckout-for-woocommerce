@@ -119,6 +119,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			// Classes.
 			$this->session          = new PaysonCheckout_For_WooCommerce_Sessions();
 			$this->order_management = new PaysonCheckout_For_WooCommerce_Order_Management();
+			$this->backup_order     = new PaysonCheckout_For_WooCommerce_Backup_Order();
 			do_action( 'payson_initiated' );
 		}
 
@@ -137,6 +138,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-confirmation.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-sessions.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-order-management.php';
+			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-backup-order.php';
 
 			// Request classes.
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-request.php';
