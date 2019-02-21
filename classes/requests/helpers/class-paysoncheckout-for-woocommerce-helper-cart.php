@@ -100,6 +100,9 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 	 * @return float
 	 */
 	public function get_product_tax_rate( $cart_item ) {
+		if ( 0 === intval( $cart_item['line_total'] ) ) {
+			return 0;
+		}
 		return round( $cart_item['line_tax'] / $cart_item['line_total'], 2 );
 	}
 

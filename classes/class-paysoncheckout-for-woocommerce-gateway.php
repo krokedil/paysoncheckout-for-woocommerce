@@ -100,7 +100,10 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 
 		// Save payment type and run $order->payment_complete() if all looks good.
 		if ( ! $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {
-			$this->process_payson_payment_in_order( $order_id );
+			$process_payment = $this->process_payson_payment_in_order( $order_id );
+			if ( true !== $process_payment ) {
+				return;
+			}
 		}
 
 		return array(
@@ -143,11 +146,19 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$payment_id   = WC()->session->get( 'payson_payment_id' );
 		$payson_order = PCO_WC()->get_order->request( $payment_id );
 		$order        = wc_get_order( $order_id );
-		if ( 'readyToShip' === $payson_order['status'] ) {
+		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
 			update_post_meta( $order_id, '_paysoncheckout_payment_id', $payment_id );
 			$order->payment_complete( $payson_order['purchaseId'] );
 			// Unset sessions.
 			pco_wc_unset_sessions();
+			return true;
+		} else {
+			// If failed then extract error message and return. Its not used right now, but might be used later.
+			$error_message = __( 'Error processing order. Please try again', 'woocommerce-gateway-paysoncheckout' );
+			if ( is_wp_error( $payson_order ) ) {
+				$error_message = $payson_order->get_error_message();
+			}
+			return $error_message;
 		}
 	}
 }
