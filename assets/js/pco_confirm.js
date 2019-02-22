@@ -28,11 +28,41 @@ jQuery(function($) {
 			$('form[name="checkout"]').submit();
 		},
 
+		checkoutError: function() {
+			let error_message = $( ".woocommerce-NoticeGroup-checkout" ).text();
+			$.ajax({
+				type: 'POST',
+				url: pco_wc_params.checkout_error_url,
+				data: {
+					error_message: error_message,
+					nonce: pco_wc_params.checkout_error_nonce,
+				},
+				dataType: 'json',
+				success: function(data) {
+				},
+				error: function(data) {
+				},
+				complete: function(data) {
+					console.log( data );
+					if (true === data.responseJSON.success) {
+						console.log( 'in if' );
+						window.location.href = data.responseJSON.data;
+					}
+				}
+			});
+		},
+
 		/*
 		 * Initiates the script and sets the triggers for the functions.
 		 */
 		init: function() {
 			$(document).ready( pco_wc.documentReady() );
+
+			// On checkout error.
+			//$(document).on( 'checkout_error', pco_wc.checkoutError() );
+			$( document ).on( 'checkout_error', function () {
+				pco_wc.checkoutError();
+			});
 		},
 	}
 	pco_wc.init();

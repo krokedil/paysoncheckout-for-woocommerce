@@ -23,28 +23,29 @@ class PaysonCheckout_For_WooCommerce_Backup_Order {
 	 */
 	public function checkout_error( $payson_order, $error_message ) {
 		// Create order.
-		$this->create_order();
+		$order = $this->create_order();
 
 		// Add cart data to order.
-		$this->add_items_to_local_order();
-		$this->add_order_fees();
-		$this->add_order_shipping();
-		$this->add_order_tax_rows();
-		$this->add_order_coupons();
-		$this->add_order_payment_method();
+		$this->add_items_to_local_order( $order );
+		$this->add_order_fees( $order );
+		$this->add_order_shipping( $order );
+		$this->add_order_tax_rows( $order );
+		$this->add_order_coupons( $order );
+		$this->add_order_payment_method( $order );
 
 		// Add Payson data to order.
-		$this->add_customer_data_to_local_order();
+		$this->add_customer_data_to_local_order( $order, $payson_order );
 
 		// Calculate order totals and save order.
-		$this->calculate_order_totals();
+		$this->calculate_order_totals( $order );
 
 		// Do payment_complete and set status to on-hold.
 		$this->order->payment_complete( $payson_order['purchaseId'] );
 		// Translators: $error_message.
-		$note = sprintf( __( 'This order was made as a fallback due to an error in the checkout (%s). Please verify the order with Collector.', 'woocommerce-payson-checkout' ), $error_message );
+		$note = sprintf( __( 'This order was made as a fallback due to an error in the checkout (%s). Please verify the order with PaysonCheckout.', 'woocommerce-payson-checkout' ), $error_message );
 		$this->order->add_order_note( $note );
-		$this->order->set_stauts( 'on-hold' );
+		$this->order->set_status( 'on-hold' );
+		$this->order->save();
 
 		// Return order ID.
 		return $this->order->get_id();
@@ -71,16 +72,18 @@ class PaysonCheckout_For_WooCommerce_Backup_Order {
 		// Remove items as to stop the item lines from being duplicated.
 		$order->remove_order_items();
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) { // Store the line items to the new/resumed order.
-			$item_id = $order->add_product( $values['data'], $values['quantity'], array(
-				'variation' => $values['variation'],
-				'totals'    => array(
-					'subtotal'     => $values['line_subtotal'],
-					'subtotal_tax' => $values['line_subtotal_tax'],
-					'total'        => $values['line_total'],
-					'tax'          => $values['line_tax'],
-					'tax_data'     => $values['line_tax_data'],
-				),
-			) );
+			$item_id = $order->add_product(
+				$values['data'], $values['quantity'], array(
+					'variation' => $values['variation'],
+					'totals'    => array(
+						'subtotal'     => $values['line_subtotal'],
+						'subtotal_tax' => $values['line_subtotal_tax'],
+						'total'        => $values['line_total'],
+						'tax'          => $values['line_tax'],
+						'tax_data'     => $values['line_tax_data'],
+					),
+				)
+			);
 			if ( ! $item_id ) {
 				$order->add_order_note( 'Error: Unable to add cart items in Create Local Order Fallback.' );
 			}
@@ -140,7 +143,7 @@ class PaysonCheckout_For_WooCommerce_Backup_Order {
 	 */
 	public function add_order_tax_rows( $order ) {
 		// Store tax rows.
-		foreach ( array_keys( WC()->cart->taxes + WC()->cart->shipping_taxes ) as $tax_rate_id ) {
+		foreach ( array_keys( WC()->cart->get_cart_contents_taxes() + WC()->cart->get_shipping_taxes() ) as $tax_rate_id ) {
 			if ( $tax_rate_id && ! $order->add_tax( $tax_rate_id, WC()->cart->get_tax_amount( $tax_rate_id ), WC()->cart->get_shipping_tax_amount( $tax_rate_id ) ) && apply_filters( 'woocommerce_cart_remove_taxes_zero_rate_id', 'zero-rated' ) !== $tax_rate_id ) {
 				$order->add_order_note( 'Error: Unable to add taxes in Create Local Order Fallback.' );
 			}
@@ -188,7 +191,7 @@ class PaysonCheckout_For_WooCommerce_Backup_Order {
 		$order->set_billing_last_name( $address_data['lastName'] );
 		$order->set_billing_address_1( $address_data['street'] );
 		$order->set_billing_city( $address_data['city'] );
-		$order->set_billing_postalcode( $address_data['postalCode'] );
+		$order->set_billing_postcode( $address_data['postalCode'] );
 		$order->set_billing_country( $address_data['countryCode'] );
 		$order->set_billing_email( $address_data['email'] );
 		$order->set_billing_phone( $address_data['phone'] );
@@ -198,12 +201,11 @@ class PaysonCheckout_For_WooCommerce_Backup_Order {
 		$order->set_shipping_last_name( $address_data['lastName'] );
 		$order->set_shipping_address_1( $address_data['street'] );
 		$order->set_shipping_city( $address_data['city'] );
-		$order->set_shipping_postalcode( $address_data['postalCode'] );
+		$order->set_shipping_postcode( $address_data['postalCode'] );
 		$order->set_shipping_country( $address_data['countryCode'] );
-		$order->set_shipping_email( $address_data['email'] );
-		$order->set_shipping_phone( $address_data['phone'] );
 
 		// Set post metas.
+		$order_id = $order->get_id();
 		update_post_meta( $order_id, '_payson_payment_id', $payson_order['id'] );
 		update_post_meta( $order_id, '_created_via_payson_fallback', 'yes' );
 

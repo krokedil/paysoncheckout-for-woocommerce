@@ -175,7 +175,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 	 * @return void
 	 */
 	public static function pco_wc_checkout_error() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_get_order' ) ) { // phpcs: ignore.
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_checkout_error' ) ) { // phpcs: ignore.
 			wp_send_json_error( 'bad_nonce' );
 			exit;
 		}
@@ -192,7 +192,19 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			wp_die();
 		}
 
-		PCO_WC()->backup_order->checkout_error( $payson_order );
+		// Get error message.
+		if ( ! empty( $_POST['error_message'] ) ) { // Input var okay.
+			$error_message = 'Error message: ' . sanitize_text_field( trim( $_POST['error_message'] ) );
+		} else {
+			$error_message = 'Error message could not be retreived';
+		}
+
+		// Create the order and send redirect url.
+		$order_id     = PCO_WC()->backup_order->checkout_error( $payson_order, $error_message );
+		$order        = wc_get_order( $order_id );
+		$redirect_url = $order->get_checkout_order_received_url();
+		wp_send_json_success( $redirect_url );
+		wp_die();
 	}
 }
 PaysonCheckout_For_WooCommerce_AJAX::init();

@@ -41,7 +41,6 @@ jQuery(function($) {
 		 */
 		addressChanged: function( data /* Address from Payson */ ) {
 			let address = data.detail;
-			console.table( address );
 			$.ajax({
 				type: 'POST',
 				url: pco_wc_params.address_changed_url,

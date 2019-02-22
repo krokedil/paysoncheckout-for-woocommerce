@@ -234,10 +234,12 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						true
 					);
 					$params = array(
-						'ajax_url'        => admin_url( 'admin-ajax.php' ),
-						'modal_text'      => __( 'Please wait while we process your order.', 'woocommerce-gateway-paysoncheckout' ),
-						'get_order_url'   => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
-						'get_order_nonce' => wp_create_nonce( 'pco_wc_get_order' ),
+						'ajax_url'             => admin_url( 'admin-ajax.php' ),
+						'modal_text'           => __( 'Please wait while we process your order.', 'woocommerce-gateway-paysoncheckout' ),
+						'get_order_url'        => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
+						'get_order_nonce'      => wp_create_nonce( 'pco_wc_get_order' ),
+						'checkout_error_url'   => WC_AJAX::get_endpoint( 'pco_wc_checkout_error' ),
+						'checkout_error_nonce' => wp_create_nonce( 'pco_wc_checkout_error' ),
 					);
 					wp_localize_script(
 						'pco_wc',
