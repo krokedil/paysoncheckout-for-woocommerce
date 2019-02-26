@@ -146,8 +146,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully activated.', 'woocommerce-gateway-paysoncheckout' ) );
 		} elseif ( is_wp_error( $payson_order ) ) {
 			// If error save error message.
-			$code          = $payson_order_tmp->get_error_code();
-			$message       = $payson_order_tmp->get_error_message();
+			$code          = $payson_order->get_error_code();
+			$message       = $payson_order->get_error_message();
 			$text          = __( 'Payson API Error on Payson activate order: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 			$formated_text = sprintf( $text, $code, $message );
 			$order->add_order_note( $formated_text );

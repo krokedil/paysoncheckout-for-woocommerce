@@ -52,7 +52,6 @@ function pco_wc_maybe_create_payson_order() {
 	return $payson_order;
 }
 
-
 /**
  * Unsets all sessions for the plugin.
  *

@@ -43,9 +43,7 @@ jQuery(function($) {
 				error: function(data) {
 				},
 				complete: function(data) {
-					console.log( data );
 					if (true === data.responseJSON.success) {
-						console.log( 'in if' );
 						window.location.href = data.responseJSON.data;
 					}
 				}

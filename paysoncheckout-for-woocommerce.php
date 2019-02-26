@@ -12,7 +12,7 @@
  * Domain Path:     /languages
  *
  * WC requires at least: 3.0
- * WC tested up to: 3.4.6
+ * WC tested up to: 3.5.5
  *
  * Copyright:       © 2016-2018 Krokedil.
  * License:         GNU General Public License v3.0
@@ -101,14 +101,15 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 
 			// Set variabled for shorthand access to classes.
 			// Requests.
-			$this->requests       = new PaysonCheckout_For_WooCommerce_Request();
-			$this->create_order   = new PaysonCheckout_For_WooCommerce_Create_Order();
-			$this->update_order   = new PaysonCheckout_For_WooCommerce_Update_Order();
-			$this->get_order      = new PaysonCheckout_For_WooCommerce_Get_Order();
-			$this->cancel_order   = new PaysonCheckout_For_WooCommerce_Cancel_Order();
-			$this->activate_order = new PaysonCheckout_For_WooCommerce_Activate_Order();
-			$this->refund_order   = new PaysonCheckout_For_WooCommerce_Refund_Order();
-			$this->get_account    = '';
+			$this->requests         = new PaysonCheckout_For_WooCommerce_Request();
+			$this->create_order     = new PaysonCheckout_For_WooCommerce_Create_Order();
+			$this->update_order     = new PaysonCheckout_For_WooCommerce_Update_Order();
+			$this->update_reference = new PaysonCheckout_For_WooCommerce_Update_Reference();
+			$this->get_order        = new PaysonCheckout_For_WooCommerce_Get_Order();
+			$this->cancel_order     = new PaysonCheckout_For_WooCommerce_Cancel_Order();
+			$this->activate_order   = new PaysonCheckout_For_WooCommerce_Activate_Order();
+			$this->refund_order     = new PaysonCheckout_For_WooCommerce_Refund_Order();
+			$this->get_account      = '';
 
 			// Request Helpers.
 			$this->cart_items    = new PaysonCheckout_For_WooCommerce_Helper_Cart();
@@ -144,6 +145,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-request.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-create-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-update-order.php';
+			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-update-reference.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-get-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-cancel-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-activate-order.php';
@@ -158,15 +160,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 
 			// Include include files.
 			include_once PAYSONCHECKOUT_PATH . '/includes/paysoncheckout-for-woocommerce-functions.php';
-		}
-
-		/**
-		 * Registers Scripts for the plugin
-		 *
-		 * @return void
-		 */
-		public function register_scripts() {
-
 		}
 
 		/**
