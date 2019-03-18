@@ -204,12 +204,14 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						true
 					);
 					$params = array(
-						'ajax_url'                   => admin_url( 'admin-ajax.php' ),
-						'select_another_method_text' => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
-						'address_changed_url'        => WC_AJAX::get_endpoint( 'pco_wc_address_changed' ),
-						'address_changed_nonce'      => wp_create_nonce( 'pco_wc_address_changed' ),
-						'update_order_url'           => WC_AJAX::get_endpoint( 'pco_wc_update_checkout' ),
-						'update_order_nonce'         => wp_create_nonce( 'pco_wc_update_checkout' ),
+						'ajax_url'                    => admin_url( 'admin-ajax.php' ),
+						'select_another_method_text'  => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
+						'address_changed_url'         => WC_AJAX::get_endpoint( 'pco_wc_address_changed' ),
+						'address_changed_nonce'       => wp_create_nonce( 'pco_wc_address_changed' ),
+						'update_order_url'            => WC_AJAX::get_endpoint( 'pco_wc_update_checkout' ),
+						'update_order_nonce'          => wp_create_nonce( 'pco_wc_update_checkout' ),
+						'change_payment_method_url'   => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
+						'change_payment_method_nonce' => wp_create_nonce( 'pco_wc_change_payment_method' ),
 					);
 					wp_localize_script(
 						'pco_wc',

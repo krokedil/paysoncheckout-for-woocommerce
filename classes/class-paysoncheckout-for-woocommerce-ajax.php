@@ -25,10 +25,11 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 	 */
 	public static function add_ajax_events() {
 		$ajax_events = array(
-			'pco_wc_address_changed' => true,
-			'pco_wc_update_checkout' => true,
-			'pco_wc_get_order'       => true,
-			'pco_wc_checkout_error'  => true,
+			'pco_wc_address_changed'       => true,
+			'pco_wc_update_checkout'       => true,
+			'pco_wc_get_order'             => true,
+			'pco_wc_checkout_error'        => true,
+			'pco_wc_change_payment_method' => true,
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_woocommerce_' . $ajax_event, array( __CLASS__, $ajax_event ) );
@@ -139,7 +140,18 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			$payson_order = $payson_order_tmp;
 		}
 
-		wp_send_json_success( $payson_order['customer'] );
+		if ( false === $payson_order ) {
+			$changed = false;
+		} else {
+			$changed = true;
+		}
+
+		wp_send_json_success(
+			array(
+				'address' => $payson_order['customer'],
+				'changed' => $changed,
+			)
+		);
 		wp_die();
 	}
 
@@ -204,6 +216,40 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		$order        = wc_get_order( $order_id );
 		$redirect_url = $order->get_checkout_order_received_url();
 		wp_send_json_success( $redirect_url );
+		wp_die();
+	}
+
+	/**
+	 * Changes the selected payment method based on the posted params.
+	 *
+	 * @return void
+	 */
+	public static function pco_wc_change_payment_method() {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_change_payment_method' ) ) {
+			wp_send_json_error( 'bad_nonce' );
+			exit;
+		}
+
+		$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+		if ( 'false' === $_POST['pco'] ) {
+			// Set chosen payment method to first gateway that is not Klarna Checkout for WooCommerce.
+			$first_gateway = reset( $available_gateways );
+			if ( 'paysoncheckout' !== $first_gateway->id ) {
+				WC()->session->set( 'chosen_payment_method', $first_gateway->id );
+			} else {
+				$second_gateway = next( $available_gateways );
+				WC()->session->set( 'chosen_payment_method', $second_gateway->id );
+			}
+		} else {
+			WC()->session->set( 'chosen_payment_method', 'paysoncheckout' );
+		}
+
+		WC()->payment_gateways()->set_current_gateway( $available_gateways );
+		$redirect = wc_get_checkout_url();
+		$data     = array(
+			'redirect' => $redirect,
+		);
+		wp_send_json_success( $data );
 		wp_die();
 	}
 }

@@ -1,6 +1,7 @@
 jQuery(function($) {
 	const pco_wc = {
 		bodyEl: $('body'),
+		checkoutFormSelector: 'form.checkout',
 
 		// Order notes.
 		orderNotesValue: '',
@@ -10,7 +11,7 @@ jQuery(function($) {
 		// Payment method
 		paymentMethodEl: $('input[name="payment_method"]'),
 		paymentMethod: '',
-		selectAnotherSelector: '#payson-checkout-select-other',
+		selectAnotherSelector: '#paysoncheckout-select-other',
 
 		// Address data.
 		addressData: [],
@@ -29,11 +30,11 @@ jQuery(function($) {
 		checkIfPaysonSelected: function() {
 			if (pco_wc.paymentMethodEl.length > 0) {
 				pco_wc.paymentMethod = pco_wc.paymentMethodEl.filter(':checked').val();
-				return false;
-			} else {
-				pco_wc.paymentMethod = 'paysoncheckout';
-				return true;
-			}
+				if( 'paysoncheckout' === pco_wc.paymentMethod ) {
+					return true;
+				}
+			} 
+			return false;
 		},
 
 		/*
@@ -86,13 +87,17 @@ jQuery(function($) {
 						$('.payson-error').remove();
 						$('.woocommerce-checkout-review-order-table').after( '<ul class="payson-error woocommerce-error" role="alert"><li>' + result.data + '</li></ul>' );
 					} else {
+						console.log( result.data );
 						// Set address data if we have it.
-						if( result.hasOwnProperty( 'data' ) ) {
-							pco_wc.addressData = result.data;
+						if( result.data.address !== null ) {
+							pco_wc.addressData = result.data.address;
 							pco_wc.setAddressData();
 						}
-						// Update the iFrame, remove any error messages and resume the iFrame.
-						pco_wc.pcoUpdate();
+						// Update the iFrame if needed.
+						if( result.data.changed === true ) {
+							pco_wc.pcoUpdate();
+						}
+						// Remove any error messages and resume the iFrame.
 						$('.payson-error').remove();
 						pco_wc.pcoResume();
 					}
@@ -135,6 +140,66 @@ jQuery(function($) {
 			console.log( 'Payment status changed.' );
 		},
 
+		// When "Change to another payment method" is clicked.
+		changeFromPco: function(e) {
+			e.preventDefault();
+
+			$(pco_wc.checkoutFormSelector).block({
+				message: null,
+				overlayCSS: {
+					background: '#fff',
+					opacity: 0.6
+				}
+			});
+
+			$.ajax({
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					pco: false,
+					nonce: pco_wc_params.change_payment_method_nonce
+				},
+				url: pco_wc_params.change_payment_method_url,
+				success: function (data) {},
+				error: function (data) {},
+				complete: function (data) {
+					console.log( data );
+					window.location.href = data.responseJSON.data.redirect;
+				}
+			});
+		},
+
+		// When payment method is changed to PCO in regular WC Checkout page.
+		maybeChangeToPco: function() {
+			if ( 'paysoncheckout' === $(this).val() ) {
+
+				$(pco_wc.checkoutFormSelector).block({
+					message: null,
+					overlayCSS: {
+						background: '#fff',
+						opacity: 0.6
+					}
+				});
+
+				$('.woocommerce-info').remove();
+
+				$.ajax({
+					type: 'POST',
+					data: {
+						pco: true,
+						nonce: pco_wc_params.change_payment_method_nonce
+					},
+					dataType: 'json',
+					url: pco_wc_params.change_payment_method_url,
+					success: function (data) {},
+					error: function (data) {},
+					complete: function (data) {
+						window.location.href = data.responseJSON.data.redirect;
+					}
+				});
+			}
+		},
+
 		/*
 		 * Locks the iFrame. 
 		 */
@@ -163,16 +228,22 @@ jQuery(function($) {
 		 * Initiates the script and sets the triggers for the functions.
 		 */
 		init: function() {
-			$(document).ready( pco_wc.documentReady() );
+			// Check if payson is the selected payment method before we do anything.
+			if( pco_wc.checkIfPaysonSelected() ) {
+				$(document).ready( pco_wc.documentReady() );
+				// Payson Event listeners.
+				document.addEventListener( 'PaysonEmbeddedAddressChanged', function( data ) { pco_wc.addressChanged( data ) } );
+				document.addEventListener( 'PaysonEmbeddedCheckoutResult', function( data ) { pco_wc.checkoutResult( data ) } );
 
-			// Payson Event listeners.
-			document.addEventListener( 'PaysonEmbeddedAddressChanged', function( data ) { pco_wc.addressChanged( data ) } );
-			document.addEventListener( 'PaysonEmbeddedCheckoutResult', function( data ) { pco_wc.checkoutResult( data ) } );
+				// Update Checkout.
+				pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
+				// Updated Checkout.
+				pco_wc.bodyEl.on('updated_checkout', pco_wc.updatePaysonOrder );
 
-			// Update Checkout.
-			pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
-			// Updated Checkout.
-			pco_wc.bodyEl.on('updated_checkout', pco_wc.updatePaysonOrder );
+				// Change from PCO.
+				pco_wc.bodyEl.on('click', pco_wc.selectAnotherSelector, pco_wc.changeFromPco);
+			}
+			pco_wc.bodyEl.on('change', 'input[name="payment_method"]', pco_wc.maybeChangeToPco);
 		},
 	}
 	pco_wc.init();

@@ -61,3 +61,23 @@ function pco_wc_unset_sessions() {
 	WC()->session->__unset( 'payson_payment_id' );
 	WC()->session->__unset( 'pco_wc_update_md5' );
 }
+
+/**
+ * Shows select another payment method button on Payson Checkout page.
+ *
+ * @return void
+ */
+function pco_wc_show_another_gateway_button() {
+	$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+	if ( count( $available_gateways ) > 1 ) {
+		$settings                   = get_option( 'woocommerce_paysoncheckout_settings' );
+		$select_another_method_text = isset( $settings['select_another_method_text'] ) && '' !== $settings['select_another_method_text'] ? $settings['select_another_method_text'] : __( 'Select another payment method', 'klarna-checkout-for-woocommerce' );
+		?>
+		<p class="paysoncheckout-select-other-wrapper">
+			<a class="checkout-button button" href="#" id="paysoncheckout-select-other">
+				<?php echo $select_another_method_text; ?>
+			</a>
+		</p>
+		<?php
+	}
+}
