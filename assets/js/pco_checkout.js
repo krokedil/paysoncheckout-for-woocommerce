@@ -22,6 +22,10 @@ jQuery(function($) {
 		 */
 		documentReady: function() {
 			pco_wc.pcoFreeze;
+			
+			// Set order comment data and move field.
+			$('#order_comments').val( localStorage.getItem( 'pco_wc_order_comment' ) );
+			$('.woocommerce-additional-fields').appendTo('#pco-extra-checkout-fields');
 		},
 
 		/*
@@ -200,6 +204,14 @@ jQuery(function($) {
 			}
 		},
 
+		/**
+		 * Updates the order comment local storage.
+		 */
+		updateOrderComment: function() {
+			let val = $('#order_comments').val();
+			localStorage.setItem( 'pco_wc_order_comment', val );
+		},
+
 		/*
 		 * Locks the iFrame. 
 		 */
@@ -242,6 +254,10 @@ jQuery(function($) {
 
 				// Change from PCO.
 				pco_wc.bodyEl.on('click', pco_wc.selectAnotherSelector, pco_wc.changeFromPco);
+
+				// Catch changes to order notes.
+				pco_wc.bodyEl.on('change', '#order_comments', pco_wc.updateOrderComment);
+
 			}
 			pco_wc.bodyEl.on('change', 'input[name="payment_method"]', pco_wc.maybeChangeToPco);
 		},

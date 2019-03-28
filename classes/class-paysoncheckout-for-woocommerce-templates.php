@@ -88,8 +88,8 @@ class PaysonCheckout_For_WooCommerce_Templates {
 			<?php do_action( 'woocommerce_checkout_shipping' ); ?>
 			<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
 			<input id="payment_method_paysoncheckout" type="radio" class="input-radio" name="payment_method" value="paysoncheckout" checked="checked" />
-			</div>
-			<div id="pco-extra-checkout-fields">
+		</div>
+		<div id="pco-extra-checkout-fields">
 		</div>
 		<?php
 	}

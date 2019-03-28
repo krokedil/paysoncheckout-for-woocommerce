@@ -5,17 +5,11 @@ jQuery(function($) {
 		 * Runs on the $(document).ready event.
 		 */
 		documentReady: function() {
-			// Add the modal window to the page.
-			pco_wc.addModal();
-			// Submit the form.
-			pco_wc.submit()
-		},
+			// Set the WooCommerce order comment.
+			pco_wc.setOrderComment();
 
-		/*
-		 * Adds the modal window to the page. 
-		 */
-		addModal: function() {
-	
+			// Submit the form.
+			pco_wc.submit();
 		},
 
 		/*
@@ -50,6 +44,13 @@ jQuery(function($) {
 			});
 		},
 
+		/**
+		 * Sets the order comment, and removes the local storage after.
+		 */
+		setOrderComment: function() {
+			$('#order_comments').val( localStorage.getItem( 'pco_wc_order_comment' ) );
+			localStorage.removeItem( 'pco_wc_order_comment' );
+		},
 		/*
 		 * Initiates the script and sets the triggers for the functions.
 		 */
