@@ -42,7 +42,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		}
 
 		// Check if we have a payment id.
-		$payment_id = get_post_meta( $order_id, '_paysoncheckout_payment_id', true );
+		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
 		if ( empty( $payment_id ) ) {
 			$order->add_order_note( __( 'PaysonCheckout reservation could not be cancelled. Missing Payson payment id.', 'woocommerce-gateway-paysoncheckout' ) );
 			return;
@@ -108,7 +108,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		}
 
 		// Check if we have a payment id.
-		$payment_id = get_post_meta( $order_id, '_paysoncheckout_payment_id', true );
+		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
 		if ( empty( $payment_id ) ) {
 			$order->add_order_note( __( 'PaysonCheckout reservation could not be activated. Missing Payson payment id.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->set_status( 'on-hold' );
@@ -179,7 +179,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		}
 
 		// Check if we have a payment id.
-		$payment_id = get_post_meta( $order_id, '_paysoncheckout_payment_id', true );
+		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
 		if ( empty( $payment_id ) ) {
 			$order->add_order_note( __( 'PaysonCheckout order could not be refunded. Missing Payson payment id.', 'woocommerce-gateway-paysoncheckout' ) );
 			return false;
