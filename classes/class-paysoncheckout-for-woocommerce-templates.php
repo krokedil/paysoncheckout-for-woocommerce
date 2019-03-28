@@ -15,6 +15,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	public function __construct() {
 		add_filter( 'woocommerce_locate_template', array( $this, 'override_template' ), 10, 3 );
 		add_action( 'pco_wc_after_wrapper', array( $this, 'add_wc_form' ), 10 );
+		add_action( 'pco_wc_before_checkout_form', 'maybe_show_validation_error_message', 5 );
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_login_form', 10 );
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_coupon_form', 20 );
 		add_action( 'pco_wc_before_snippet', 'pco_wc_show_another_gateway_button', 20 );

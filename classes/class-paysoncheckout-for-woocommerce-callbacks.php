@@ -66,7 +66,13 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		} else {
 			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $_GET['checkout'], 'CALLBACK - GET', 'Payson Validation callback', $_GET, $this->validation_messages, 400 );
 			PaysonCheckout_For_WooCommerce_Logger::log( $log );
-			header( 'HTTP/1.0 400 Bad Request' );
+			$redirect = add_query_arg(
+				'pco_validation_error',
+				base64_encode( json_encode( $this->validation_messages ) ),
+				wc_get_checkout_url()
+			);
+			header( 'HTTP/1.0 303 See Other' );
+			header( 'Location: ' . $redirect );
 		}
 	}
 

@@ -81,3 +81,17 @@ function pco_wc_show_another_gateway_button() {
 		<?php
 	}
 }
+
+/**
+ * Maybe shows error messages if any are set.
+ *
+ * @return void
+ */
+function maybe_show_validation_error_message() {
+	if ( isset( $_GET['pco_validation_error'] ) && is_checkout() ) {
+		$errors = json_decode( base64_decode( $_GET['pco_validation_error'] ), true );
+		foreach ( $errors as $error ) {
+			wc_add_notice( $error, 'error' );
+		}
+	}
+}
