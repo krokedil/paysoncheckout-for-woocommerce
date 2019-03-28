@@ -39,6 +39,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$this->request_phone    = $this->get_option( 'request_phone' );
 		$this->debug            = $this->get_option( 'debug' );
 		$this->order_management = $this->get_option( 'order_management' );
+		$this->order_validation = $this->get_option( 'order_validation' );
 
 		// Supports.
 		$this->supports = array( 'products', 'refunds' );

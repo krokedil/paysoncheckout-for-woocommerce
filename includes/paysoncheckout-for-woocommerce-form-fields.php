@@ -78,6 +78,12 @@ $settings = array(
 		'label'   => __( 'Check this box to require the customer to fill in his phone number.', 'woocommerce-gateway-paysoncheckout' ),
 		'default' => 'no',
 	),
+	'order_validation'              => array(
+		'title'   => __( 'Enable order validation', 'woocommerce-gateway-paysoncheckout' ),
+		'type'    => 'checkbox',
+		'label'   => __( 'Check this box to perform order validation before payment.', 'woocommerce-gateway-paysoncheckout' ),
+		'default' => 'no',
+	),
 	'debug'                      => array(
 		'title'       => __( 'Debug Log', 'woocommerce-gateway-paysoncheckout' ),
 		'type'        => 'checkbox',
