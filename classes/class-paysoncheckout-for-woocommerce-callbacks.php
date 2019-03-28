@@ -28,6 +28,13 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	public $validation_messages = array();
 
 	/**
+	 * The Payson order
+	 *
+	 * @var array The Payson order object.
+	 */
+	public $payson_order = array();
+
+	/**
 	 * Class constructor.
 	 */
 	public function __construct() {
@@ -41,7 +48,10 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @return void
 	 */
 	public function validate_cb() {
-		// @todo Implement the method properly once Payson has their JS event in place.
+		// Get the payson order.
+		$payment_id         = $_GET['checkout'];
+		$this->payson_order = PCO_WC()->get_order->request( $payment_id );
+
 		// Check if we have a session id.
 		$this->check_session_id();
 
@@ -55,9 +65,8 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$this->check_woo_notices();
 
 		// Check order amount match.
-		// Check that we have shipping if needed.
-		// Check if user is logged in or not if needed.
-		// Check that we have the full customer data set.
+		$this->check_order_amount();
+
 		// Check if order is still valid.
 		if ( $this->order_is_valid ) {
 			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $_GET['checkout'], 'CALLBACK - GET', 'Payson Validation callback', $_GET, 'OK', 200 );
@@ -103,11 +112,8 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @return void
 	 */
 	public function check_payment_id_in_order() {
-		// Get the payson order.
-		$payment_id   = $_GET['checkout'];
-		$payson_order = PCO_WC()->get_order->request( $payment_id );
 		// Check the merchant URL.
-		if ( is_wp_error( $payson_order ) || ! strpos( $payson_order['merchant']['confirmationUri'], 'pco_payment_id' ) ) {
+		if ( is_wp_error( $this->payson_order ) || ! strpos( $this->payson_order['merchant']['confirmationUri'], 'pco_payment_id' ) ) {
 			$this->order_is_valid                            = false;
 			$this->validation_messages['missing_payment_id'] = __( 'No payment ID set in confirmation URL.', 'woocommerce-gateway-payson' );
 		}
@@ -140,6 +146,20 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			foreach ( $errors as $error ) {
 				$this->validation_messages['wc_notice'] = $error;
 			}
+		}
+	}
+
+	/**
+	 * Checks if Payson order total equals the current cart total.
+	 *
+	 * @return void
+	 */
+	public function check_order_amount() {
+		$payson_total = floatval( $this->payson_order['order']['totalPriceIncludingTax'] );
+		$woo_total    = floatval( WC()->cart->get_total( 'payson_validation' ) );
+		if ( $woo_total !== $payson_total ) {
+			$this->order_is_valid                      = false;
+			$this->validation_messages['amount_error'] = __( 'Missmatch between the Payson and WooCommerce order total.', 'woocommerce-gateway-payson' );
 		}
 	}
 }

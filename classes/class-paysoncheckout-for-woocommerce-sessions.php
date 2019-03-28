@@ -62,17 +62,12 @@ class PaysonCheckout_For_WooCommerce_Sessions {
 	/**
 	 * Sets the session from the session id.
 	 *
-	 * @param string $session_id The WooCommerce session id.
 	 * @return void
 	 */
-	public function set_session_from_id( $session_id = null ) {
+	public function set_session_from_id() {
 		if ( isset( $_GET['pco_session_id'] ) ) { // phpcs: ignore.
-			if ( null === $session_id ) {
-				$session_id = $this->get_session_id;
-			}
 			$sessions_handler = new WC_Session_Handler();
-			$session_data     = $sessions_handler->get_session( $session_id );
-
+			$session_data     = $sessions_handler->get_session( $_GET['pco_session_id'] );
 			if ( ! empty( $session_data ) ) {
 				WC()->session = $sessions_handler;
 				foreach ( $session_data as $key => $value ) {
