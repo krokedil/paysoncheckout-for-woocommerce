@@ -67,6 +67,9 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		// Check order amount match.
 		$this->check_order_amount();
 
+		// Check that all items are still in stock.
+		$this->check_all_in_stock();
+
 		// Check if order is still valid.
 		if ( $this->order_is_valid ) {
 			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $_GET['checkout'], 'CALLBACK - GET', 'Payson Validation callback', $_GET, 'OK', 200 );
@@ -160,6 +163,19 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		if ( $woo_total !== $payson_total ) {
 			$this->order_is_valid                      = false;
 			$this->validation_messages['amount_error'] = __( 'Missmatch between the Payson and WooCommerce order total.', 'woocommerce-gateway-payson' );
+		}
+	}
+
+	/**
+	 * Checks if all cart items are still in stock.
+	 *
+	 * @return void
+	 */
+	public function check_all_in_stock() {
+		$stock_check = WC()->cart->check_cart_item_stock();
+		if ( true !== $stock_check ) {
+			$this->order_is_valid                      = false;
+			$this->validation_messages['amount_error'] = __( 'Not all items are in stock.', 'woocommerce-gateway-payson' );
 		}
 	}
 }
