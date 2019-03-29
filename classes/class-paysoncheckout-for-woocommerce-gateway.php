@@ -163,6 +163,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			}
 			// Set post meta and complete order.
 			update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
 			$order->payment_complete( $payson_order['purchaseId'] );
 			// Unset sessions.
 			pco_wc_unset_sessions();
