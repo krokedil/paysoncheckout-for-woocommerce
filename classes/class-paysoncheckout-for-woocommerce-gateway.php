@@ -45,6 +45,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 
 		// Actions.
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'show_thank_you_snippet' ) );
 	}
 
 	/**
@@ -176,6 +177,20 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			}
 			return $error_message;
 		}
+	}
+
+	/**
+	 * Shows the snippet on the thankyou page.
+	 *
+	 * @return void
+	 */
+	public function show_thank_you_snippet() {
+		// Show snippet.
+		pco_wc_show_snippet();
+
+		// Clear sessionStorage.
+		echo '<script>sessionStorage.removeItem("PCORequiredFields")</script>';
+		echo '<script>sessionStorage.removeItem("PCOFieldData")</script>';
 	}
 }
 

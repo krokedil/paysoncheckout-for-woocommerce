@@ -5,6 +5,9 @@ jQuery(function($) {
 		 * Runs on the $(document).ready event.
 		 */
 		documentReady: function() {
+			// Set extra fields values.
+			pco_wc.setFormFieldValues();
+			
 			// Set the WooCommerce order comment.
 			pco_wc.setOrderComment();
 
@@ -51,6 +54,33 @@ jQuery(function($) {
 			$('#order_comments').val( localStorage.getItem( 'pco_wc_order_comment' ) );
 			localStorage.removeItem( 'pco_wc_order_comment' );
 		},
+
+		/**
+		 * Sets the form fields values from the session storage.
+		 */
+		setFormFieldValues: function() {
+			var form_data = JSON.parse( sessionStorage.getItem( 'PCOFieldData' ) );
+			$.each( form_data, function( name, value ) {
+				var field = $('*[name="' + name + '"]');
+				var saved_value = value;
+				// Check if field is a checkbox
+				if( field.is(':checkbox') ) {
+					if( saved_value !== '' ) {
+						field.prop('checked', true);
+					}
+				} else if( field.is(':radio') ) {
+					for ( x = 0; x < field.length; x++ ) {
+						if( field[x].value === value ) {
+							$(field[x]).prop('checked', true);
+						}
+					}
+				} else {
+					field.val( saved_value );
+				}
+
+			});
+		},
+
 		/*
 		 * Initiates the script and sets the triggers for the functions.
 		 */

@@ -16,6 +16,12 @@ jQuery(function($) {
 		// Address data.
 		addressData: [],
 
+		// Extra checkout fields.
+		needsUpdate: false,
+		extraFieldsSelectorText: 'div#pco-extra-checkout-fields input[type="text"], div#pco-extra-checkout-fields input[type="password"], div#pco-extra-checkout-fields textarea, div#pco-extra-checkout-fields input[type="email"], div#pco-extra-checkout-fields input[type="tel"]',
+		extraFieldsSelectorNonText: 'div#pco-extra-checkout-fields select, div#pco-extra-checkout-fields input[type="radio"], div#pco-extra-checkout-fields input[type="checkbox"], div#pco-extra-checkout-fields input.checkout-date-picker, input#terms input[type="checkbox"]',
+
+
 		/*
 		 * Document ready function. 
 		 * Runs on the $(document).ready event.
@@ -23,9 +29,11 @@ jQuery(function($) {
 		documentReady: function() {
 			pco_wc.pcoFreeze;
 			
-			// Set order comment data and move field.
+			// Extra checkout fields.
+			pco_wc.setFormFieldValues();
+			pco_wc.moveExtraCheckoutFields();
+			pco_wc.checkFormData();
 			$('#order_comments').val( localStorage.getItem( 'pco_wc_order_comment' ) );
-			$('.woocommerce-additional-fields').appendTo('#pco-extra-checkout-fields');
 		},
 
 		/*
@@ -236,6 +244,141 @@ jQuery(function($) {
     		iframe.contentWindow.postMessage('updatePage', '*');
 		},
 
+		/**
+		 * Checks for form Data on the page, and sets the checkout fields session storage.
+		 */
+		checkFormData: function() {
+			let form = $('form[name="checkout"] input, form[name="checkout"] select, textarea');
+				let requiredFields = [];
+				let fieldData = {};
+				// Get all form fields.
+				for ( i = 0; i < form.length; i++ ) { 
+					// Check if the form has a name set.
+					if ( form[i]['name'] !== '' ) {
+						let name    = form[i]['name'];
+						let field = $('*[name="' + name + '"]');
+						let required = ( $('p#' + name + '_field').hasClass('validate-required') ? true : false );
+						// Only keep track of non standard WooCommerce checkout fields
+						if ($.inArray(name, pco_wc_params.standard_woo_checkout_fields) == '-1' && name.indexOf('[qty]') < 0 && name.indexOf( 'shipping_method' ) < 0 && name.indexOf( 'payment_method' ) < 0 ) {
+							// Only keep track of required fields for validation.
+							if ( required === true ) {
+								requiredFields.push(name);
+							}
+							// Get the value from the field.
+							let value = '';
+							if( field.is(':checkbox') ) {
+								if( field.is(':checked') ) {
+									value = form[i].value;
+								}
+							} else if( field.is(':radio') ) {
+								if( field.is(':checked') ) {
+									value = $( 'input[name="' + name + '"]:checked').val();
+								}
+							} else {
+								value = form[i].value
+							}
+							// Set field data with values.
+							fieldData[name] = value;
+						}
+					}
+				}
+				sessionStorage.setItem( 'PCORequiredFields', JSON.stringify( requiredFields ) );
+				sessionStorage.setItem( 'PCOFieldData', JSON.stringify( fieldData ) );
+				pco_wc.needsUpdate = true;
+				pco_wc.validateRequiredFields();
+		},
+
+		/**
+		 * Validates the required fields, checks if they have a value set.
+		 */
+		validateRequiredFields: function() {
+			// Get data from session storage.
+			let requiredFields = JSON.parse( sessionStorage.getItem( 'PCORequiredFields' ) );
+			let fieldData = JSON.parse( sessionStorage.getItem( 'PCOFieldData' ) );
+			// Check if all data is set for required fields.
+			let allValid = true;
+			for( i = 0; i < requiredFields.length; i++ ) {
+				fieldName = requiredFields[i];
+				if ( '' === fieldData[fieldName] ) {
+					allValid = false;
+				}
+			}
+			pco_wc.updateSession( allValid );
+		},
+
+		/**
+		 * Updates the session with the correct boolean.
+		 * 
+		 * @param {boolean} allValid 
+		 */
+		updateSession: function( allValid ) {
+			console.log( 'updating' );
+			if ( false === pco_wc.needsUpdate ) {
+				return;
+			}
+			// Update the session with the current value.
+			$.ajax({
+				type: 'POST',
+				url: pco_wc_params.update_session_url,
+				data: {
+					bool: allValid,
+					nonce: pco_wc_params.update_session_nonce
+				},
+				dataType: 'json',
+				success: function(data) {
+				},
+				error: function(data) {
+				},
+				complete: function(data) {
+					pco_wc.needsUpdate = false;
+				}
+			});
+		},
+
+		/**
+		 * Sets the form fields values from the session storage.
+		 */
+		setFormFieldValues: function() {
+			let form_data = JSON.parse( sessionStorage.getItem( 'PCOFieldData' ) );
+			$.each( form_data, function( name, value ) {
+				let field = $('*[name="' + name + '"]');
+				let saved_value = value;
+				// Check if field is a checkbox
+				if( field.is(':checkbox') ) {
+					if( saved_value !== '' ) {
+						field.prop('checked', true);
+					}
+				} else if( field.is(':radio') ) {
+					for ( x = 0; x < field.length; x++ ) {
+						if( field[x].value === value ) {
+							$(field[x]).prop('checked', true);
+						}
+					}
+				} else {
+					field.val( saved_value );
+				}
+
+			});
+		},
+
+		/**
+		 * Moves all non standard fields to the extra checkout fields.
+		 */
+		moveExtraCheckoutFields: function() {
+			// Move order comments.
+			$('.woocommerce-additional-fields').appendTo('#pco-extra-checkout-fields');
+
+			let form = $('form[name="checkout"] input, form[name="checkout"] select, textarea');
+			for ( i = 0; i < form.length; i++ ) {
+				let name = form[i]['name'];
+				// Check if this is a standard field.
+				if ( $.inArray( name, pco_wc_params.standard_woo_checkout_fields ) === -1 ) {
+					// This is not a standard Woo field, move to our div.
+					$('p#' + name + '_field').appendTo('#pco-extra-checkout-fields');
+				}
+			}
+		},
+
 		/*
 		 * Initiates the script and sets the triggers for the functions.
 		 */
@@ -257,6 +400,11 @@ jQuery(function($) {
 
 				// Catch changes to order notes.
 				pco_wc.bodyEl.on('change', '#order_comments', pco_wc.updateOrderComment);
+
+				// Extra checkout fields.
+				pco_wc.bodyEl.on('blur', pco_wc.extraFieldsSelectorText, pco_wc.checkFormData);
+				pco_wc.bodyEl.on('change', pco_wc.extraFieldsSelectorNonText, pco_wc.checkFormData);
+				pco_wc.bodyEl.on('click', 'input#terms', pco_wc.checkFormData);
 
 			}
 			pco_wc.bodyEl.on('change', 'input[name="payment_method"]', pco_wc.maybeChangeToPco);

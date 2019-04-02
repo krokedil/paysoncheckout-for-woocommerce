@@ -203,15 +203,21 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						PAYSONCHECKOUT_VERSION,
 						true
 					);
+
+					$standard_woo_checkout_fields = array( 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_address_2', 'billing_postcode', 'billing_city', 'billing_phone', 'billing_email', 'billing_state', 'billing_country', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_address_2', 'shipping_postcode', 'shipping_city', 'shipping_state', 'shipping_country', 'terms', 'account_username', 'account_password' );
+
 					$params = array(
-						'ajax_url'                    => admin_url( 'admin-ajax.php' ),
-						'select_another_method_text'  => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
-						'address_changed_url'         => WC_AJAX::get_endpoint( 'pco_wc_address_changed' ),
-						'address_changed_nonce'       => wp_create_nonce( 'pco_wc_address_changed' ),
-						'update_order_url'            => WC_AJAX::get_endpoint( 'pco_wc_update_checkout' ),
-						'update_order_nonce'          => wp_create_nonce( 'pco_wc_update_checkout' ),
-						'change_payment_method_url'   => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
-						'change_payment_method_nonce' => wp_create_nonce( 'pco_wc_change_payment_method' ),
+						'ajax_url'                     => admin_url( 'admin-ajax.php' ),
+						'select_another_method_text'   => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
+						'standard_woo_checkout_fields' => $standard_woo_checkout_fields,
+						'address_changed_url'          => WC_AJAX::get_endpoint( 'pco_wc_address_changed' ),
+						'address_changed_nonce'        => wp_create_nonce( 'pco_wc_address_changed' ),
+						'update_order_url'             => WC_AJAX::get_endpoint( 'pco_wc_update_checkout' ),
+						'update_order_nonce'           => wp_create_nonce( 'pco_wc_update_checkout' ),
+						'change_payment_method_url'    => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
+						'change_payment_method_nonce'  => wp_create_nonce( 'pco_wc_change_payment_method' ),
+						'update_session_url'           => WC_AJAX::get_endpoint( 'pco_wc_update_session' ),
+						'update_session_nonce'         => wp_create_nonce( 'pco_wc_update_session' ),
 					);
 					wp_localize_script(
 						'pco_wc',

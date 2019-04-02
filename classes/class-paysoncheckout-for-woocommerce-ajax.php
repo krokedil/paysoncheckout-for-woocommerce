@@ -30,6 +30,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			'pco_wc_get_order'             => true,
 			'pco_wc_checkout_error'        => true,
 			'pco_wc_change_payment_method' => true,
+			'pco_wc_update_session'        => true,
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_woocommerce_' . $ajax_event, array( __CLASS__, $ajax_event ) );
@@ -250,6 +251,23 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			'redirect' => $redirect,
 		);
 		wp_send_json_success( $data );
+		wp_die();
+	}
+
+	/**
+	 * Saves the valid checkout session.
+	 *
+	 * @return void
+	 */
+	public static function pco_wc_update_session() {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_update_session' ) ) { // Input var okay.
+			wp_send_json_error( 'bad_nonce' );
+			exit;
+		}
+		error_log( 'in ajax' );
+
+		WC()->session->set( 'pco_valid_checkout', $_POST['bool'] );
+		wp_send_json_success();
 		wp_die();
 	}
 }
