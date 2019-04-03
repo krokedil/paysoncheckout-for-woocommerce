@@ -12,9 +12,9 @@
  * Domain Path:     /languages
  *
  * WC requires at least: 3.0
- * WC tested up to: 3.5.5
+ * WC tested up to: 3.5.7
  *
- * Copyright:       © 2016-2018 Krokedil.
+ * Copyright:       © 2016-2019 Krokedil.
  * License:         GNU General Public License v3.0
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.html
  *
