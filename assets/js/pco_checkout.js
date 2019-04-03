@@ -17,7 +17,7 @@ jQuery(function($) {
 		addressData: [],
 
 		// Extra checkout fields.
-		needsUpdate: false,
+		blocked: false,
 		extraFieldsSelectorText: 'div#pco-extra-checkout-fields input[type="text"], div#pco-extra-checkout-fields input[type="password"], div#pco-extra-checkout-fields textarea, div#pco-extra-checkout-fields input[type="email"], div#pco-extra-checkout-fields input[type="tel"]',
 		extraFieldsSelectorNonText: 'div#pco-extra-checkout-fields select, div#pco-extra-checkout-fields input[type="radio"], div#pco-extra-checkout-fields input[type="checkbox"], div#pco-extra-checkout-fields input.checkout-date-picker, input#terms input[type="checkbox"]',
 
@@ -32,7 +32,6 @@ jQuery(function($) {
 			// Extra checkout fields.
 			pco_wc.setFormFieldValues();
 			pco_wc.moveExtraCheckoutFields();
-			pco_wc.checkFormData();
 			$('#order_comments').val( localStorage.getItem( 'pco_wc_order_comment' ) );
 		},
 
@@ -232,8 +231,10 @@ jQuery(function($) {
 		 * Unlocks the iFrame. 
 		 */
 		pcoResume: function() {
-			let iframe = document.getElementById('paysonIframe');
-    		iframe.contentWindow.postMessage('release', '*');
+			if ( ! pco_wc.blocked ) {
+				let iframe = document.getElementById('paysonIframe');
+				iframe.contentWindow.postMessage('release', '*');
+			}
 		},
 
 		/*
@@ -284,7 +285,6 @@ jQuery(function($) {
 				}
 				sessionStorage.setItem( 'PCORequiredFields', JSON.stringify( requiredFields ) );
 				sessionStorage.setItem( 'PCOFieldData', JSON.stringify( fieldData ) );
-				pco_wc.needsUpdate = true;
 				pco_wc.validateRequiredFields();
 		},
 
@@ -303,36 +303,28 @@ jQuery(function($) {
 					allValid = false;
 				}
 			}
-			pco_wc.updateSession( allValid );
+			pco_wc.maybeFreezeIframe( allValid );
 		},
 
 		/**
-		 * Updates the session with the correct boolean.
+		 * Maybe freezes the iframe to prevent anyone from completing the order before filling in all required fields.
 		 * 
 		 * @param {boolean} allValid 
 		 */
-		updateSession: function( allValid ) {
-			console.log( 'updating' );
-			if ( false === pco_wc.needsUpdate ) {
-				return;
+		maybeFreezeIframe: function( allValid ) {
+			if ( true === allValid ) {
+				pco_wc.blocked = false;
+				$('#pco-required-fields-notice').remove();
+				pco_wc.pcoResume();
+			} else 	if( ! $('#pco-required-fields-notice').length ) { // Only if we dont have an error message already.
+				pco_wc.blocked = true;
+				$('form.checkout').prepend( '<div id="pco-required-fields-notice" class="woocommerce-NoticeGroup woocommerce-NoticeGroup-updateOrderReview"><ul class="woocommerce-error" role="alert"><li>' +  pco_wc_params.required_fields_text + '</li></ul></div>' );
+				var etop = $('form.checkout').offset().top;
+				$('html, body').animate({
+					scrollTop: etop
+					}, 1000);
+				pco_wc.pcoFreeze();
 			}
-			// Update the session with the current value.
-			$.ajax({
-				type: 'POST',
-				url: pco_wc_params.update_session_url,
-				data: {
-					bool: allValid,
-					nonce: pco_wc_params.update_session_nonce
-				},
-				dataType: 'json',
-				success: function(data) {
-				},
-				error: function(data) {
-				},
-				complete: function(data) {
-					pco_wc.needsUpdate = false;
-				}
-			});
 		},
 
 		/**
@@ -394,6 +386,7 @@ jQuery(function($) {
 				pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
 				// Updated Checkout.
 				pco_wc.bodyEl.on('updated_checkout', pco_wc.updatePaysonOrder );
+				pco_wc.bodyEl.on( 'updated_checkout', pco_wc.validateRequiredFields )
 
 				// Change from PCO.
 				pco_wc.bodyEl.on('click', pco_wc.selectAnotherSelector, pco_wc.changeFromPco);

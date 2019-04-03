@@ -70,9 +70,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		// Check that all items are still in stock.
 		$this->check_all_in_stock();
 
-		// Check if all required fields are filled.
-		$this->check_valid_checkout_fields();
-
 		// Check if order is still valid.
 		if ( $this->order_is_valid ) {
 			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $_GET['checkout'], 'CALLBACK - GET', 'Payson Validation callback', $_GET, 'OK', 200 );
@@ -180,20 +177,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			$this->order_is_valid                      = false;
 			$this->validation_messages['amount_error'] = __( 'Not all items are in stock.', 'woocommerce-gateway-payson' );
 		}
-	}
-
-	/**
-	 * Checks the session if all required checkout fields are filled in.
-	 *
-	 * @return void
-	 */
-	public function check_valid_checkout_fields() {
-		$has_required_data = false;
-		$session_variable  = WC()->session->get( 'pco_valid_checkout' );
-		// Check if all fields are valid.
-		if ( 'true' !== $session_variable ) {
-			$this->order_is_valid                         = false;
-			$this->validation_messages['required_fields'] = __( 'Please fill in all required fields.', 'woocommerce-gateway-payson' );      }
 	}
 }
 new PaysonCheckout_For_WooCommerce_Callbacks();

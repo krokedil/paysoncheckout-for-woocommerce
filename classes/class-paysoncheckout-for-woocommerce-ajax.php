@@ -253,22 +253,5 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		wp_send_json_success( $data );
 		wp_die();
 	}
-
-	/**
-	 * Saves the valid checkout session.
-	 *
-	 * @return void
-	 */
-	public static function pco_wc_update_session() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_update_session' ) ) { // Input var okay.
-			wp_send_json_error( 'bad_nonce' );
-			exit;
-		}
-		error_log( 'in ajax' );
-
-		WC()->session->set( 'pco_valid_checkout', $_POST['bool'] );
-		wp_send_json_success();
-		wp_die();
-	}
 }
 PaysonCheckout_For_WooCommerce_AJAX::init();

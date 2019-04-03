@@ -216,8 +216,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						'update_order_nonce'           => wp_create_nonce( 'pco_wc_update_checkout' ),
 						'change_payment_method_url'    => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
 						'change_payment_method_nonce'  => wp_create_nonce( 'pco_wc_change_payment_method' ),
-						'update_session_url'           => WC_AJAX::get_endpoint( 'pco_wc_update_session' ),
-						'update_session_nonce'         => wp_create_nonce( 'pco_wc_update_session' ),
+						'required_fields_text'         => __( 'Please fill in all required checkout fields.', 'woocommerce-gateway-paysoncheckout' ),
 					);
 					wp_localize_script(
 						'pco_wc',
