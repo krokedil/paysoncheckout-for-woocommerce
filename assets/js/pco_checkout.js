@@ -27,10 +27,11 @@ jQuery(function($) {
 		 * Runs on the $(document).ready event.
 		 */
 		documentReady: function() {
-			pco_wc.pcoFreeze;
+			pco_wc.pcoFreeze();
 			
 			// Extra checkout fields.
 			pco_wc.setFormFieldValues();
+			pco_wc.checkFormData();
 			pco_wc.moveExtraCheckoutFields();
 			$('#order_comments').val( localStorage.getItem( 'pco_wc_order_comment' ) );
 		},
@@ -52,6 +53,7 @@ jQuery(function($) {
 		 * Runs when PaysonEmbeddedAddressChanged is triggered ( address changed ).
 		 */
 		addressChanged: function( data /* Address from Payson */ ) {
+			pco_wc.pcoFreeze();
 			let address = data.detail;
 			$.ajax({
 				type: 'POST',
@@ -98,7 +100,6 @@ jQuery(function($) {
 						$('.payson-error').remove();
 						$('.woocommerce-checkout-review-order-table').after( '<ul class="payson-error woocommerce-error" role="alert"><li>' + result.data + '</li></ul>' );
 					} else {
-						console.log( result.data );
 						// Set address data if we have it.
 						if( result.data.address !== null ) {
 							pco_wc.addressData = result.data.address;
@@ -107,10 +108,11 @@ jQuery(function($) {
 						// Update the iFrame if needed.
 						if( result.data.changed === true ) {
 							pco_wc.pcoUpdate();
+						} else {
+							pco_wc.pcoResume();
 						}
-						// Remove any error messages and resume the iFrame.
+						// Remove any error messages.
 						$('.payson-error').remove();
-						pco_wc.pcoResume();
 					}
 				}
 			});
@@ -174,7 +176,6 @@ jQuery(function($) {
 				success: function (data) {},
 				error: function (data) {},
 				complete: function (data) {
-					console.log( data );
 					window.location.href = data.responseJSON.data.redirect;
 				}
 			});
@@ -241,8 +242,10 @@ jQuery(function($) {
 		 * Updates the iFrame.
 		 */
 		pcoUpdate: function() {
-			let iframe = document.getElementById('paysonIframe');
-    		iframe.contentWindow.postMessage('updatePage', '*');
+			if ( ! pco_wc.blocked ) {
+				let iframe = document.getElementById('paysonIframe');
+				iframe.contentWindow.postMessage('updatePage', '*');
+			}
 		},
 
 		/**
@@ -386,7 +389,6 @@ jQuery(function($) {
 				pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
 				// Updated Checkout.
 				pco_wc.bodyEl.on('updated_checkout', pco_wc.updatePaysonOrder );
-				pco_wc.bodyEl.on( 'updated_checkout', pco_wc.validateRequiredFields )
 
 				// Change from PCO.
 				pco_wc.bodyEl.on('click', pco_wc.selectAnotherSelector, pco_wc.changeFromPco);
