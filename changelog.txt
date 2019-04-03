@@ -1,4 +1,15 @@
 *** PaysonCheckout 2.0 Changelog ***
+2019.04.03		- version 2.0.0
+* Feature		- Added support for Extra Checkout field validation.
+* Feature		- Added support for full order refunds with Payson.
+* Feature		- Better error handling and logging.
+* Feature		- Added stock, coupon and order total validation before completing checkout.
+* Feature       - Added filters to all request arguments. Create and update Payson order. 
+* Tweak			- Complete rewrite of plugin.
+* Tweak			- Only create a WooCommerce order when Payson payment is completed.
+* Tweak			- Update the order reference in Payson on WooCommerce payment complete.
+* Tweak			- Optimized checkout process.
+* Tweak			- Optimized JavaScript for checkout and confirmation page.
 
 2018.10.16    	- version 1.4.0
 * Feature		- Added support for wp_add_privacy_policy_content (for GDPR compliance). More info: https://core.trac.wordpress.org/attachment/ticket/43473/PRIVACY-POLICY-CONTENT-HOOK.md.
