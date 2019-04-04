@@ -2,9 +2,9 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 4.9.8
+Tested up to: 5.1.1
 WC requires at least: 3.0
-WC tested up to: 3.4.6
+WC tested up to: 3.5.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,18 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2019.04.03	- version 2.0.0 =
+* Feature		- Added support for Extra Checkout field validation.
+* Feature		- Added support for full order refunds with Payson.
+* Feature		- Better error handling and logging.
+* Feature		- Added stock, coupon and order total validation before completing checkout.
+* Feature       - Added filters to all request arguments. Create and update Payson order. 
+* Tweak			- Complete rewrite of plugin.
+* Tweak			- Only create a WooCommerce order when Payson payment is completed.
+* Tweak			- Update the order reference in Payson on WooCommerce payment complete.
+* Tweak			- Optimized checkout process.
+* Tweak			- Optimized JavaScript for checkout and confirmation page.
 
 = 2018.10.16    - version 1.4.0 =
 * Feature		- Added support for wp_add_privacy_policy_content (for GDPR compliance). More info: https://core.trac.wordpress.org/attachment/ticket/43473/PRIVACY-POLICY-CONTENT-HOOK.md.
