@@ -321,12 +321,21 @@ jQuery(function($) {
 				pco_wc.pcoResume();
 			} else 	if( ! $('#pco-required-fields-notice').length ) { // Only if we dont have an error message already.
 				pco_wc.blocked = true;
+				pco_wc.maybePrintValidationMessage();
+				pco_wc.pcoFreeze();
+			}
+		},
+
+		/**
+		 * Maybe prints the validation error message.
+		 */
+		maybePrintValidationMessage: function() {
+			if ( true === pco_wc.blocked && ! $('#pco-required-fields-notice').length ) {
 				$('form.checkout').prepend( '<div id="pco-required-fields-notice" class="woocommerce-NoticeGroup woocommerce-NoticeGroup-updateOrderReview"><ul class="woocommerce-error" role="alert"><li>' +  pco_wc_params.required_fields_text + '</li></ul></div>' );
 				var etop = $('form.checkout').offset().top;
 				$('html, body').animate({
 					scrollTop: etop
-					}, 1000);
-				pco_wc.pcoFreeze();
+				}, 1000);
 			}
 		},
 
@@ -389,6 +398,7 @@ jQuery(function($) {
 				pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
 				// Updated Checkout.
 				pco_wc.bodyEl.on('updated_checkout', pco_wc.updatePaysonOrder );
+				pco_wc.bodyEl.on('updated_checkout', pco_wc.maybePrintValidationMessage	);
 
 				// Change from PCO.
 				pco_wc.bodyEl.on('click', pco_wc.selectAnotherSelector, pco_wc.changeFromPco);
