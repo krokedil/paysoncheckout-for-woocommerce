@@ -15,6 +15,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	public function __construct() {
 		add_filter( 'woocommerce_locate_template', array( $this, 'override_template' ), 10, 3 );
 		add_action( 'pco_wc_after_wrapper', array( $this, 'add_wc_form' ), 10 );
+		add_action( 'pco_wc_after_order_review', array( $this, 'add_extra_checkout_fields' ), 10 );
 		add_action( 'pco_wc_before_checkout_form', 'maybe_show_validation_error_message', 5 );
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_login_form', 10 );
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_coupon_form', 20 );
@@ -90,6 +91,16 @@ class PaysonCheckout_For_WooCommerce_Templates {
 			<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
 			<input id="payment_method_paysoncheckout" type="radio" class="input-radio" name="payment_method" value="paysoncheckout" checked="checked" />
 		</div>
+		<?php
+	}
+
+	/**
+	 * Adds the extra checkout field div to the checkout page.
+	 *
+	 * @return void
+	 */
+	public function add_extra_checkout_fields() {
+		?>
 		<div id="pco-extra-checkout-fields">
 		</div>
 		<?php
