@@ -41,7 +41,17 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$this->order_management = $this->get_option( 'order_management' );
 
 		// Supports.
-		$this->supports = array( 'products', 'refunds' );
+		$this->supports = array(
+			'products',
+			'refunds',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'multiple_subscriptions',
+		);
 
 		// Actions.
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );

@@ -40,10 +40,10 @@ function pco_wc_show_snippet() {
 function pco_wc_maybe_create_payson_order() {
 	// Check if we have a payment id. If we do get the order.
 	if ( WC()->session->get( 'payson_payment_id' ) ) {
-		$payson_order = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
+		$payson_order = pco_wc_get_order();
 	} else {
 		// Else create the order and maybe set payment id.
-		$payson_order = PCO_WC()->create_order->request();
+		$payson_order = pco_wc_create_order();
 		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
 			WC()->session->set( 'payson_payment_id', $payson_order['id'] );
 		}
@@ -94,4 +94,30 @@ function maybe_show_validation_error_message() {
 			wc_add_notice( $error, 'error' );
 		}
 	}
+}
+
+/**
+ * Creates either a normal order or a subscription order.
+ *
+ * @return array
+ */
+function pco_wc_create_order() {
+	// Check if the cart has a subscription.
+	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+		return PCO_WC()->create_recurring_order->request();
+	}
+	return PCO_WC()->create_order->request();
+}
+
+/**
+ * Gets either a normal order or a subscription order.
+ *
+ * @return array
+ */
+function pco_wc_get_order() {
+	// Check if the cart has a subscription.
+	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+		return PCO_WC()->get_recurring_order->request( WC()->session->get( 'payson_payment_id' ) );
+	}
+	return PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
 }

@@ -101,9 +101,10 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			wp_send_json_error( 'bad_nonce' );
 			exit;
 		}
+		$subscription = ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) ? true : false;
 
 		// Get the payson order.
-		$payson_order_tmp = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
+		$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_order->request( WC()->session->get( 'payson_payment_id' ) ) : PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
 		if ( is_wp_error( $payson_order_tmp ) ) {
 			// If error return error message.
 			$code          = $payson_order_tmp->get_error_code();
@@ -124,7 +125,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		WC()->cart->calculate_totals();
 
 		// Update the payson order.
-		$payson_order = PCO_WC()->update_order->request( null, $payson_data );
+		$payson_order = ( $subscription ) ? PCO_WC()->update_recurring_order->request( null, $payson_data ) : PCO_WC()->update_order->request( null, $payson_data );
 
 		if ( is_wp_error( $payson_order ) ) {
 			// If error return error message.
