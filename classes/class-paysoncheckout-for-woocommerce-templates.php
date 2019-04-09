@@ -85,7 +85,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 */
 	public function add_wc_form() {
 		?>
-		<div id="pco-wc-form" style="position:absolute; top:0; left:99999px;">
+		<div aria-hidden="true" id="pco-wc-form" style="position:absolute; top:0; left:99999px;">
 			<?php do_action( 'woocommerce_checkout_billing' ); ?>
 			<?php do_action( 'woocommerce_checkout_shipping' ); ?>
 			<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
