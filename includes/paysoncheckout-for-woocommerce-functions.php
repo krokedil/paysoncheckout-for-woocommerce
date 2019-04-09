@@ -41,11 +41,11 @@ function pco_wc_maybe_create_payson_order() {
 	// Check if we have a payment id. If we do get the order.
 	if ( WC()->session->get( 'payson_payment_id' ) ) {
 		$payson_order = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
-		// Check if the order has a valid status.
-		if ( ! pco_check_valid_order_status( $payson_order ) ) {
+		// Check if the order has a valid status and not on confirmation page or thank you page..
+		if ( ! pco_check_valid_order_status( $payson_order ) && ! isset( $_GET['pco_confirm'] ) && ! is_order_received_page() ) {
 			// If not clear session and rerun function to get a new order.
 			WC()->session->__unset( 'payson_payment_id' );
-			pco_wc_maybe_create_payson_order();
+			return pco_wc_maybe_create_payson_order();
 		}
 	} else {
 		// Else create the order and maybe set payment id.
