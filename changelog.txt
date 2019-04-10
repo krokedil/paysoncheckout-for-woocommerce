@@ -1,4 +1,12 @@
 *** PaysonCheckout 2.0 Changelog ***
+
+2019.04.10		- version 2.0.2
+* Enhancement   - Added check on Payson order status for checkout page to create a new checkout session if the order is expired, canceled and so on.
+* Enhancement   - Added integration information to all requests to Payson for easier debugging.
+* Tweak         - Removed setting for mandatory phone number. We now go off if the phone number field is required or not.
+* Tweak         - Moved a update checkout trigger to cover more scenarios for postcode based shipping.
+* Fix           - Fixed inline CSS to prevent an overflow scroll for mobile users on checkout page.
+
 2019.04.08		- version 2.0.1
 * Tweak			- Changed location of extra checkout fields to be above the iFrame.
 * Tweak			- Re-added the language pot file.

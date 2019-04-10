@@ -71,9 +71,6 @@ jQuery(function($) {
 					// Set address data.
 					pco_wc.addressData = address;
 					pco_wc.setAddressData();
-
-					// Update the checkout for postcode based shipping and resume the iFrame.
-					pco_wc.bodyEl.trigger('update_checkout');
 				}
 			});
 		},
@@ -143,6 +140,9 @@ jQuery(function($) {
 				$('#billing_country').val( pco_wc.addressData.countryCode );
 				$('#shipping_country').val( pco_wc.addressData.countryCode );
 			}
+			
+			// Update the checkout for postcode based shipping and resume the iFrame.
+			pco_wc.bodyEl.trigger('update_checkout');
 
 		},
 

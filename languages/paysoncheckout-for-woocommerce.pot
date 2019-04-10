@@ -20,7 +20,7 @@ msgstr ""
 msgid "Payson"
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:24, ../includes/paysoncheckout-for-woocommerce-form-fields.php:12, ../includes/paysoncheckout-for-woocommerce-form-fields.php:86
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:24, ../includes/paysoncheckout-for-woocommerce-form-fields.php:12, ../includes/paysoncheckout-for-woocommerce-form-fields.php:76
 msgstr ""
 
 #: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:172
@@ -143,46 +143,22 @@ msgid "Gray"
 msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:65
-msgid "Blue"
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:66
 msgid "White"
 msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:67
-msgid "GrayTextLogos"
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:68
-msgid "BlueTextLogos"
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:69
-msgid "WhiteTextLogos"
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:71
 msgid "Different color schemes for how the embedded PaysonCheckout iframe should be displayed."
 msgstr ""
 
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:76
-msgid "Request phone"
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:78
-msgid "Check this box to require the customer to fill in his phone number."
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:82
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:72
 msgid "Debug Log"
 msgstr ""
 
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:84
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:74
 msgid "Enable logging"
 msgstr ""
 
-#: ../includes/paysoncheckout-for-woocommerce-functions.php:74, ../paysoncheckout-for-woocommerce.php:211
+#: ../includes/paysoncheckout-for-woocommerce-functions.php:80, ../paysoncheckout-for-woocommerce.php:211
 msgid "Select another payment method"
 msgstr ""
 

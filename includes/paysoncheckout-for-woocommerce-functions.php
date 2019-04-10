@@ -41,6 +41,12 @@ function pco_wc_maybe_create_payson_order() {
 	// Check if we have a payment id. If we do get the order.
 	if ( WC()->session->get( 'payson_payment_id' ) ) {
 		$payson_order = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
+		// Check if the order has a valid status and not on confirmation page or thank you page..
+		if ( ! pco_check_valid_order_status( $payson_order ) && ! isset( $_GET['pco_confirm'] ) && ! is_order_received_page() ) {
+			// If not clear session and rerun function to get a new order.
+			WC()->session->__unset( 'payson_payment_id' );
+			return pco_wc_maybe_create_payson_order();
+		}
 	} else {
 		// Else create the order and maybe set payment id.
 		$payson_order = PCO_WC()->create_order->request();
@@ -87,11 +93,28 @@ function pco_wc_show_another_gateway_button() {
  *
  * @return void
  */
-function maybe_show_validation_error_message() {
+function pco_maybe_show_validation_error_message() {
 	if ( isset( $_GET['pco_validation_error'] ) && is_checkout() ) {
 		$errors = json_decode( base64_decode( $_GET['pco_validation_error'] ), true );
 		foreach ( $errors as $error ) {
 			wc_add_notice( $error, 'error' );
 		}
 	}
+}
+
+/**
+ * Checks the order if it has an invalid status for the checkout process.
+ *
+ * @param array $payson_order The payson order object.
+ * @return boolean
+ */
+function pco_check_valid_order_status( $payson_order ) {
+	$invalid_status      = array( 'expired', 'canceled', 'denied', 'paidToAccount', 'shipped', 'readyToShip' );
+	$payson_order_status = $payson_order['status'];
+	// If the order status is an invalid status, return false.
+	if ( in_array( $payson_order_status, $invalid_status ) ) {
+		return false;
+	}
+	// If we get here return true.
+	return true;
 }
