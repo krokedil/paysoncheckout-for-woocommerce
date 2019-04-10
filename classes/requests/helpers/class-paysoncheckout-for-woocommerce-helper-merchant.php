@@ -37,6 +37,8 @@ class PaysonCheckout_For_WooCommerce_Helper_Merchant {
 			get_home_url() . '/wc-api/PCO_WC_Validation'
 		);
 
+		$integration_info = 'krokedil_woocommerce|' . PAYSONCHECKOUT_VERSION . '|' . WC()->version;
+
 		return array(
 			'checkoutUri'     => wc_get_checkout_url(), // String.
 			'confirmationUri' => $confirmation_uri, // String.
@@ -44,6 +46,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Merchant {
 			'termsUri'        => get_permalink( wc_get_page_id( 'terms' ) ), // String.
 			'validationUri'   => $validation_uri, // String.
 			'partnerId'       => 'Krokedil', // String.
+			'integrationInfo' => $integration_info,
 		);
 	}
 }
