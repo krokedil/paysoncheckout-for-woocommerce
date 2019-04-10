@@ -1,4 +1,9 @@
 *** PaysonCheckout 2.0 Changelog ***
+2019.04.08		- version 2.0.1
+* Tweak			- Changed location of extra checkout fields to be above the iFrame.
+* Tweak			- Re-added the language pot file.
+* Tweak			- Retain the extra checkout field validation message.
+
 2019.04.03		- version 2.0.0
 * Feature		- Added support for Extra Checkout field validation.
 * Feature		- Added support for full order refunds with Payson.

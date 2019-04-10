@@ -234,7 +234,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 
 		$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 		if ( 'false' === $_POST['pco'] ) {
-			// Set chosen payment method to first gateway that is not Klarna Checkout for WooCommerce.
+			// Set chosen payment method to first gateway that is not PaysonCheckout for WooCommerce.
 			$first_gateway = reset( $available_gateways );
 			if ( 'paysoncheckout' !== $first_gateway->id ) {
 				WC()->session->set( 'chosen_payment_method', $first_gateway->id );

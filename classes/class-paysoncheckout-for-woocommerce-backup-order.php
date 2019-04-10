@@ -206,7 +206,7 @@ class PaysonCheckout_For_WooCommerce_Backup_Order {
 
 		// Set post metas.
 		$order_id = $order->get_id();
-		update_post_meta( $order_id, '_payson_payment_id', $payson_order['id'] );
+		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
 		update_post_meta( $order_id, '_created_via_payson_fallback', 'yes' );
 
 		// Set customer id.
