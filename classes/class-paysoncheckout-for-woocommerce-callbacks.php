@@ -56,8 +56,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$this->check_session_id();
 
 		// Check if the order has a payment id set in the confirmation URL.
-		$this->check_payment_id_in_order();
-
+		// $this->check_payment_id_in_order();
 		// Check coupons.
 		$this->check_cart_coupons();
 
