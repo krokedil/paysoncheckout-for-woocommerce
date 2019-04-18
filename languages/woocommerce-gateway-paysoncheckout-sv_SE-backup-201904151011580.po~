@@ -1,0 +1,196 @@
+# Copyright (C) 2019 paysoncheckout-for-woocommerce
+# This file is distributed under the same license as the paysoncheckout-for-woocommerce package.
+msgid ""
+msgstr ""
+"Project-Id-Version: paysoncheckout-for-woocommerce\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: \n"
+"Last-Translator: admin <michael@krokedil.se>\n"
+"Report-Msgid-Bugs-To: http://krokedil.se\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:"
+"1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;"
+"esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"POT-Creation-Date: 2019-04-15 10:03+0000\n"
+"PO-Revision-Date: 2019-04-15 10:03+0000\n"
+"Language: sv_SE\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.2.2; wp-4.9.10"
+
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:22
+msgid "Payson"
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:172
+msgid "Error processing order. Please try again"
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:47
+msgid ""
+"PaysonCheckout reservation could not be cancelled. Missing Payson payment id."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:53
+msgid ""
+"Could not cancel PaysonCheckout reservation, PaysonCheckout reservation is "
+"already cancelled."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:77
+msgid "PaysonCheckout reservation was successfully cancelled."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:86
+msgid "PaysonCheckout reservation could not be cancelled."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:113
+msgid ""
+"PaysonCheckout reservation could not be activated. Missing Payson payment id."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:120
+msgid ""
+"Could not activate PaysonCheckout reservation, PaysonCheckout reservation is "
+"already activated."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:146
+msgid "PaysonCheckout reservation was successfully activated."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:156
+msgid "PaysonCheckout reservation could not be activatied."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:184
+msgid "PaysonCheckout order could not be refunded. Missing Payson payment id."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:218
+msgid "PaysonCheckout reservation was successfully refunded."
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:221
+msgid "PaysonCheckout order could not be refunded."
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:10
+msgid "Enable/Disable"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:16
+msgid "Title"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:18
+msgid "This controls the title which the user sees during checkout."
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:19
+msgid "$this->method_title"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:23
+msgid "Description"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:25
+msgid ""
+"Pay with Payson via invoice, card, direct bank payments, part payment and "
+"sms."
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:27
+msgid "This controls the description which the user sees during checkout."
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:30
+msgid "Other payment method button text"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:32
+msgid ""
+"Customize the <em>Select another payment method</em> button text that is "
+"displayed in checkout if using other payment methods than PaysonCheckout. "
+"Leave blank to use the default (and translatable) text."
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:37
+msgid "Agent ID"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:43
+msgid "API Key"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:49
+msgid "Testmode"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:51
+msgid "Enable PaysonCheckout testmode"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:55
+msgid "Enable Order Management"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:57
+msgid ""
+"Enable Payson order capture on WooCommerce order completion and Payson order "
+"cancellation on WooCommerce order cancellation"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:61
+msgid "Color Scheme"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:64
+msgid "Gray"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:65
+msgid "White"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:67
+msgid ""
+"Different color schemes for how the embedded PaysonCheckout iframe should be "
+"displayed."
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:72
+msgid "Debug Log"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:74
+msgid "Enable logging"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-functions.php:80,
+#: ../paysoncheckout-for-woocommerce.php:210
+msgid "Select another payment method"
+msgstr ""
+
+#: ../paysoncheckout-for-woocommerce.php:174
+msgid "Settings"
+msgstr ""
+
+#: ../paysoncheckout-for-woocommerce.php:175
+msgid "Support"
+msgstr ""
+
+#: ../paysoncheckout-for-woocommerce.php:218
+msgid "Please fill in all required checkout fields."
+msgstr ""
+
+#: ../paysoncheckout-for-woocommerce.php:237
+msgid "Please wait while we process your order."
+msgstr ""

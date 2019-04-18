@@ -3,7 +3,7 @@
  * Plugin Name:     PaysonCheckout 2.0 for WooCommerce
  * Plugin URI:      http://krokedil.com/
  * Description:     Provides a PaysonCheckout 2.0 payment gateway for WooCommerce.
- * Version:         2.0.2
+ * Version:         2.0.3
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
  * Developer:       Krokedil
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'PAYSONCHECKOUT_VERSION', '2.0.2' );
+define( 'PAYSONCHECKOUT_VERSION', '2.0.3' );
 define( 'PAYSONCHECKOUT_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_LIVE_ENV', 'https://api.payson.se/2.0/' );
@@ -51,7 +51,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		public function __construct() {
 			// Initiate the plugin.
 			add_action( 'plugins_loaded', array( $this, 'init' ) );
-
 		}
 
 		/**
@@ -91,7 +90,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		 * @return void
 		 */
 		public function init() {
-			load_plugin_textdomain( 'woocommerce-gateway-paysoncheckout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+			load_plugin_textdomain( 'woocommerce-gateway-paysoncheckout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
 
 			$this->include_files();
