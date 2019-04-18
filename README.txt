@@ -37,6 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 == CHANGELOG ==
 
+= 2019.04.18	- version 2.0.3 =
+* Enhancement	- Added swedish translation of plugin.
+* Fix			- Fixed an issue getting a fee name.
+
 = 2019.04.10	- version 2.0.2 =
 * Enhancement   - Added check on Payson order status for checkout page to create a new checkout session if the order is expired, canceled and so on.
 * Enhancement   - Added integration information to all requests to Payson for easier debugging.
