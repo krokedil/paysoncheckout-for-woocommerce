@@ -158,22 +158,22 @@ msgstr ""
 msgid "Enable logging"
 msgstr ""
 
-#: ../includes/paysoncheckout-for-woocommerce-functions.php:80, ../paysoncheckout-for-woocommerce.php:211
+#: ../includes/paysoncheckout-for-woocommerce-functions.php:80, ../paysoncheckout-for-woocommerce.php:210
 msgid "Select another payment method"
 msgstr ""
 
-#: ../paysoncheckout-for-woocommerce.php:175
+#: ../paysoncheckout-for-woocommerce.php:174
 msgid "Settings"
 msgstr ""
 
-#: ../paysoncheckout-for-woocommerce.php:176
+#: ../paysoncheckout-for-woocommerce.php:175
 msgid "Support"
 msgstr ""
 
-#: ../paysoncheckout-for-woocommerce.php:219
+#: ../paysoncheckout-for-woocommerce.php:218
 msgid "Please fill in all required checkout fields."
 msgstr ""
 
-#: ../paysoncheckout-for-woocommerce.php:238
+#: ../paysoncheckout-for-woocommerce.php:237
 msgid "Please wait while we process your order."
 msgstr ""
