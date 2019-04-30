@@ -67,8 +67,10 @@ class PaysonCheckout_For_WooCommerce_Request {
 			$data          = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
 			$error_message = ' ';
 			// Get the error messages.
-			foreach ( json_decode( $response['body'], true )['errors'] as $error ) {
-				$error_message = $error_message . '<br>' . $error['message'];
+			if ( null !== json_decode( $response['body'], true )['errors'] ) {
+				foreach ( json_decode( $response['body'], true )['errors'] as $error ) {
+					$error_message = $error_message . '<br>' . $error['message'];
+				}
 			}
 			return new WP_Error( wp_remote_retrieve_response_code( $response ), $response['response']['message'] . $error_message, $data );
 		}
