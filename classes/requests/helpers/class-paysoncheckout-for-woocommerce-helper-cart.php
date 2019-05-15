@@ -60,7 +60,6 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 		} else {
 			$product = wc_get_product( $cart_item['product_id'] );
 		}
-
 		return array(
 			'name'      => $this->get_product_name( $cart_item ), // String.
 			'unitPrice' => $this->get_product_unit_price( $cart_item ), // Float.
@@ -131,7 +130,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 	public function get_fee( $fee ) {
 		return array(
 			'name'      => $fee->name, // String.
-			'unitPrice' => $fee->amount, // Float.
+			'unitPrice' => $fee->amount + $fee->tax, // Float.
 			'quantity'  => 1, // Float.
 			'taxRate'   => $fee->tax / $fee->amount, // Float.
 			'reference' => $fee->id, // String.
