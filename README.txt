@@ -2,9 +2,9 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.1.1
+Tested up to: 5.2.1
 WC requires at least: 3.0
-WC tested up to: 3.5.7
+WC tested up to: 3.6.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,12 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2019.05.28	- version 2.1.0 =
+* Feature	    - Added support for recurring orders through WooCommerce Subscriptions ( https://woocommerce.com/products/woocommerce-subscriptions/ ).
+* Enhancement   - Better handling of payment id transfer between frontend and server to server calls.
+* Fix           - Fixed fee totals calculations. Caused missmatches between Payson and WooCommerce.
+* Fix			- Set customer country properly on server to server callbacks. WooCommerce 3.6 compatible.
 
 = 2019.04.18	- version 2.0.3 =
 * Enhancement	- Added swedish translation of plugin.

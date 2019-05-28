@@ -40,6 +40,12 @@ class PaysonCheckout_For_WooCommerce_Helper_GUI {
 			case 'fi':
 				$payson_language = 'fi';
 				break;
+			case 'es':
+				$payson_language = 'es';
+				break;
+			case 'de':
+				$payson_language = 'de';
+				break;
 			default:
 				$payson_language = 'en';
 		}

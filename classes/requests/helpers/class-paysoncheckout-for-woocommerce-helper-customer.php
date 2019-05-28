@@ -15,7 +15,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Customer {
 	 * @param array $payson_data The payson order data.
 	 * @return array
 	 */
-	public function get_customer_data( $payson_data ) {
+	public function get_customer_data( $payson_data = null ) {
 		// If we dont have an order from Payson.
 		if ( null === $payson_data ) {
 			return array(

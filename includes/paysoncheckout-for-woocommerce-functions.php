@@ -8,11 +8,15 @@
 /**
  * Prints the PaysonCheckout snippet.
  *
+ * @param boolean $sbuscription If this is a subscription order or not.
  * @return void
  */
-function pco_wc_show_snippet() {
+function pco_wc_show_snippet( $subscription = false ) {
+	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+		$subscription = true;
+	}
 	if ( ! isset( $_GET['pco_confirm'] ) ) {
-		$payson_order = pco_wc_maybe_create_payson_order();
+		$payson_order = pco_wc_maybe_create_payson_order( $subscription );
 		if ( is_wp_error( $payson_order ) ) {
 			// If error print error message.
 			$code    = $payson_order->get_error_code();
@@ -35,27 +39,46 @@ function pco_wc_show_snippet() {
 /**
  * Maybe creates the Payson order.
  *
+ * @param boolean $subscription If this is a subscription order or not.
  * @return array
  */
-function pco_wc_maybe_create_payson_order() {
-	// Check if we have a payment id. If we do get the order.
-	if ( WC()->session->get( 'payson_payment_id' ) ) {
-		$payson_order = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
+function pco_wc_maybe_create_payson_order( $subscription = false ) {
+	// Check if we have a payment id. If we do get the order. Also check if previous session was a subscription or not.
+	if ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription || is_order_received_page() ) {
+		$payson_order = pco_wc_get_order( null, $subscription );
+		// Check if Payson order is WP_Error.
+		if ( is_wp_error( $payson_order ) ) {
+			pco_wc_force_new_checkout_session();
+		}
 		// Check if the order has a valid status and not on confirmation page or thank you page..
-		if ( ! pco_check_valid_order_status( $payson_order ) && ! isset( $_GET['pco_confirm'] ) && ! is_order_received_page() ) {
+		if ( ! is_order_received_page() && ! pco_check_valid_order_status( $payson_order ) && ! isset( $_GET['pco_confirm'] ) ) {
 			// If not clear session and rerun function to get a new order.
-			WC()->session->__unset( 'payson_payment_id' );
-			return pco_wc_maybe_create_payson_order();
+			pco_wc_force_new_checkout_session();
 		}
 	} else {
 		// Else create the order and maybe set payment id.
-		$payson_order = PCO_WC()->create_order->request();
+		$payson_order = pco_wc_create_order();
 		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
 			WC()->session->set( 'payson_payment_id', $payson_order['id'] );
+			WC()->session->set( 'payson_subscription', $subscription );
 		}
 	}
 
 	return $payson_order;
+}
+
+/**
+ * Forces a new checkout session from Payson.
+ *
+ * @return void|array
+ */
+function pco_wc_force_new_checkout_session() {
+	// Check if we have done this before, if we have do nothing.
+	if ( did_action( 'pco_forced_new_session' ) < 1 ) {
+		do_action( 'pco_forced_new_session' );
+		WC()->session->__unset( 'payson_payment_id' );
+		return pco_wc_maybe_create_payson_order();
+	}
 }
 
 /**
@@ -103,13 +126,46 @@ function pco_maybe_show_validation_error_message() {
 }
 
 /**
+ * Creates either a normal order or a subscription order.
+ *
+ * @return array
+ */
+function pco_wc_create_order() {
+	// Check if the cart has a subscription.
+	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+		return PCO_WC()->create_recurring_order->request();
+	}
+	return PCO_WC()->create_order->request();
+}
+
+/**
+ * Gets either a normal order or a subscription order.
+ *
+ * @param string  $payment_id The payment id from Payson.
+ * @param boolean $subscription If this is a subscription order or not.
+ * @return array
+ */
+function pco_wc_get_order( $payment_id = null, $subscription = false ) {
+	$payment_id = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
+	// Check if the cart has a subscription.
+	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() || $subscription ) {
+		return PCO_WC()->get_recurring_order->request( $payment_id );
+	}
+	return PCO_WC()->get_order->request( $payment_id );
+}
+
+/**
  * Checks the order if it has an invalid status for the checkout process.
  *
  * @param array $payson_order The payson order object.
  * @return boolean
  */
 function pco_check_valid_order_status( $payson_order ) {
-	$invalid_status      = array( 'expired', 'canceled', 'denied', 'paidToAccount', 'shipped', 'readyToShip' );
+	$invalid_status = array( 'expired', 'canceled', 'denied', 'paidToAccount', 'shipped', 'readyToShip' );
+	// Return false if this is a WP error.
+	if ( is_wp_error( $payson_order ) ) {
+		return false;
+	}
 	$payson_order_status = $payson_order['status'];
 	// If the order status is an invalid status, return false.
 	if ( in_array( $payson_order_status, $invalid_status ) ) {

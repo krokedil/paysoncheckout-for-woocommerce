@@ -74,6 +74,12 @@ class PaysonCheckout_For_WooCommerce_Sessions {
 					WC()->session->set( $key, maybe_unserialize( $value ) );
 				}
 			}
+
+			// Set customer country based on session data.
+			$customer_data = maybe_unserialize( $session_data['customer'] );
+			WC()->customer->set_billing_country( $customer_data['country'] );
+			WC()->customer->set_shipping_country( $customer_data['shipping_country'] );
+			WC()->customer->save();
 		}
 	}
 

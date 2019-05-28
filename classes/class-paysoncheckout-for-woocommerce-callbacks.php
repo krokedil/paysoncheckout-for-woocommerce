@@ -48,36 +48,51 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @return void
 	 */
 	public function validate_cb() {
-		// Get the payson order.
-		$payment_id         = $_GET['checkout'];
-		$this->payson_order = PCO_WC()->get_order->request( $payment_id );
+		// Set the payment/subscription id
+		if ( isset( $_GET['checkout'] ) ) {
+			$payment_id   = $_GET['checkout'];
+			$subscription = false;
+		} elseif ( isset( $_GET['subscription'] ) ) {
+			$payment_id   = $_GET['subscription'];
+			$subscription = true;
+		}
 
+		$this->payson_order = pco_wc_get_order( $payment_id );
 		// Check if we have a session id.
 		$this->check_session_id();
 
 		// Check if the order has a payment id set in the confirmation URL.
-		$this->check_payment_id_in_order();
-
+		// $this->check_payment_id_in_order();
 		// Check coupons.
 		$this->check_cart_coupons();
 
 		// Check for error notices from WooCommerce.
 		$this->check_woo_notices();
 
-		// Check order amount match.
-		$this->check_order_amount();
+		// Check order amount match. Only normal orders, since Payson does not save a subscription amount.
+		if ( ! $subscription ) {
+			$this->check_order_amount();
+		}
 
 		// Check that all items are still in stock.
 		$this->check_all_in_stock();
 
+		// Subscription specific controlls.
+		if ( $subscription ) {
+			$this->check_if_user_exists_and_logged_in();
+		}
+
 		// Check if order is still valid.
 		if ( $this->order_is_valid ) {
-			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $_GET['checkout'], 'CALLBACK - GET', 'Payson Validation callback', $_GET, 'OK', 200 );
+			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'CALLBACK - GET', 'Payson Validation callback', $_GET, 'OK', 200 );
 			PaysonCheckout_For_WooCommerce_Logger::log( $log );
 			header( 'HTTP/1.0 200 OK' );
 		} else {
-			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $_GET['checkout'], 'CALLBACK - GET', 'Payson Validation callback', $_GET, $this->validation_messages, 400 );
+			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'CALLBACK - GET', 'Payson Validation callback', $_GET, $this->validation_messages, 400 );
 			PaysonCheckout_For_WooCommerce_Logger::log( $log );
+			if ( isset( $this->validation_messages['amount_error_totals'] ) ) {
+				unset( $this->validation_messages['amount_error_totals'] );
+			}
 			$redirect = add_query_arg(
 				'pco_validation_error',
 				base64_encode( json_encode( $this->validation_messages ) ),
@@ -161,8 +176,9 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$payson_total = floatval( $this->payson_order['order']['totalPriceIncludingTax'] );
 		$woo_total    = floatval( WC()->cart->get_total( 'payson_validation' ) );
 		if ( $woo_total !== $payson_total ) {
-			$this->order_is_valid                      = false;
-			$this->validation_messages['amount_error'] = __( 'Missmatch between the Payson and WooCommerce order total.', 'woocommerce-gateway-payson' );
+			$this->order_is_valid                             = false;
+			$this->validation_messages['amount_error']        = __( 'Missmatch between the Payson and WooCommerce order total.', 'woocommerce-gateway-payson' );
+			$this->validation_messages['amount_error_totals'] = 'Woo Total: ' . $woo_total . ' Payson total: ' . $payson_total;
 		}
 	}
 
@@ -176,6 +192,24 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		if ( true !== $stock_check ) {
 			$this->order_is_valid                      = false;
 			$this->validation_messages['amount_error'] = __( 'Not all items are in stock.', 'woocommerce-gateway-payson' );
+		}
+	}
+
+	/**
+	 * Checks if the email exists as a user and if they are logged in.
+	 *
+	 * @return void
+	 */
+	public function check_if_user_exists_and_logged_in() {
+		// Check if the email exists as a user.
+		$user = email_exists( $this->payson_order['customer']['email'] );
+
+		// If not false, user exists. Check if the session id matches the User id.
+		if ( false !== $user ) {
+			if ( $user != $_GET['pco_session_id'] ) {
+				$this->order_is_valid                    = false;
+				$this->validation_messages['user_login'] = __( 'An account already exists with this email. Please login to complete the purchase.', 'woocommerce-gateway-payson' );
+			}
 		}
 	}
 }
