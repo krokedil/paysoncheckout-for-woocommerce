@@ -27,8 +27,8 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 	 */
 	public function maybe_populate_wc_checkout() {
 		// Get the payson order.
-		$payment_id   = ( isset( $_GET['pco_payment_id'] ) ? $_GET['pco_payment_id'] : null );
-		$payson_order = PCO_WC()->get_order->request( $payment_id );
+		$payment_id   = WC()->session->get( 'payson_payment_id' );
+		$payson_order = pco_wc_get_order( $payment_id );
 		if ( is_wp_error( $payson_order ) ) {
 			// If error print error message.
 			$code    = $payson_order->get_error_code();

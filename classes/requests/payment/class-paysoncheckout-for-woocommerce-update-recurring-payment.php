@@ -1,6 +1,6 @@
 <?php
 /**
- * Update order request class
+ * Update recurring order request class
  *
  * @package PaysonCheckout/Classes/Requests
  */
@@ -10,9 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class for request update order.
+ * Class for request update recurring order.
  */
-class PaysonCheckout_For_WooCommerce_Update_Order extends PaysonCheckout_For_WooCommerce_Request {
+class PaysonCheckout_For_WooCommerce_Update_Recurring_Payment extends PaysonCheckout_For_WooCommerce_Request {
 	/**
 	 * Makes the request
 	 *
@@ -20,20 +20,15 @@ class PaysonCheckout_For_WooCommerce_Update_Order extends PaysonCheckout_For_Woo
 	 * @param array       $payson_data The Payson order data.
 	 * @return array
 	 */
-	public function request( $order_id = null, $payson_data = null ) {
-		$payment_id   = WC()->session->get( 'payson_payment_id' );
-		$request_url  = $this->enviroment . 'Checkouts/' . $payment_id;
-		$request_args = apply_filters( 'pco_update_order_args', $this->get_request_args( $order_id, $payson_data, $payment_id ) );
-		if ( WC()->session->get( 'pco_wc_update_md5' ) && WC()->session->get( 'pco_wc_update_md5' ) === md5( serialize( $request_args ) ) ) {
-			return false;
-		}
-		WC()->session->set( 'pco_wc_update_md5', md5( serialize( $request_args ) ) );
+	public function request( $order_id = null, $payson_data = null, $payment_id = null ) {
+		$payment_id        = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
+		$request_url       = $this->enviroment . 'RecurringPayments/' . $payment_id;
+		$request_args      = apply_filters( 'pco_update_recurring_payment_args', $this->get_request_args( $order_id, $payson_data, $payment_id ) );
 		$response          = wp_remote_request( $request_url, $request_args );
 		$code              = wp_remote_retrieve_response_code( $response );
 		$formated_response = $this->process_response( $response, $request_args, $request_url );
-
 		// Log the request.
-		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update order request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
+		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update recurring payment request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
 		return $formated_response;
 	}
@@ -46,24 +41,11 @@ class PaysonCheckout_For_WooCommerce_Update_Order extends PaysonCheckout_For_Woo
 	 * @return array
 	 */
 	public function get_body( $order_id, $payson_data, $payment_id ) {
-		$body = array(
-			'status'   => $payson_data['status'],
-			'id'       => $payment_id,
-			'merchant' => PCO_WC()->merchant_urls->get_merchant_urls(),
-			'customer' => PCO_WC()->customer->get_customer_data( $payson_data ),
-			'order'    => array(
-				'currency' => get_woocommerce_currency(),
-				'items'    => PCO_WC()->cart_items->get_cart_items(),
-			),
-			'gui'      => PCO_WC()->gui->get_gui(),
-
-		);
-
 		if ( null !== $order_id ) {
-			$body['merchant']['reference'] = $order_id;
+			$payson_data['merchant']['reference'] = $order_id;
 		}
 
-		return $body;
+		return $payson_data;
 	}
 
 	/**
