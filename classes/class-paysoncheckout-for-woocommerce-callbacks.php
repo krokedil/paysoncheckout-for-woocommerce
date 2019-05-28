@@ -58,7 +58,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		}
 
 		$this->payson_order = pco_wc_get_order( $payment_id );
-
 		// Check if we have a session id.
 		$this->check_session_id();
 
@@ -77,6 +76,11 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 
 		// Check that all items are still in stock.
 		$this->check_all_in_stock();
+
+		// Subscription specific controlls.
+		if ( $subscription ) {
+			$this->check_if_user_exists_and_logged_in();
+		}
 
 		// Check if order is still valid.
 		if ( $this->order_is_valid ) {
@@ -188,6 +192,24 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		if ( true !== $stock_check ) {
 			$this->order_is_valid                      = false;
 			$this->validation_messages['amount_error'] = __( 'Not all items are in stock.', 'woocommerce-gateway-payson' );
+		}
+	}
+
+	/**
+	 * Checks if the email exists as a user and if they are logged in.
+	 *
+	 * @return void
+	 */
+	public function check_if_user_exists_and_logged_in() {
+		// Check if the email exists as a user
+		$user = email_exists( $this->payson_order['customer']['email'] );
+
+		// If not false, user exists. Check if the session id matches the User id.
+		if ( false !== $user ) {
+			if ( $user != $_GET['pco_session_id'] ) {
+				$this->order_is_valid                    = false;
+				$this->validation_messages['user_login'] = __( 'An account already exists with this email. Please login to complete the purchase.', 'woocommerce-gateway-payson' );
+			}
 		}
 	}
 }
