@@ -1,5 +1,11 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+2019.05.28	    - version 2.1.0
+* Feature	    - Added support for recurring orders through WooCommerce Subscriptions ( https://woocommerce.com/products/woocommerce-subscriptions/ ).
+* Enhancement   - Better handling of payment id transfer between frontend and server to server calls.
+* Fix           - Fixed fee totals calculations. Caused missmatches between Payson and WooCommerce.
+* Fix			- Set customer country properly on server to server callbacks. WooCommerce 3.6 compatible.
+
 2019.04.18		- version 2.0.3
 * Enhancement	- Added swedish translation of plugin.
 * Fix			- Fixed an issue getting a fee name.

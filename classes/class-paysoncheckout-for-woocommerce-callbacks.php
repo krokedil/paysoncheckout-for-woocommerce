@@ -201,7 +201,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @return void
 	 */
 	public function check_if_user_exists_and_logged_in() {
-		// Check if the email exists as a user
+		// Check if the email exists as a user.
 		$user = email_exists( $this->payson_order['customer']['email'] );
 
 		// If not false, user exists. Check if the session id matches the User id.
