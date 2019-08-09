@@ -40,6 +40,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	public function __construct() {
 		add_action( 'woocommerce_api_pco_wc_validation', array( $this, 'validate_cb' ) );
 		add_action( 'woocommerce_api_pco_wc_notification', array( $this, 'notification_cb' ) );
+		$this->needs_login = 'no' === get_option( 'woocommerce_enable_guest_checkout') ? true : false; // Needs to be logged in order to checkout.
 	}
 
 	/**
@@ -78,7 +79,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$this->check_all_in_stock();
 
 		// Subscription specific controlls.
-		if ( $subscription ) {
+		if ( $subscription || $this->needs_login ) {
 			$this->check_if_user_exists_and_logged_in();
 		}
 

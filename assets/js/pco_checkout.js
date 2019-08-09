@@ -87,6 +87,8 @@ jQuery(function($) {
 				},
 				dataType: 'json',
 				success: function(data) {
+					let pcoNonce = data.data.pco_nonce;
+					$('#pco-nonce-wrapper').html(pcoNonce); // Updates the nonce used on checkout
 				},
 				error: function(data) {
 				},

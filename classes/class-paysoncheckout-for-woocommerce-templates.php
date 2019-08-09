@@ -13,7 +13,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 * Class constructor
 	 */
 	public function __construct() {
-		add_filter( 'woocommerce_locate_template', array( $this, 'override_template' ), 10, 3 );
+		add_filter( 'wc_get_template', array( $this, 'override_template' ), 10, 2 );
 		add_action( 'pco_wc_after_wrapper', array( $this, 'add_wc_form' ), 10 );
 		add_action( 'pco_wc_after_order_review', array( $this, 'add_extra_checkout_fields' ), 10 );
 		add_action( 'pco_wc_before_checkout_form', 'pco_maybe_show_validation_error_message', 5 );
@@ -30,7 +30,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 * @param string $template_path Template path.
 	 * @return string
 	 */
-	public function override_template( $template, $template_name, $template_path ) {
+	public function override_template( $template, $template_name ) {
 		if ( is_checkout() ) {
 			// Don't display PCO template if we have a cart that doesn't needs payment.
 			if ( ! WC()->cart->needs_payment() ) {
@@ -88,7 +88,9 @@ class PaysonCheckout_For_WooCommerce_Templates {
 		<div aria-hidden="true" id="pco-wc-form" style="position:absolute; top:0; left:-99999px;">
 			<?php do_action( 'woocommerce_checkout_billing' ); ?>
 			<?php do_action( 'woocommerce_checkout_shipping' ); ?>
-			<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
+			<div id="pco-nonce-wrapper">
+				<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
+			</div>
 			<input id="payment_method_paysoncheckout" type="radio" class="input-radio" name="payment_method" value="paysoncheckout" checked="checked" />
 		</div>
 		<?php
