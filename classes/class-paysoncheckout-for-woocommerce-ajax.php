@@ -150,8 +150,9 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 
 		wp_send_json_success(
 			array(
-				'address' => $payson_order['customer'],
-				'changed' => $changed,
+				'address'   => $payson_order['customer'],
+				'changed'   => $changed,
+				'pco_nonce' => wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce', true, false ),
 			)
 		);
 		wp_die();
