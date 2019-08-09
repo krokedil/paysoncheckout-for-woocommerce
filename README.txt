@@ -2,9 +2,9 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.2.1
+Tested up to: 5.2.2
 WC requires at least: 3.0
-WC tested up to: 3.6.4
+WC tested up to: 3.6.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+
+= 2019.08.09	- version 2.1.1 =
+* Fix			- Updating nonce correctly on update_checkout. This could cause issues finalizing order if logging in on checkout page.
+* Fix			- Added checks to prevent JS error with some themes in checkout page.
+* Fix			- Fix for order going through even if login in required and user isn't logged in.
 
 = 2019.05.28	- version 2.1.0 =
 * Feature	    - Added support for recurring orders through WooCommerce Subscriptions ( https://woocommerce.com/products/woocommerce-subscriptions/ ).
