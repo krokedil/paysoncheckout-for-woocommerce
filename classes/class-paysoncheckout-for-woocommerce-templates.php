@@ -27,7 +27,6 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 *
 	 * @param string $template      Template.
 	 * @param string $template_name Template name.
-	 * @param string $template_path Template path.
 	 * @return string
 	 */
 	public function override_template( $template, $template_name ) {
@@ -88,10 +87,18 @@ class PaysonCheckout_For_WooCommerce_Templates {
 		<div aria-hidden="true" id="pco-wc-form" style="position:absolute; top:0; left:-99999px;">
 			<?php do_action( 'woocommerce_checkout_billing' ); ?>
 			<?php do_action( 'woocommerce_checkout_shipping' ); ?>
-			<div id="pco-nonce-wrapper">
-				<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
-			</div>
-			<input id="payment_method_paysoncheckout" type="radio" class="input-radio" name="payment_method" value="paysoncheckout" checked="checked" />
+			<?php
+			if ( isset( $_GET['pco_confirm'] ) ) {
+				// On confirmation page - render woocommerce_checkout_payment() to get the woocommerce-process-checkout-nonce correct.
+				woocommerce_checkout_payment();
+			} else {
+				// On regular PCO checkout page - use our own woocommerce-process-checkout-nonce (so we don't render the checkout form submit button).
+				?>
+				<div id="pco-nonce-wrapper">
+					<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
+				</div>
+				<input id="payment_method_paysoncheckout" type="radio" class="input-radio" name="payment_method" value="paysoncheckout" checked="checked" />
+			<?php }; ?>
 		</div>
 		<?php
 	}
