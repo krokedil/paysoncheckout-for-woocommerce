@@ -77,7 +77,8 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 	 */
 	public function get_product_name( $cart_item ) {
 		$cart_item_data = $cart_item['data'];
-		$item_name      = $cart_item_data->get_name();
+		$cart_item_name = $cart_item_data->get_name();
+		$item_name = apply_filters( 'pco_cart_item_name',  $cart_item_name,  $cart_item );
 		return strip_tags( $item_name );
 	}
 
