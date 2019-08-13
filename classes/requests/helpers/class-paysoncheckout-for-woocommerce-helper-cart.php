@@ -157,6 +157,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 							'quantity'  => 1, // Float.
 							'taxRate'   => array_sum( $method->taxes ) / $method->cost, // Float.
 							'reference' => __( 'Shipping', 'payson-checkout-for-woocommerce' ), // String.
+							'type'		=> 'service',
 						);
 					} else {
 						return array(
@@ -165,6 +166,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 							'quantity'  => 1, // Float.
 							'taxRate'   => 0, // Float.
 							'reference' => __( 'Shipping', 'payson-checkout-for-woocommerce' ), // String.
+							'type'		=> 'service',
 						);
 					}
 				}
