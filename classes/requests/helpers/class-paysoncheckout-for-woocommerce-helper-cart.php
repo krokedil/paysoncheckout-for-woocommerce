@@ -144,7 +144,6 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 	 * @return array
 	 */
 	public function get_shipping() {
-		WC()->cart->calculate_shipping();
 		$packages        = WC()->shipping->get_packages();
 		$chosen_methods  = WC()->session->get( 'chosen_shipping_methods' );
 		$chosen_shipping = $chosen_methods[0];
