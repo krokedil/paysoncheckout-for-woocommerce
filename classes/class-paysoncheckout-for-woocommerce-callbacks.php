@@ -169,6 +169,49 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		}
 	}
 
+	public function backup_order_creation( $payment_id, $transaction_id ) {
+		// Get payson order
+		$payson_order = (object) pco_wc_get_order( $payment_id );
+
+		// Process order.
+		$order = $this->process_order( $payson_order );
+	}
+
+	private function process_order( $payson_order ) {
+		try {
+			$order = wc_create_order( array( 'status' => 'pending' ) );
+
+			$order->set_billing_first_name( sanitize_text_field( $payson_order->customer->firstName ) );
+			$order->set_billing_last_name( sanitize_text_field( $payson_order->customer->lastName ) );
+			$order->set_billing_country( sanitize_text_field( $payson_order->customer->countryCode ) );
+			$order->set_billing_address_1( sanitize_text_field( $payson_order->customer->street ) );
+			$order->set_billing_city( sanitize_text_field( $payson_order->customer->city ) );
+			$order->set_billing_postcode( sanitize_text_field( $payson_order->customer->postalCode ) );
+			$order->set_billing_phone( sanitize_text_field( $payson_order->customer->phone ) );
+			$order->set_billing_email( sanitize_text_field( $payson_order->customer->email ) );
+
+			$order->set_shipping_first_name( sanitize_text_field( $payson_order->customer->firstName ) );
+			$order->set_shipping_last_name( sanitize_text_field( $payson_order->customer->lastName ) );
+			$order->set_shipping_country( sanitize_text_field( $payson_order->customer->countryCode ) );
+			$order->set_shipping_address_1( sanitize_text_field( $payson_order->customer->street ) );
+			$order->set_shipping_city( sanitize_text_field( $payson_order->customer->city ) );
+			$order->set_shipping_postcode( sanitize_text_field( $payson_order->customer->postalCode ) );
+
+			if ( 'company' === $payson_order->customer->type ) {
+				$order->set_billing_company( sanitize_text_field( $customer->name ) );
+				$order->set_shipping_company( sanitize_text_field( $customer->name ) );
+			}
+			update_post_meta( $order->get_id(), '_shipping_phone', sanitize_text_field( $payson_order->customer->phone ) );
+			update_post_meta( $order->get_id(), '_shipping_email', sanitize_text_field( $payson_order->customer->email ) );
+			$order->set_created_via( 'pco_checkout_backup_order_creation' );
+			$order->set_currency( sanitize_text_field( $payson_order->order->currency ) );
+			$order->set_prices_include_tax( 'yes' === get_option( 'woocommerce_prices_include_tax' ) );
+
+			$available_gateways = WC()->payment_gateways->payment_gateways();
+			$payment_method = $available_gateways['pco'];
+			$order->set_payment_method( $payment_method );
+
+		}
 	}
 
 	/**
