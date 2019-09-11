@@ -172,12 +172,20 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	public function backup_order_creation( $payment_id, $transaction_id ) {
 		// Get payson order
 		$payson_order = (object) pco_wc_get_order( $payment_id );
+		$payson_order = pco_wc_get_order( $payment_id );
 
 		// Process order.
 		$order = $this->process_order( $payson_order );
 	}
 
+	public function array_to_object( $payson_order ) {
+		$json   = json_encode( $payson_order );
+		$obejct = json_decode( $json );
+		return $obejct;
+	}
+
 	private function process_order( $payson_order ) {
+		$payson_order = $this->array_to_object( $payson_order );
 		try {
 			$order = wc_create_order( array( 'status' => 'pending' ) );
 
@@ -208,7 +216,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			$order->set_prices_include_tax( 'yes' === get_option( 'woocommerce_prices_include_tax' ) );
 
 			$available_gateways = WC()->payment_gateways->payment_gateways();
-			$payment_method = $available_gateways['pco'];
+			$payment_method = $available_gateways['paysoncheckout'];
 			$order->set_payment_method( $payment_method );
 
 			$order->save();
