@@ -40,7 +40,8 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	public function __construct() {
 		add_action( 'woocommerce_api_pco_wc_validation', array( $this, 'validate_cb' ) );
 		add_action( 'woocommerce_api_pco_wc_notification', array( $this, 'notification_cb' ) );
-		$this->needs_login = 'no' === get_option( 'woocommerce_enable_guest_checkout') ? true : false; // Needs to be logged in order to checkout.
+		add_action( 'pco_check_for_order', array( $this, 'pco_check_for_order_callback' ), 10, 2 );
+		$this->needs_login = 'no' === get_option( 'woocommerce_enable_guest_checkout' ) ? true : false; // Needs to be logged in order to checkout.
 	}
 
 	/**
@@ -110,7 +111,23 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @return void
 	 */
 	public function notification_cb() {
-		header( 'HTTP/1.0 200 OK' );
+		PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . json_encode( $_GET ) . ' URL: ' . $_SERVER['REQUEST_URI'] );
+		if ( isset( $_GET['checkout'] ) ) {
+			$payment_id   = $_GET['checkout'];
+			$subscription = false;
+		} elseif ( isset( $_GET['subscription'] ) ) {
+			$payment_id   = $_GET['subscription'];
+			$subscription = true;
+		}
+		$payson_order = pco_wc_get_order( $payment_id, $subscription );
+
+		if ( 'readyToShip' === $payson_order['status'] ) {
+			$transaction_id = (string) $payson_order['purchaseId'];
+			wp_schedule_single_event( time() + 120, 'pco_check_for_order', array( $payment_id, $transaction_id ) );
+			header( 'HTTP/1.1 200 OK' );
+		}
+	}
+
 	}
 
 	/**
