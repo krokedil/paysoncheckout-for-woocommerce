@@ -128,6 +128,47 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		}
 	}
 
+	public function pco_check_for_order_callback( $payment_id, $transaction_id ) {
+		$query          = new WC_Order_Query(
+			array(
+				'limit'          => -1,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'return'         => 'ids',
+				'payment_method' => 'paysoncheckout',
+				'date_created'   => '>' . ( time() - MONTH_IN_SECONDS ),
+			)
+		);
+		$orders         = $query->get_orders();
+		$order_id_match = '';
+
+		foreach ( $orders as $order_id ) {
+			$order                = wc_get_order( $order_id );
+			$order_transaction_id = $order->get_transaction_id();
+
+			if ( $order_transaction_id === $transaction_id ) {
+				$order_id_match = $order_id;
+				break;
+			}
+		}
+
+		// Did we get a match?
+		if ( $order_id_match ) {
+			$order = wc_get_order( $order_id_match );
+
+			if ( $order ) {
+				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Transaction id ' . $transaction_id . '. already exist in order ID ' . $order_id_match );
+			} else {
+				// No order, why?
+				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Transaction id ' . $transaction_id . '. already exist in order ID ' . $order_id_match . '. But we could not instantiate an order object' );
+			}
+		} else {
+			// No order found - create a new
+			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. We could NOT find Transaction id ' . $transaction_id . '. Starting backup order creation...' );
+			$this->backup_order_creation( $payment_id, $transaction_id );
+		}
+	}
+
 	}
 
 	/**
