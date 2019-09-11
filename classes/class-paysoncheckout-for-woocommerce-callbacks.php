@@ -211,6 +211,11 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			$payment_method = $available_gateways['pco'];
 			$order->set_payment_method( $payment_method );
 
+			$order->save();
+
+		} catch ( Exception $e ) {
+			$logger = new WC_Logger();
+			$logger->add( 'woocommerce-gateway-paysoncheckout', 'Backup order creation error: ' . $e->getCode() . ' - ' . $e->getMessage() );
 		}
 	}
 
