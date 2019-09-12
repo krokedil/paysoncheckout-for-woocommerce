@@ -169,6 +169,13 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		}
 	}
 
+	/**
+	 * Backup order creation, in case checkout process failed.
+	 *
+	 * @param string $payment_id
+	 * @param string $transaction_id
+	 * @return void
+	 */
 	public function backup_order_creation( $payment_id, $transaction_id ) {
 		// Get payson order
 		$payson_order = PCO_WC()->get_order->request( $payment_id );
@@ -177,8 +184,15 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$order = $this->process_order( $payson_order );
 	}
 
+	/**
+	 * Processes WooCommerce order on backup order creation.
+	 *
+	 * @param array $payson_order
+	 * @return void
+	 */
 	private function process_order( $payson_order ) {
-		$order = wc_create_order( array( 'status' => 'pending' ) );
+		$order    = wc_create_order( array( 'status' => 'pending' ) );
+		$order_id = $order->get_id();
 
 		$order->set_billing_first_name( sanitize_text_field( $payson_order['customer']['firstName'] ) );
 		$order->set_billing_last_name( sanitize_text_field( $payson_order['customer']['lastName'] ) );
@@ -206,14 +220,98 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$payment_method     = $available_gateways['paysoncheckout'];
 		$order->set_payment_method( $payment_method );
 
+		$this->process_order_lines( $payson_order, $order );
 
+		$order->set_shipping_total( self::get_shipping_total( $payson_order ) );
+		$order->set_cart_tax( self::get_cart_contents_tax( $payson_order ) );
+		$order->set_shipping_tax( self::get_shipping_tax_total( $payson_order ) );
+		$order->set_total( $payson_order['order']['totalPriceIncludingTax'] );
+
+		$order->add_order_note( __( 'Order created via Payson Checkout API callback. Please verify the order in Payson system.', 'woocommerce-gateway-paysoncheckout' ) );
+
+		// Make sure to run Sequential Order numbers if plugin exsists.
+		if ( class_exists( 'WC_Seq_Order_Number_Pro' ) ) {
+			$sequential = new WC_Seq_Order_Number_Pro();
+			$sequential->set_sequential_order_number( $order_id );
+		} elseif ( class_exists( 'WC_Seq_Order_Number' ) ) {
+			$sequential = new WC_Seq_Order_Number();
+			$sequential->set_sequential_order_number( $order_id, get_post( $order_id ) );
+		}
+
+		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
+		update_post_meta( $order_id, '_payson_date_paid', date( 'Y-m-d H:i:s' ) );
+
+		$order->calculate_totals();
 		$order->save();
+
+		if ( 'readyToShip' === $payson_order['status'] ) {
+			$order->payment_complete( $payson_order['purchaseId'] );
+		}
+
+		if ( (int) round( $order->get_total() ) !== (int) round( $payson_order['order']['totalPriceIncludingTax'] ) ) {
+			$order->update_status( 'on-hold', sprintf( __( 'Order needs manual review, WooCommerce total and Payson total do not match. Payson order total: %s.', 'woocommerce-gateway-paysoncheckout' ), $payson_order['order']['totalPriceIncludingTax'] ) );
+		}
 
 		return $order;
 
 	}
 
 
+	/**
+	 * Get the shipping total including tax of Payson order.
+	 *
+	 * @param array $payson_order
+	 * @return void
+	 */
+	private static function get_shipping_total( $payson_order ) {
+		$shipping_total = 0;
+		foreach ( $payson_order['order']['items'] as $cart_item ) {
+			if ( strpos( $cart_item['reference'], 'shipping|' ) !== false ) {
+				$shipping_total += $cart_item['totalPriceIncludingTax'];
+			}
+		}
+		if ( $shipping_total > 0 ) {
+			$shipping_total = $shipping_total;
+		}
+		return $shipping_total;
+	}
+
+	/**
+	 * Get the cart contents tax of Payson order.
+	 *
+	 * @param array $payson_order
+	 * @return void
+	 */
+	private static function get_cart_contents_tax( $payson_order ) {
+		$cart_contents_tax = 0;
+		foreach ( $payson_order['order']['items'] as $cart_item ) {
+			if ( strpos( $cart_item['reference'], 'shipping|' ) === false && strpos( $cart_item['reference'], 'fee|' ) === false ) {
+				$cart_contents_tax += $cart_item['totalTaxAmount'];
+			}
+		}
+		if ( $cart_contents_tax > 0 ) {
+			$cart_contents_tax = $cart_contents_tax;
+		}
+		return $cart_contents_tax;
+	}
+
+	/**
+	 * Get the shipping tax total of Payson order.
+	 *
+	 * @param array $payson_order
+	 * @return void
+	 */
+	private static function get_shipping_tax_total( $payson_order ) {
+		$shipping_tax_total = 0;
+		foreach ( $payson_order['order']['items'] as $cart_item ) {
+			if ( strpos( $cart_item['reference'], 'shipping|' ) !== false ) {
+				$shipping_tax_total += $cart_item['totalTaxAmount'];
+			}
+		}
+		if ( $shipping_tax_total > 0 ) {
+			$shipping_tax_total = $shipping_tax_total;
+		}
+		return $shipping_tax_total;
 	}
 
 	/**
