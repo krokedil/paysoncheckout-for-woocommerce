@@ -256,6 +256,85 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 
 	}
 
+	/**
+	 * Processes cart contents on backup order creation.
+	 *
+	 * @param array    $payson_order
+	 * @param WC_Order $order
+	 * @return void
+	 */
+	private function process_order_lines( $payson_order, $order ) {
+		PaysonCheckout_For_WooCommerce_Logger::log( 'Processing order lines (from Payson order) during backup order creation for Payson order ID ' . $payson_order['id'] );
+		error_log( 'payson order process o lines f ' . var_export( $payson_order, true ) );
+		foreach ( $payson_order['order']['items'] as $cart_item ) {
+			if ( strpos( $cart_item['reference'], 'shipping|' ) !== false ) {
+				// Shipping
+				$trimmed_cart_item_reference = str_replace( 'shipping|', '', $cart_item['reference'] );
+				$method_id                   = substr( $trimmed_cart_item_reference, 0, strpos( $trimmed_cart_item_reference, ':' ) );
+				$instance_id                 = substr( $trimmed_cart_item_reference, strpos( $trimmed_cart_item_reference, ':' ) + 1 );
+				$rate                        = new WC_Shipping_Rate( $trimmed_cart_item_reference, $cart_item['name'], $cart_item['totalPriceExcludingTax'], array(), $method_id, $instance_id );
+				$item                        = new WC_Order_Item_Shipping();
+				$item->set_props(
+					array(
+						'method_title' => $rate->label,
+						'method_id'    => $rate->id,
+						'total'        => wc_format_decimal( $rate->cost ),
+						'taxes'        => $rate->taxes,
+						'meta_data'    => $rate->get_meta_data(),
+					)
+				);
+				$order->add_item( $item );
+			} elseif ( strpos( $cart_item['reference'], 'fee|' ) !== false ) {
+				// Fee
+				$trimmed_cart_item_id = str_replace( 'fee|', '', $cart_item['reference'] );
+				$tax_class            = '';
+				try {
+					$args = array(
+						'name'      => $cart_item['name'],
+						'tax_class' => $tax_class,
+						'subtotal'  => $cart_item['totalPriceExcludingTax'],
+						'total'     => $cart_item['totalPriceExcludingTax'],
+						'quantity'  => $cart_item['quantity'],
+					);
+					$fee  = new WC_Order_Item_Fee();
+					$fee->set_props( $args );
+					$order->add_item( $fee );
+				} catch ( Exception $e ) {
+					DIBS_Easy::log( 'Backup order creation error add fee error: ' . $e->getCode() . ' - ' . $e->getMessage() );
+				}
+			} else {
+				// Product items
+				if ( wc_get_product_id_by_sku( $cart_item['reference'] ) ) {
+					$id = wc_get_product_id_by_sku( $cart_item['reference'] );
+				} else {
+					$id = $cart_item['reference'];
+				}
+				try {
+					$product = wc_get_product( $id );
+					$args    = array(
+						'name'         => $product->get_name(),
+						'tax_class'    => $product->get_tax_class(),
+						'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
+						'variation_id' => $product->is_type( 'variation' ) ? $product->get_id() : 0,
+						'variation'    => $product->is_type( 'variation' ) ? $product->get_attributes() : array(),
+						'subtotal'     => ( $cart_item['totalPriceExcludingTax'] ),
+						'total'        => ( $cart_item['totalPriceExcludingTax'] ),
+						'quantity'     => $cart_item['quantity'],
+					);
+					$item    = new WC_Order_Item_Product();
+					$item->set_props( $args );
+					$item->set_backorder_meta();
+					$item->set_order_id( $order->get_id() );
+					$item->calculate_taxes();
+					$item->save();
+					$order->add_item( $item );
+				} catch ( Exception $e ) {
+					DIBS_Easy::log( 'Backup order creation error add to cart error: ' . $e->getCode() . ' - ' . $e->getMessage() );
+				}
+			}
+		}
+
+	}
 
 	/**
 	 * Get the shipping total including tax of Payson order.
