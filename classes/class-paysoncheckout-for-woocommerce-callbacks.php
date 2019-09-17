@@ -120,15 +120,13 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			$subscription = true;
 		}
 		$payson_order = pco_wc_get_order( $payment_id, $subscription );
-
-		if ( 'readyToShip' === $payson_order['status'] ) {
-			$transaction_id = (string) $payson_order['purchaseId'];
-			wp_schedule_single_event( time() + 120, 'pco_check_for_order', array( $payment_id, $transaction_id ) );
+		if ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) {
+			wp_schedule_single_event( time() + 120, 'pco_check_for_order', array( $payment_id, $subscription ) );
 			header( 'HTTP/1.1 200 OK' );
 		}
 	}
 
-	public function pco_check_for_order_callback( $payment_id, $transaction_id ) {
+	public function pco_check_for_order_callback( $payment_id, $subscription ) {
 		$query          = new WC_Order_Query(
 			array(
 				'limit'          => -1,
@@ -143,10 +141,9 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$order_id_match = '';
 
 		foreach ( $orders as $order_id ) {
-			$order                = wc_get_order( $order_id );
-			$order_transaction_id = $order->get_transaction_id();
+			$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id' );
 
-			if ( $order_transaction_id === $transaction_id ) {
+			if ( $order_payment_id === $payment_id ) {
 				$order_id_match = $order_id;
 				break;
 			}
@@ -157,15 +154,16 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			$order = wc_get_order( $order_id_match );
 
 			if ( $order ) {
-				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Transaction id ' . $transaction_id . '. already exist in order ID ' . $order_id_match );
+				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order_id_match );
+				// @todo create check_order _status function.
 			} else {
 				// No order, why?
-				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Transaction id ' . $transaction_id . '. already exist in order ID ' . $order_id_match . '. But we could not instantiate an order object' );
+				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order_id_match . '. But we could not instantiate an order object' );
 			}
 		} else {
 			// No order found - create a new
-			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. We could NOT find Transaction id ' . $transaction_id . '. Starting backup order creation...' );
-			$this->backup_order_creation( $payment_id, $transaction_id );
+			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. We could NOT find Payment id ' . $payment_id . '. Starting backup order creation...' );
+			$this->backup_order_creation( $payment_id, $subscription );
 		}
 	}
 
@@ -173,15 +171,23 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * Backup order creation, in case checkout process failed.
 	 *
 	 * @param string $payment_id
-	 * @param string $transaction_id
+	 * @param bool   $subscription
 	 * @return void
 	 */
-	public function backup_order_creation( $payment_id, $transaction_id ) {
+	public function backup_order_creation( $payment_id, $subscription ) {
 		// Get payson order
-		$payson_order = PCO_WC()->get_order->request( $payment_id );
+		$payson_order = pco_wc_get_order( $payment_id, $subscription );
 
 		// Process order.
-		$order = $this->process_order( $payson_order );
+		$order = $this->process_order( $payson_order, $subscription );
+
+		// Send order number to Payson
+		if ( ! $subscription ) {
+			if ( is_object( $order ) ) {
+				PCO_WC()->update_reference->request( $order->get_id(), $payson_order );
+			}
+		}
+
 	}
 
 	/**
@@ -190,8 +196,15 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @param array $payson_order
 	 * @return void
 	 */
-	private function process_order( $payson_order ) {
-		$order    = wc_create_order( array( 'status' => 'pending' ) );
+	private function process_order( $payson_order, $subscription ) {
+		$order = wc_create_order( array( 'status' => 'pending' ) );
+
+		if ( is_wp_error( $order ) ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Backup order creation. Error - could not create order. ' . var_export( $order->get_error_message(), true ) );
+		} else {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Backup order creation - order ID - ' . $order->get_id() . ' - created.' );
+		}
+
 		$order_id = $order->get_id();
 
 		$order->set_billing_first_name( sanitize_text_field( $payson_order['customer']['firstName'] ) );
@@ -213,21 +226,20 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		update_post_meta( $order->get_id(), '_shipping_phone', sanitize_text_field( $payson_order['customer']['phone'] ) );
 		update_post_meta( $order->get_id(), '_shipping_email', sanitize_text_field( $payson_order['customer']['email'] ) );
 		$order->set_created_via( 'pco_checkout_backup_order_creation' );
-		$order->set_currency( sanitize_text_field( strtoupper( $payson_order['order']['currency'] ) ) );
+		$order->set_currency( isset( $payson_order['order']['currency'] ) ? sanitize_text_field( strtoupper( $payson_order['order']['currency'] ) ) : '' );
 		$order->set_prices_include_tax( 'yes' === get_option( 'woocommerce_prices_include_tax' ) );
 
 		$available_gateways = WC()->payment_gateways->payment_gateways();
 		$payment_method     = $available_gateways['paysoncheckout'];
 		$order->set_payment_method( $payment_method );
 
-		$this->process_order_lines( $payson_order, $order );
-
-		$order->set_shipping_total( self::get_shipping_total( $payson_order ) );
-		$order->set_cart_tax( self::get_cart_contents_tax( $payson_order ) );
-		$order->set_shipping_tax( self::get_shipping_tax_total( $payson_order ) );
-		$order->set_total( $payson_order['order']['totalPriceIncludingTax'] );
-
-		$order->add_order_note( __( 'Order created via Payson Checkout API callback. Please verify the order in Payson system.', 'woocommerce-gateway-paysoncheckout' ) );
+		if ( ! $subscription ) {
+			$this->process_order_lines( $payson_order, $order );
+			$order->set_shipping_total( self::get_shipping_total( $payson_order ) );
+			$order->set_cart_tax( self::get_cart_contents_tax( $payson_order ) );
+			$order->set_shipping_tax( self::get_shipping_tax_total( $payson_order ) );
+			$order->set_total( $payson_order['order']['totalPriceIncludingTax'] );
+		}
 
 		// Make sure to run Sequential Order numbers if plugin exsists.
 		if ( class_exists( 'WC_Seq_Order_Number_Pro' ) ) {
@@ -244,12 +256,20 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$order->calculate_totals();
 		$order->save();
 
-		if ( 'readyToShip' === $payson_order['status'] ) {
+		if ( ! $subscription && 'readyToShip' === $payson_order['status'] ) {
 			$order->payment_complete( $payson_order['purchaseId'] );
+			$order->add_order_note( __( 'Order created via Payson Checkout API callback. Please verify the order in Payson system.', 'woocommerce-gateway-paysoncheckout' ) );
+		} elseif ( $subscription ) {
+			$order->update_status( 'failed', __( 'Payson Checkout does not have support for creating subscription orders via Payson Checkout API callback. Please verify the subscription order in Payson system.', 'woocommerce-gateway-paysoncheckout' ) );
 		}
 
-		if ( (int) round( $order->get_total() ) !== (int) round( $payson_order['order']['totalPriceIncludingTax'] ) ) {
-			$order->update_status( 'on-hold', sprintf( __( 'Order needs manual review, WooCommerce total and Payson total do not match. Payson order total: %s.', 'woocommerce-gateway-paysoncheckout' ), $payson_order['order']['totalPriceIncludingTax'] ) );
+		if ( ! $subscription ) {
+			$payson_order_total = (int) round( $payson_order['order']['totalPriceIncludingTax'] );
+			$woo_order_total    = (int) round( $order->get_total() );
+			if ( $woo_order_total !== $payson_order_total ) {
+				$order->update_status( 'on-hold', sprintf( __( 'Order needs manual review, WooCommerce total and Payson total do not match. Payson order total: %s.', 'woocommerce-gateway-paysoncheckout' ), $payson_order_total ) );
+				PaysonCheckout_For_WooCommerce_Logger::log( 'Order total missmatch in order:' . $order->get_order_number() . '. Woo order total: ' . $woo_order_total . '. Payson order total: ' . $payson_order_total );
+			}
 		}
 
 		return $order;
@@ -265,7 +285,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 */
 	private function process_order_lines( $payson_order, $order ) {
 		PaysonCheckout_For_WooCommerce_Logger::log( 'Processing order lines (from Payson order) during backup order creation for Payson order ID ' . $payson_order['id'] );
-		error_log( 'payson order process o lines f ' . var_export( $payson_order, true ) );
 		foreach ( $payson_order['order']['items'] as $cart_item ) {
 			if ( strpos( $cart_item['reference'], 'shipping|' ) !== false ) {
 				// Shipping
