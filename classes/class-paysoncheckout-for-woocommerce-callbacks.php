@@ -111,7 +111,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @return void
 	 */
 	public function notification_cb() {
-		PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . json_encode( $_GET ) . ' URL: ' . $_SERVER['REQUEST_URI'] );
 		if ( isset( $_GET['checkout'] ) ) {
 			$payment_id   = $_GET['checkout'];
 			$subscription = false;
@@ -121,9 +120,10 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		}
 		$payson_order = pco_wc_get_order( $payment_id, $subscription );
 		if ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . json_encode( $_GET ) . ' URL: ' . $_SERVER['REQUEST_URI'] );
 			wp_schedule_single_event( time() + 120, 'pco_check_for_order', array( $payment_id, $subscription ) );
-			header( 'HTTP/1.1 200 OK' );
 		}
+		header( 'HTTP/1.1 200 OK' );
 	}
 
 	public function pco_check_for_order_callback( $payment_id, $subscription ) {
@@ -155,7 +155,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 
 			if ( $order ) {
 				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order_id_match );
-				// @todo create check_order _status function.
 			} else {
 				// No order, why?
 				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order_id_match . '. But we could not instantiate an order object' );
