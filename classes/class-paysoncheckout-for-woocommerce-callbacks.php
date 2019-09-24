@@ -143,7 +143,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		foreach ( $orders as $order_id ) {
 			$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id' );
 
-			if ( $order_payment_id === $payment_id ) {
+			if ( $order_payment_id['0'] === $payment_id ) {
 				$order_id_match = $order_id;
 				break;
 			}
