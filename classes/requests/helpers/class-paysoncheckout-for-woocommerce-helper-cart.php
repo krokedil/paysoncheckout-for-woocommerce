@@ -78,7 +78,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 	public function get_product_name( $cart_item ) {
 		$cart_item_data = $cart_item['data'];
 		$cart_item_name = $cart_item_data->get_name();
-		$item_name = apply_filters( 'pco_cart_item_name',  $cart_item_name,  $cart_item );
+		$item_name      = apply_filters( 'pco_cart_item_name', $cart_item_name, $cart_item );
 		return strip_tags( $item_name );
 	}
 
@@ -134,7 +134,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 			'unitPrice' => $fee->amount + $fee->tax, // Float.
 			'quantity'  => 1, // Float.
 			'taxRate'   => $fee->tax / $fee->amount, // Float.
-			'reference' => $fee->id, // String.
+			'reference' => 'fee|' . $fee->id, // String.
 		);
 	}
 
@@ -156,8 +156,8 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 							'unitPrice' => $method->cost + array_sum( $method->taxes ), // Float.
 							'quantity'  => 1, // Float.
 							'taxRate'   => array_sum( $method->taxes ) / $method->cost, // Float.
-							'reference' => __( 'Shipping', 'payson-checkout-for-woocommerce' ), // String.
-							'type'		=> 'service',
+							'reference' => 'shipping|' . $method->id, // String.
+							'type'      => 'service',
 						);
 					} else {
 						return array(
@@ -165,8 +165,8 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 							'unitPrice' => 0, // Float.
 							'quantity'  => 1, // Float.
 							'taxRate'   => 0, // Float.
-							'reference' => __( 'Shipping', 'payson-checkout-for-woocommerce' ), // String.
-							'type'		=> 'service',
+							'reference' => 'shipping|' . $method->id, // String.
+							'type'      => 'service',
 						);
 					}
 				}
