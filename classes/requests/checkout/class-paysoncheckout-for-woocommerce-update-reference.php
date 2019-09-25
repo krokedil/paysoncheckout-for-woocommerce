@@ -21,13 +21,11 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 	 * @return array
 	 */
 	public function request( $order_id = null, $payson_data = null ) {
-		$payment_id   = null !== WC()->session ? WC()->session->get( 'payson_payment_id' ) : $payson_data['id'];
+		$payment_id   = WC()->session->get( 'payson_payment_id' );
 		$request_url  = $this->enviroment . 'Checkouts/' . $payment_id;
 		$request_args = apply_filters( 'pco_update_order_args', $this->get_request_args( $order_id, $payson_data ) );
-		if ( null !== WC()->session ) {
-			if ( WC()->session->get( 'pco_wc_update_md5' ) && WC()->session->get( 'pco_wc_update_md5' ) === md5( serialize( $request_args ) ) ) {
-				return false;
-			}
+		if ( WC()->session->get( 'pco_wc_update_md5' ) && WC()->session->get( 'pco_wc_update_md5' ) === md5( serialize( $request_args ) ) ) {
+			return false;
 		}
 		$response          = wp_remote_request( $request_url, $request_args );
 		$code              = wp_remote_retrieve_response_code( $response );
