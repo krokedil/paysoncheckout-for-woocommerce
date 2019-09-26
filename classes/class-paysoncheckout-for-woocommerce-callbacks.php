@@ -263,11 +263,11 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		}
 
 		if ( ! $subscription ) {
-			$payson_order_total = (int) round( $payson_order['order']['totalPriceIncludingTax'] );
-			$woo_order_total    = (int) round( $order->get_total() );
+			$payson_order_total = floatval( round( $payson_order['order']['totalPriceIncludingTax'], 2 ) );
+			$woo_order_total    = floatval( round( $order->get_total(), 2 ) );
 			if ( $woo_order_total !== $payson_order_total ) {
 				$order->update_status( 'on-hold', sprintf( __( 'Order needs manual review, WooCommerce total and Payson total do not match. Payson order total: %s.', 'woocommerce-gateway-paysoncheckout' ), $payson_order_total ) );
-				PaysonCheckout_For_WooCommerce_Logger::log( 'Order total missmatch in order:' . $order->get_order_number() . '. Woo order total: ' . $woo_order_total . '. Payson order total: ' . $payson_order_total );
+				PaysonCheckout_For_WooCommerce_Logger::log( 'Order total mismatch in order:' . $order->get_order_number() . '. Woo order total: ' . $woo_order_total . '. Payson order total: ' . $payson_order_total );
 			}
 		}
 
@@ -318,7 +318,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 					$fee->set_props( $args );
 					$order->add_item( $fee );
 				} catch ( Exception $e ) {
-					DIBS_Easy::log( 'Backup order creation error add fee error: ' . $e->getCode() . ' - ' . $e->getMessage() );
+					PaysonCheckout_For_WooCommerce_Logger::log( 'Backup order creation error add fee error: ' . $e->getCode() . ' - ' . $e->getMessage() );
 				}
 			} else {
 				// Product items
@@ -347,7 +347,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 					$item->save();
 					$order->add_item( $item );
 				} catch ( Exception $e ) {
-					DIBS_Easy::log( 'Backup order creation error add to cart error: ' . $e->getCode() . ' - ' . $e->getMessage() );
+					PaysonCheckout_For_WooCommerce_Logger::log( 'Backup order creation error add to cart error: ' . $e->getCode() . ' - ' . $e->getMessage() );
 				}
 			}
 		}
