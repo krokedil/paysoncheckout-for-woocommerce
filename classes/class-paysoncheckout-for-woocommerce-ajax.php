@@ -120,7 +120,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			'customer' => $payson_order_tmp['customer'],
 		);
 
-		WC()->cart->calculate_shipping();
 		WC()->cart->calculate_fees();
 		WC()->cart->calculate_totals();
 
