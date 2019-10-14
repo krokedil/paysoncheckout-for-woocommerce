@@ -38,6 +38,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * Class constructor.
 	 */
 	public function __construct() {
+		add_action( 'init', array( $this, 'set_current_user' ) );
 		add_action( 'woocommerce_api_pco_wc_validation', array( $this, 'validate_cb' ) );
 		add_action( 'woocommerce_api_pco_wc_notification', array( $this, 'notification_cb' ) );
 		add_action( 'pco_check_for_order', array( $this, 'pco_check_for_order_callback' ), 10, 2 );
@@ -509,6 +510,17 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 				$this->order_is_valid                    = false;
 				$this->validation_messages['user_login'] = __( 'An account already exists with this email. Please login to complete the purchase.', 'woocommerce-gateway-payson' );
 			}
+		}
+	}
+
+	/**
+	 * Sets the current user for the callback.
+	 * 
+	 * @return void
+	 */
+	public function set_current_user() {
+		if ( isset( $_GET['pco_session_id'] ) ) {
+			wp_set_current_user( $_GET['pco_session_id'] );
 		}
 	}
 }
