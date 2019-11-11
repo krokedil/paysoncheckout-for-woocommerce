@@ -36,6 +36,8 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2019.11.11	- version 2.2.1 =
+* Enhancement	- Added default for Last name when customer type is business. Prevents orders from being created on checkout error fallback.
 
 = 2019.09.25	- version 2.2.0 =
 * Feature		- Added support for creating orders via API callback.

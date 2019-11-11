@@ -254,7 +254,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			$subscription = true;
 		}
 		// Show snippet.
-		pco_wc_show_snippet( $subscription );
+		pco_wc_thankyou_page_snippet( $order_id, $subscription );
 
 		// Clear sessionStorage.
 		echo '<script>sessionStorage.removeItem("PCORequiredFields")</script>';

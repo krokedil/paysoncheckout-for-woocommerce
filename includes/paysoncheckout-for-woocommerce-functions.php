@@ -37,6 +37,28 @@ function pco_wc_show_snippet( $subscription = false ) {
 }
 
 /**
+ * Prints the thank you page snippet for PaysonCheckout. Does not display error messages.
+ *
+ * @param int $order_id WooCommerce order id.
+ * @param bool $subscription is this a subscription order.
+ * @return void
+ */
+function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
+	$order = wc_get_order( $order_id );
+	if( $subscription ) {
+		$payment_id = get_post_meta( $order_id, '_payson_subscription_id', true );
+	} else {
+		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
+	}
+	$payson_order = pco_wc_get_order( $payment_id, $subscription );
+
+	if ( ! is_wp_error( $payson_order ) ) {
+		$snippet = $payson_order['snippet'];
+		echo $snippet;
+	}
+}
+
+/**
  * Maybe creates the Payson order.
  *
  * @param boolean $subscription If this is a subscription order or not.
