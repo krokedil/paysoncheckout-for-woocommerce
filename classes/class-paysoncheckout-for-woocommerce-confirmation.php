@@ -47,8 +47,12 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 			WC()->customer->set_billing_first_name( sanitize_text_field( $address['firstName'] ) );
 			WC()->customer->set_shipping_first_name( sanitize_text_field( $address['firstName'] ) );
 			// Last name.
-			WC()->customer->set_billing_last_name( sanitize_text_field( $address['lastName'] ) );
-			WC()->customer->set_shipping_last_name( sanitize_text_field( $address['lastName'] ) );
+			$payson_lastname = sanitize_text_field( $address['lastName'] );
+			if ( 'business' === $payson_order['customer']['type'] ) {
+				$payson_lastname = '-';
+			}
+			WC()->customer->set_billing_last_name( sanitize_text_field( $payson_lastname ) );
+			WC()->customer->set_shipping_last_name( sanitize_text_field( $payson_lastname ) );
 			// Country.
 			WC()->customer->set_billing_country( strtoupper( sanitize_text_field( $address['countryCode'] ) ) );
 			WC()->customer->set_shipping_country( strtoupper( sanitize_text_field( $address['countryCode'] ) ) );
