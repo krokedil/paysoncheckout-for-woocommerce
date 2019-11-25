@@ -98,7 +98,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			// Load scripts.
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ) );
 
-			// Set variabled for shorthand access to classes.
+			// Set variables for shorthand access to classes.
 			// Requests.
 			$this->requests                 = new PaysonCheckout_For_WooCommerce_Request();
 			$this->create_order             = new PaysonCheckout_For_WooCommerce_Create_Order();

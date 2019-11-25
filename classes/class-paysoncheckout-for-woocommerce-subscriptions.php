@@ -47,12 +47,16 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 			$text          = __( 'Payson API Error on make recurring payment: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 			$formated_text = sprintf( $text, $code, $message );
 			$renewal_order->add_order_note( $formated_text );
-			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order( $renewal_order );
+			foreach ( $subscriptions as $subscription ) {
+				$subscription->payment_failed();
+			}
 		} else {
 			update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
+			// translators: %s Payson order id.
 			$renewal_order->add_order_note( sprintf( __( 'Subscription payment made with Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
-			$renewal_order->payment_complete( $payson_order['purchaseId'] );
-			WC_Subscriptions_Manager::process_subscription_payments_on_order( $renewal_order );
+			foreach ( $subscriptions as $subscription ) {
+				$subscription->payment_complete( $payson_order['purchaseId'] );
+			}
 		}
 	}
 }
