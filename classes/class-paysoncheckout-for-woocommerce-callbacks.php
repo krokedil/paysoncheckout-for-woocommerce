@@ -150,7 +150,11 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$order_id_match = '';
 
 		foreach ( $orders as $order_id ) {
-			$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
+			if ( $subscription ) {
+				$order_payment_id = get_post_meta( $order_id, '_payson_subscription_id', true );
+			} else {
+				$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
+			}
 
 			if ( $order_payment_id === $payment_id ) {
 				$order_id_match = $order_id;
@@ -523,7 +527,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 
 	/**
 	 * Sets the current user for the callback.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function set_current_user() {
