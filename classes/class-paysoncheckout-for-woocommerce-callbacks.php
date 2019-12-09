@@ -132,6 +132,8 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 				}
 				header( 'HTTP/1.1 200 OK' );
 			}
+		} else {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'No payment id in notification callback' );
 		}
 	}
 
