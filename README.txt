@@ -36,6 +36,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2019.12.10	- version 2.2.2 =
+* Fix			- Comparing with correct payment id in notification callback if order is a subscription.
+* Enhancement 	- Added more logging in the notification callback function.
+* Feature		- Free trial subscriptions is now supported in the plugin.
+
 = 2019.11.11	- version 2.2.1 =
 * Enhancement	- Added default for Last name when customer type is business. Prevents orders from being created on checkout error fallback.
 
