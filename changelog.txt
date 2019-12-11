@@ -1,5 +1,13 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+= 2019.12.10	- version 2.3.0 =
+* Feature		- Free trial subscriptions is now supported in the plugin.
+* Enhancement 	- Added more logging in the notification callback function.
+* Fix			- Comparing with correct payment id in notification callback if order is a subscription.
+
+= 2019.11.11	- version 2.2.1 =
+* Enhancement	- Added default for Last name when customer type is business. Prevents orders from being created on checkout error fallback.
+
 = 2019.09.25	- version 2.2.0 =
 * Feature		- Added support for creating orders via API callback.
 

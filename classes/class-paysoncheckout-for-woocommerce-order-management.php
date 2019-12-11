@@ -112,6 +112,12 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return;
 		}
 
+		$subscription = $this->check_if_subscription( $order );
+		// If this is a free subscription then stop here.
+		if ( $subscription && 0 <= $order->get_total() ) {
+			return;
+		}
+
 		// Check if we have a payment id.
 		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
 		if ( empty( $payment_id ) ) {
@@ -127,7 +133,6 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return;
 		}
 
-		$subscription = $this->check_if_subscription( $order );
 		// Get the Payson order.
 		$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_payment->request( $payment_id ) : PCO_WC()->get_order->request( $payment_id );
 		if ( is_wp_error( $payson_order_tmp ) ) {

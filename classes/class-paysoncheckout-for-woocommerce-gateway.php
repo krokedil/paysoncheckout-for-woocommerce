@@ -64,6 +64,10 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_available() {
+		$is_subscription = false;
+		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+			$is_subscription = true;
+		}
 		if ( 'yes' === $this->enabled ) {
 			if ( ! is_admin() ) {
 				// Currency check.
@@ -75,11 +79,13 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 					return false;
 				}
 				// Don't display the payment method if we have an order with to low amount.
-				if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
-					return false;
-				}
-				if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
-					return false;
+				if ( ! $is_subscription ) { // Not needed for subscriptions.
+					if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
+						return false;
+					}
+					if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
+						return false;
+					}
 				}
 			}
 			return true;
@@ -211,7 +217,17 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	public function process_recurring_payson_order( $order_id ) {
 		$order           = wc_get_order( $order_id );
 		$subscription_id = WC()->session->get( 'payson_payment_id' );
+		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
+		foreach ( $subcriptions as $subcription ) {
+			update_post_meta( $subcription->get_id(), '_payson_subscription_id', $subscription_id );
+		}
 
+		// If subscription is free, then return true.
+		if ( 0 <= $order->get_total() ) {
+			update_post_meta( $order_id, '_payson_checkout_id', $subscription_id );
+			$order->payment_complete( $subscription_id );
+			return true;
+		}
 		// Make payment.
 		$payson_order = PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
 		if ( is_wp_error( $payson_order ) ) {
@@ -227,12 +243,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		}
 
 		// Save meta data to order and subscriptions.
-		update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
 		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
-		$subcriptions = wcs_get_subscriptions_for_order( $order_id );
-		foreach ( $subcriptions as $subcription ) {
-			update_post_meta( $subcription->get_id(), '_payson_subscription_id', $subscription_id );
-		}
+
 		$order->add_order_note( __( 'Subscription payment made with Payson, subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
 
 		// Set payment complete if all is successfull.
