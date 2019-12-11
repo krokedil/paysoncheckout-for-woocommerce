@@ -2,9 +2,9 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.2.3
+Tested up to: 5.3.0
 WC requires at least: 3.0
-WC tested up to: 3.7.0
+WC tested up to: 3.8.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,10 +36,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
-= 2019.12.10	- version 2.2.2 =
-* Fix			- Comparing with correct payment id in notification callback if order is a subscription.
-* Enhancement 	- Added more logging in the notification callback function.
+= 2019.12.10	- version 2.3.0 =
 * Feature		- Free trial subscriptions is now supported in the plugin.
+* Enhancement 	- Added more logging in the notification callback function.
+* Fix			- Comparing with correct payment id in notification callback if order is a subscription.
 
 = 2019.11.11	- version 2.2.1 =
 * Enhancement	- Added default for Last name when customer type is business. Prevents orders from being created on checkout error fallback.
