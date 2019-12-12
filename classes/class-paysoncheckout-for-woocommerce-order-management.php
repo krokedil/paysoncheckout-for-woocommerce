@@ -114,7 +114,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 		$subscription = $this->check_if_subscription( $order );
 		// If this is a free subscription then stop here.
-		if ( $subscription && 0 <= $order->get_total() ) {
+		if ( $subscription && 0 >= $order->get_total() ) {
 			return;
 		}
 

@@ -112,6 +112,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 * @return void
 	 */
 	public function notification_cb() {
+		$payment_id = null;
 		if ( isset( $_GET['checkout'] ) ) {
 			$payment_id   = $_GET['checkout'];
 			$subscription = false;
@@ -132,8 +133,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 				}
 				header( 'HTTP/1.1 200 OK' );
 			}
-		} else {
-			PaysonCheckout_For_WooCommerce_Logger::log( 'No payment id in notification callback' );
 		}
 	}
 

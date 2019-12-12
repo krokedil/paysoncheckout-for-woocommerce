@@ -223,8 +223,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		}
 
 		// If subscription is free, then return true.
-		if ( 0 <= $order->get_total() ) {
-			update_post_meta( $order_id, '_payson_checkout_id', $subscription_id );
+		if ( 0 >= $order->get_total() ) {
+			update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
 			$order->payment_complete( $subscription_id );
 			return true;
 		}
@@ -243,6 +243,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		}
 
 		// Save meta data to order and subscriptions.
+		update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
 		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
 
 		$order->add_order_note( __( 'Subscription payment made with Payson, subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
