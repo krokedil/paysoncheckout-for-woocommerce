@@ -36,6 +36,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2019.12.13	- version 2.3.1 =
+* Fix			- Save subscription ID correctly in WooCommerce subscription if a subscription has a free trial.
+
 = 2019.12.10	- version 2.3.0 =
 * Feature		- Free trial subscriptions is now supported in the plugin.
 * Enhancement 	- Added more logging in the notification callback function.
