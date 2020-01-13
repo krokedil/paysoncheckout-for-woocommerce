@@ -16,7 +16,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 	/**
 	 * Gets formated order items.
 	 *
-	 * @param object $order The WooCommerce order object.
+	 * @param int $order_id The WooCommerce order object.
 	 * @return array Formated order items.
 	 */
 	public function get_order_items( $order_id ) {
@@ -56,7 +56,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 			'name'      => $this->get_product_name( $order_item ), // String.
 			'unitPrice' => $this->get_product_unit_price( $order_item ), // Float.
 			'quantity'  => $order_item->get_quantity(), // Float.
-			'taxRate'   => $this->get_product_tax_rate( $order ), // Float.
+			'taxRate'   => $this->get_product_tax_rate( $order, $order_item ), // Float.
 		);
 	}
 
@@ -86,13 +86,16 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 	 * Gets the tax rate for the product.
 	 *
 	 * @param object $order The order item.
+	 * @param object $order_item The WooCommerce order item.
 	 * @return float
 	 */
-	public function get_product_tax_rate( $order ) {
+	public function get_product_tax_rate( $order, $order_item ) {
 		$tax_items = $order->get_items( 'tax' );
 		foreach ( $tax_items as $tax_item ) {
 			$rate_id = $tax_item->get_rate_id();
-			return round( WC_Tax::_get_tax_rate( $rate_id )['tax_rate'] / 100 );
+			if ( key( $order_item->get_taxes()['total'] ) === $rate_id ) {
+				return round( WC_Tax::_get_tax_rate( $rate_id )['tax_rate'] / 100, 2 );
+			}
 		}
 	}
 
@@ -123,7 +126,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 				'name'      => $order->get_shipping_method(), // String.
 				'unitPrice' => $order->get_shipping_total() + $order->get_shipping_tax(), // Float.
 				'quantity'  => 1, // Float.
-				'taxRate'   => ( '0' !== $order->get_shipping_tax() ) ? $this->get_product_tax_rate( $order ) : 0, // Float.
+				'taxRate'   => ( '0' !== $order->get_shipping_tax() ) ? $this->get_product_tax_rate( $order, current( $order->get_items( 'shipping' ) ) ) : 0, // Float.
 				'reference' => __( 'Shipping', 'payson-checkout-for-woocommerce' ), // String.
 			);
 		} else {
