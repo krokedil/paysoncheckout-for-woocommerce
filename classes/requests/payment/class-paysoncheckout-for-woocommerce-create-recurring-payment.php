@@ -17,6 +17,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 	 * Makes the request
 	 *
 	 * @param string $subscription_id The PaysonCheckout ID for the recurring order.
+	 * @param int    $order_id The WooCommerce order id.
 	 * @return array
 	 */
 	public function request( $subscription_id, $order_id ) {
@@ -29,6 +30,12 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
 
 		$formated_response = $this->process_response( $response, $request_args, $request_url );
+
+		if ( isset( $formated_response['status'] ) && 'denied' === $formated_response['status'] ) {
+			$data              = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
+			$formated_response = new WP_Error( wp_remote_retrieve_response_code( $response ), __( 'Scheduled payment denied by Payson.', 'woocommerce-gateway-paysoncheckout' ), $data );
+		}
+
 		return $formated_response;
 	}
 
