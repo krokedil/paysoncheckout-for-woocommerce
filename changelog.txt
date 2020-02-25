@@ -1,5 +1,8 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+= 2020.02.25	- version 2.3.3 =
+* Fix			- Fixed the handling of a denied recurring payment.
+
 = 2020.01.21	- version 2.3.2 =
 * Fix			- Fixed an issue calculating the tax rate if a site had multiple tax rates settup.
 
