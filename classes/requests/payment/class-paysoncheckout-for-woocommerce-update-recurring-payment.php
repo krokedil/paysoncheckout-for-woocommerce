@@ -42,7 +42,9 @@ class PaysonCheckout_For_WooCommerce_Update_Recurring_Payment extends PaysonChec
 	 */
 	public function get_body( $order_id, $payson_data, $payment_id ) {
 		if ( null !== $order_id ) {
-			$payson_data['merchant']['reference'] = $order_id;
+			$order                                = wc_get_order( $order_id );
+			$order_number                         = $order->get_order_number();
+			$payson_data['merchant']['reference'] = $order_number;
 		}
 
 		return $payson_data;
