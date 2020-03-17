@@ -1,5 +1,8 @@
 *** PaysonCheckout 2.0 Changelog ***
 
+= 2020.03.17    - version 2.3.4 =
+* Enhancement   - Using order number instead of order id to set the merchant reference in Payson system. (Compatibility improvement with WooCommerce Sequential Order Number).
+
 = 2020.02.25	- version 2.3.3 =
 * Fix			- Fixed the handling of a denied recurring payment.
 
