@@ -60,7 +60,9 @@ class PaysonCheckout_For_WooCommerce_Update_Order extends PaysonCheckout_For_Woo
 		);
 
 		if ( null !== $order_id ) {
-			$body['merchant']['reference'] = $order_id;
+			$order                         = wc_get_order( $order_id );
+			$order_number                  = $order->get_order_number();
+			$body['merchant']['reference'] = $order_number;
 		}
 
 		return $body;
