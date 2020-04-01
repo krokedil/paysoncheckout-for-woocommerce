@@ -2,9 +2,9 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.3.0
+Tested up to: 5.4.0
 WC requires at least: 3.0
-WC tested up to: 3.8.1
+WC tested up to: 4.0.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -36,6 +36,15 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2020.03.17    - version 2.3.4 =
+* Enhancement   - Using order number instead of order id to set the merchant reference in Payson system. (Compatibility improvement with WooCommerce Sequential Order Number).
+
+= 2020.02.25	- version 2.3.3 =
+* Fix			- Fixed the handling of a denied recurring payment.
+
+= 2020.01.21	- version 2.3.2 =
+* Fix			- Fixed an issue calculating the tax rate if a site had multiple tax rates settup.
+
 = 2019.12.13	- version 2.3.1 =
 * Fix			- Save subscription ID correctly in WooCommerce subscription if a subscription has a free trial.
 
