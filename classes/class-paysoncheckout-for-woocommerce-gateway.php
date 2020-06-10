@@ -137,11 +137,16 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @param string $reasson The reasson given for the refund.
 	 */
 	public function process_refund( $order_id, $amount = null, $reasson = '' ) {
+
 		$order = wc_get_order( $order_id );
 		// Refund full amount.
 		if ( $amount === $order->get_total() ) {
 			return PCO_WC()->order_management->refund_full_payment( $order_id );
+		} else {
+			// TODO - Refund partial.
+			return PCO_WC()->order_management->refund_partial_payment( $order_id );
 		}
+
 	}
 
 	/**
