@@ -45,6 +45,7 @@ function pco_wc_show_pay_for_order_snippet() {
 	if ( ! isset( $_GET['pco_confirm'] ) ) {
 		global $wp;
 		$order_id = $wp->query_vars['order-pay'];
+
 		// Create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order( $order_id );
 		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
@@ -187,11 +188,21 @@ function pco_maybe_show_validation_error_message() {
  * @return array
  */
 function pco_wc_create_order( $order_id = null ) {
-	// Check if the cart has a subscription.
-	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
-		return PCO_WC()->create_recurring_order->request();
+	if ( null === $order_id ) {
+		// Check if the cart has a subscription.
+		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+			return PCO_WC()->create_recurring_order->request();
+		}
+		return PCO_WC()->create_order->request();
+	} else {
+		$order = wc_get_order( $order_id );
+		// Check if the order has a subscription.
+		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+			$subscription_id = WC()->session->get( 'payson_payment_id' );
+			return PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
+		}
+		return PCO_WC()->create_order->request( $order_id );
 	}
-	return PCO_WC()->create_order->request( $order_id );
 }
 
 /**
