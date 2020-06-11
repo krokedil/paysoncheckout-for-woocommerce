@@ -275,10 +275,43 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 				foreach ( $payson_order_tmp['order']['items'] as $key => $payson_item ) {
 
-					$this->partial_refund_item( $refund_order, $key, $payson_item );
-					$this->partial_refund_shipping( $refund_order, $key, $payson_item );
-					$this->partial_refund_fees( $refund_order, $key, $payson_item );
+					$continue = false;
+					foreach ( $refund_order->get_items() as $refund_item ) {
+						$product = $refund_item->get_product();
+						if ( $product->get_sku() === $payson_item['reference'] ) {
+							$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_item->get_total() + $refund_item->get_total_tax() );
+							$payson_order_tmp['order']['items'][ $key ] = $payson_item;
+							$continue                                   = true;
+							break;
+						}
+					}
 
+					if ( $continue ) {
+						continue;
+					}
+
+					$refund_shipping = $refund_order->get_shipping_method();
+
+					if ( $payson_item['name'] === $refund_shipping ) {
+						$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_order->get_shipping_total() + $refund_order->get_shipping_tax() );
+						$payson_order_tmp['order']['items'][ $key ] = $payson_item;
+						$continue                                   = true;
+						break;
+					}
+
+					if ( $continue ) {
+						continue;
+					}
+
+					foreach ( $refund_order->get_fees() as $refund_fee ) {
+
+						if ( $payson_item['name'] === $refund_fee->get_name() ) {
+							$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_fee->get_total() + $refund_fee->get_total_tax() );
+							$payson_order_tmp['order']['items'][ $key ] = $payson_item;
+							$continue                                   = true;
+							break;
+						}
+					}
 				}
 
 				$payson_order_tmp['order']['totalCreditedAmount'] = $payson_order_tmp['order']['totalCreditedAmount'] + abs( $refund_order->get_total() );
@@ -311,57 +344,5 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Partial refund item
-	 *
-	 * @param object $refunded_order The current order to be refunfded.
-	 * @param string $refunded_key The key index for each Payson item.
-	 * @param string $refunded_payson_item The item to be refunded.
-	 * @return void
-	 */
-	public function partial_refund_item( $refunded_order, $refunded_key, $refunded_payson_item ) {
-		foreach ( $refunded_order->get_items() as $refund_item ) {
-			$product = $refund_item->get_product();
-			if ( $product->get_sku() === $refunded_payson_item['reference'] ) {
-				$refunded_payson_item['creditedAmount']              = $refunded_payson_item['creditedAmount'] + abs( $refund_item->get_total() + $refund_item->get_total_tax() );
-				$payson_order_tmp['order']['items'][ $refunded_key ] = $refunded_payson_item;
-			}
-		}
-	}
-
-	/**
-	 * Partial refund shipping
-	 *
-	 * @param object $refunded_order The current order to be refunfded.
-	 * @param string $refunded_key The key index for each Payson item.
-	 * @param string $refunded_payson_item The item to be refunded.
-	 * @return void
-	 */
-	public function partial_refund_shipping( $refunded_order, $refunded_key, $refunded_payson_item ) {
-		$refund_shipping = $refunded_order->get_shipping_method();
-		if ( $refunded_payson_item['name'] === $refund_shipping ) {
-			$payson_item['creditedAmount']                       = $refunded_payson_item['creditedAmount'] + abs( $refunded_order->get_shipping_total() + $refunded_order->get_shipping_tax() );
-			$payson_order_tmp['order']['items'][ $refunded_key ] = $refunded_payson_item;
-		}
-	}
-
-	/**
-	 * Partial refund fees
-	 *
-	 * @param object $refunded_order The current order to be refunfded.
-	 * @param string $refunded_key The key index for each Payson item.
-	 * @param string $refunded_payson_item The item to be refunded.
-	 * @return void
-	 */
-	public function partial_refund_fees( $refunded_order, $refunded_key, $refunded_payson_item ) {
-		foreach ( $refunded_order->get_fees() as $refund_fee ) {
-
-			if ( $refunded_payson_item['name'] === $refund_fee->get_name() ) {
-				$refunded_payson_item['creditedAmount']              = $refunded_payson_item['creditedAmount'] + abs( $refund_fee->get_total() + $refund_fee->get_total_tax() );
-				$payson_order_tmp['order']['items'][ $refunded_key ] = $refunded_payson_item;
-			}
-		}
 	}
 }
