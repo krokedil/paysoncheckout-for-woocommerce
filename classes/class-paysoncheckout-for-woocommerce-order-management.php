@@ -225,8 +225,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$payson_order                       = PCO_WC()->refund_order->request( $order_id, $payson_order_tmp, $payment_id, $subscription );
 			if ( is_wp_error( $payson_order ) ) {
 				// If error save error message and return false.
-				$code          = $payson_order_tmp->get_error_code();
-				$message       = $payson_order_tmp->get_error_message();
+				$code          = $payson_order->get_error_code();
+				$message       = $payson_order->get_error_message();
 				$text          = __( 'Payson API Error on Payson refund: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 				$formated_text = sprintf( $text, $code, $message );
 				$order->add_order_note( $formated_text );
@@ -270,11 +270,9 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 				// Get the Payson order.
 				$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_payment->request( $payment_id ) : PCO_WC()->get_order->request( $payment_id );
-
-				$refund_order = wc_get_order( $refund_order_id );
+				$refund_order     = wc_get_order( $refund_order_id );
 
 				foreach ( $payson_order_tmp['order']['items'] as $key => $payson_item ) {
-
 					$continue = false;
 					foreach ( $refund_order->get_items() as $refund_item ) {
 						$product = $refund_item->get_product();
@@ -304,7 +302,6 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 					}
 
 					foreach ( $refund_order->get_fees() as $refund_fee ) {
-
 						if ( $payson_item['name'] === $refund_fee->get_name() ) {
 							$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_fee->get_total() + $refund_fee->get_total_tax() );
 							$payson_order_tmp['order']['items'][ $key ] = $payson_item;
