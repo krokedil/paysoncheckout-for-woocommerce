@@ -62,6 +62,10 @@ class PaysonCheckout_For_WooCommerce_Request {
 	 * @return object|array
 	 */
 	public function process_response( $response, $request_args = array(), $request_url = '' ) {
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
 		// Check the status code.
 		if ( wp_remote_retrieve_response_code( $response ) < 200 || wp_remote_retrieve_response_code( $response ) > 299 ) {
 			$data          = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
