@@ -34,6 +34,10 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return;
 		}
 
+		if ( ! empty( get_post_meta( $order_id, '_paysoncheckout_reservation_activated', true ) ) ) {
+			return;
+		}
+
 		// Check payson settings to see if we have the ordermanagement enabled.
 		$payson_settings  = get_option( 'woocommerce_paysoncheckout_settings' );
 		$order_management = 'yes' === $payson_settings['order_management'] ? true : false;
