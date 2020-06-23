@@ -416,6 +416,9 @@ jQuery(function($) {
 				pco_wc.bodyEl.on('blur', pco_wc.extraFieldsSelectorText, pco_wc.checkFormData);
 				pco_wc.bodyEl.on('change', pco_wc.extraFieldsSelectorNonText, pco_wc.checkFormData);
 				pco_wc.bodyEl.on('click', 'input#terms', pco_wc.checkFormData);
+				document.addEventListener('PaysonEmbeddedPaymentInitiated', function (e) {
+					e.preventDefault();
+				} );
 
 			}
 			pco_wc.bodyEl.on('change', 'input[name="payment_method"]', pco_wc.maybeChangeToPco);
