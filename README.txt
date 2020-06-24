@@ -1,4 +1,4 @@
-=== PaysonCheckout for WooCommerce ===
+=== PaysonCheckout 2.0 for WooCommerce ===
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
@@ -9,7 +9,7 @@ License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
 
-PaysonCheckout for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
+PaysonCheckout 2.0 for WooCommerce is a plugin that extends WooCommerce, allowing you to take payments via Payson.
 
 
 == DESCRIPTION ==
@@ -19,7 +19,7 @@ PaysonCheckout for WooCommerce is a plugin that extends WooCommerce, allowing yo
 	<li>The customer never leaves your e-commerce store</li>
 </ul>
 
-In PaysonCheckout Payson has removed all unnecessary steps in the checkout to increase conversions and sales. The payment window is nicely integrated into your e-store where customers can pay with a single click! All purchases are based on the service Invoice via email. The customer can then choose to get the goods delivered first and pay retrospectively or pay the invoice immediately upon purchase, for example by card, online bank payment or SMS.
+In PaysonCheckout 2.0 Payson has removed all unnecessary steps in the checkout to increase conversions and sales. The payment window is nicely integrated into your e-store where customers can pay with a single click! All purchases are based on the service Invoice via email. The customer can then choose to get the goods delivered first and pay retrospectively or pay the invoice immediately upon purchase, for example by card, online bank payment or SMS.
 
 To get started with Payson you need to [sign up](https://www.payson.se/sv/) for a Business account.
 
