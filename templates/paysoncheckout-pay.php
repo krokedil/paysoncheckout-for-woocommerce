@@ -1,10 +1,10 @@
 <?php
 /**
- * Billmate_Checkout pay for order page.
+ * PaysonCheckout pay for order page.
  *
  * Overrides /checkout/form-pay.php.
  *
- * @package Billmate_Checkout/Templates
+ * @package PaysonCheckout/Templates
  */
 
 ?>
