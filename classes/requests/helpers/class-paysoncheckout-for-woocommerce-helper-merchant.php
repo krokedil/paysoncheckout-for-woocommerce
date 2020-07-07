@@ -45,7 +45,6 @@ class PaysonCheckout_For_WooCommerce_Helper_Merchant {
 			'confirmationUri' => $confirmation_uri, // String.
 			'notificationUri' => get_home_url() . '/wc-api/PCO_WC_Notification', // String.
 			'termsUri'        => get_permalink( wc_get_page_id( 'terms' ) ), // String.
-			'validationUri'   => $validation_uri, // String.
 			'partnerId'       => 'Krokedil', // String.
 			'integrationInfo' => $integration_info,
 		);
