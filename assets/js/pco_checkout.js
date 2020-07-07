@@ -87,7 +87,10 @@ jQuery(function($) {
 			$( document.body ).on( 'checkout_error', function() { pco_wc.failOrder( 'checkout_error' ); } );
 			// Run interval untill we find a hashtag or timer runs out.
 			pco_wc.interval = setInterval( function() { pco_wc.checkUrl(  ); }, 500 );
+			// get payson order - ajax
 			this.getPaysonOrder();
+			// submit wc order
+			this.submitForm();
 		},
 
 		paymentInitiationVerified: function () {
@@ -203,6 +206,13 @@ jQuery(function($) {
 			$( '#billing_phone' ).val(phone);
 			// billing email
 			$('#billing_email').val(email);
+		},
+
+		submitForm: function () {
+			if ( 0 < $( 'form.checkout #terms' ).length ) {
+				$( 'form.checkout #terms' ).prop( 'checked', true );
+			}
+			$( 'form.checkout' ).submit();
 		},
 
 		/*
