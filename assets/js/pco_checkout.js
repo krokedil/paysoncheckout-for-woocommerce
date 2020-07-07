@@ -152,7 +152,11 @@ jQuery(function($) {
 
 				},
 				complete: function(data) {
-
+					var customer = null;
+					if (data.hasOwnProperty('customer')) {
+						// set data from wc form
+						this.fillForm(customer);
+					}
 				}
 			});
 		},
