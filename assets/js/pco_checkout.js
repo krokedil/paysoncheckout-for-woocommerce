@@ -399,6 +399,7 @@ jQuery(function($) {
 				// Payson Event listeners.
 				document.addEventListener( 'PaysonEmbeddedAddressChanged', function( data ) { pco_wc.addressChanged( data ) } );
 				document.addEventListener( 'PaysonEmbeddedCheckoutResult', function( data ) { pco_wc.checkoutResult( data ) } );
+				document.addEventListener('PaysonEmbeddedPaymentInitiated', function (event) { pco_wc.paymentInitiated(event) } );
 
 				// Update Checkout.
 				pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
@@ -416,9 +417,7 @@ jQuery(function($) {
 				pco_wc.bodyEl.on('blur', pco_wc.extraFieldsSelectorText, pco_wc.checkFormData);
 				pco_wc.bodyEl.on('change', pco_wc.extraFieldsSelectorNonText, pco_wc.checkFormData);
 				pco_wc.bodyEl.on('click', 'input#terms', pco_wc.checkFormData);
-				document.addEventListener('PaysonEmbeddedPaymentInitiated', function (e) {
-					e.preventDefault();
-				} );
+
 
 			}
 			pco_wc.bodyEl.on('change', 'input[name="payment_method"]', pco_wc.maybeChangeToPco);
