@@ -196,3 +196,37 @@ function pco_check_valid_order_status( $payson_order ) {
 	// If we get here return true.
 	return true;
 }
+
+
+/**
+ * Confirms and finishes the Payson Order for processing.
+ *
+ * @param string $pco_order_id payson order id.
+ * @param int    $order_id The WooCommerce Order id.
+ * @return void
+ */
+function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
+	if ( $order_id ) {
+		$order = wc_get_order( $order_id );
+		// If the order is already completed, return.
+		if ( null !== $order->get_date_paid() ) {
+			return;
+		}
+
+		// Get the Payson order.
+		$payson_order = pco_wc_get_order( $pco_order_id );
+		if ( ! is_wp_error( $payson_order ) ) {
+			if ( 'readyToShip' === $payson_order['status'] ) {
+				$order->payment_complete( $pco_order_id );
+				$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $pco_order_id );
+				$order->save();
+			} else {
+				$order->set_status( 'on-hold', __( 'Invalid status for payson order', 'payson-checkout-for-woocommerce' ) );
+				$order->save();
+			}
+		} else {
+			$order->set_status( 'on-hold', __( 'Waiting for verification from Payson notification callback', 'payson-checkout-for-woocommerce' ) );
+			$order->save();
+		}
+	}
+}
