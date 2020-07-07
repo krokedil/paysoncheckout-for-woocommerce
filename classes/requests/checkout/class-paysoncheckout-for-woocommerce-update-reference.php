@@ -48,9 +48,17 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 	 */
 	public function get_body( $order_id, $payson_data ) {
 		// Set the merchant reference of the order.
-		$order                                = wc_get_order( $order_id );
-		$order_number                         = $order->get_order_number();
-		$payson_data['merchant']['reference'] = $order_number;
+		$order                                      = wc_get_order( $order_id );
+		$order_number                               = $order->get_order_number();
+		$payson_data['merchant']['reference']       = $order_number;
+		$payson_data['merchant']['confirmationUri'] = add_query_arg(
+			array(
+				'pco_confirm'  => 'yes',
+				'pco_order_id' => WC()->session->get( 'payson_payment_id' ),
+			),
+			$order->get_checkout_order_received_url()
+		);
+
 		return $payson_data;
 	}
 
