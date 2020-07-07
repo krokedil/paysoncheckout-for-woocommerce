@@ -76,6 +76,21 @@ jQuery(function($) {
 		},
 
 		/*
+		* Runs when PaysonEmbeddedPaymentInitiated is triggered.
+		*/
+		paymentInitiated: function(event) {
+			event.preventDefault();
+			// Empty current hash.
+			window.location.hash = '';
+			// Check for any errors.
+			pco_wc.timeout = setTimeout( function() { pco_wc.failOrder(  'timeout' ); }, pco_wc_params.timeout_time * 1000 );
+			$( document.body ).on( 'checkout_error', function() { pco_wc.failOrder( 'checkout_error' ); } );
+			// Run interval untill we find a hashtag or timer runs out.
+			pco_wc.interval = setInterval( function() { pco_wc.checkUrl(  ); }, 500 );
+			
+		},
+
+		/*
 		 * Update the payson order. Happens on updated_checkout event.
 		 */
 		updatePaysonOrder: function() {
