@@ -235,29 +235,10 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						'change_payment_method_url'    => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
 						'change_payment_method_nonce'  => wp_create_nonce( 'pco_wc_change_payment_method' ),
 						'required_fields_text'         => __( 'Please fill in all required checkout fields.', 'woocommerce-gateway-paysoncheckout' ),
-					);
-					wp_localize_script(
-						'pco_wc',
-						'pco_wc_params',
-						$params
-					);
-					wp_enqueue_script( 'pco_wc' );
-				} else {
-					// Confirmation script.
-					wp_register_script(
-						'pco_wc',
-						PAYSONCHECKOUT_URL . '/assets/js/pco_confirm.js',
-						array( 'jquery' ),
-						PAYSONCHECKOUT_VERSION,
-						true
-					);
-					$params = array(
-						'ajax_url'             => admin_url( 'admin-ajax.php' ),
-						'modal_text'           => __( 'Please wait while we process your order.', 'woocommerce-gateway-paysoncheckout' ),
-						'get_order_url'        => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
-						'get_order_nonce'      => wp_create_nonce( 'pco_wc_get_order' ),
-						'checkout_error_url'   => WC_AJAX::get_endpoint( 'pco_wc_checkout_error' ),
-						'checkout_error_nonce' => wp_create_nonce( 'pco_wc_checkout_error' ),
+						'get_order_url'                => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
+						'get_order_nonce'              => wp_create_nonce( 'pco_wc_get_order' ),
+						'timeout_message'              => __( 'Please try again, something went wrong with processing your order.', 'woocommerce-gateway-paysoncheckout' ),
+						'timeout_time'                 => apply_filters( 'pco_checkout_timeout_duration', 20 ),
 					);
 					wp_localize_script(
 						'pco_wc',
