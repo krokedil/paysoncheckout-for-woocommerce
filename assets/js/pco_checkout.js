@@ -87,7 +87,53 @@ jQuery(function($) {
 			$( document.body ).on( 'checkout_error', function() { pco_wc.failOrder( 'checkout_error' ); } );
 			// Run interval untill we find a hashtag or timer runs out.
 			pco_wc.interval = setInterval( function() { pco_wc.checkUrl(  ); }, 500 );
-			
+		},
+
+		paymentInitiationVerified: function () {
+			let iframe = document.getElementById('paysonIframe');
+			iframe.contentWindow.postMessage('paymentInitiationVerified', '*');
+		},
+		paymentInitiationCancelled: function () {
+			let iframe = document.getElementById('paysonIframe');
+			iframe.contentWindow.postMessage('paymentInitiationCancelled', '*');
+		},
+
+		checkUrl: function(  ) {
+			if ( window.location.hash ) {
+				var currentHash = window.location.hash;
+				if ( -1 < currentHash.indexOf( '#payson-success' ) ) {
+					this.paymentInitiationVerified();
+					// Clear the interval.
+					clearInterval(pco_wc.interval);
+					// Remove the timeout.
+					clearTimeout( pco_wc.timeout );
+					// Remove the processing class from the form.
+					// pco_wc.checkoutFormSelector.removeClass( 'processing' );
+					$( '.woocommerce-checkout-review-order-table' ).unblock();
+					$( pco_wc.checkoutFormSelector ).unblock();
+				}
+			}
+		},
+
+		failOrder: function( event ) {
+			// Send false and cancel
+			this.paymentInitiationCancelled();
+			// Clear the interval.
+			clearInterval(pco_wc.interval);
+			// Remove the timeout.
+			clearTimeout( pco_wc.timeout );
+			// Renable the form.
+			$( 'body' ).trigger( 'updated_checkout' );
+			// pco_wc.checkoutFormSelector.removeClass( 'processing' );
+			$( pco_wc.checkoutFormSelector ).unblock();
+			if ( 'timeout' === event ) {
+				$('#pco-timeout').remove();
+				$('form.checkout').prepend(
+					'<div id="pco-timeout" class="woocommerce-NoticeGroup woocommerce-NoticeGroup-updateOrderReview"><ul class="woocommerce-error" role="alert"><li>'
+					+  pco_wc.timeout_message
+					+ '</li></ul></div>'
+				);
+			}
 		},
 
 		/*
