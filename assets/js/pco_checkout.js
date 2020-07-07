@@ -87,6 +87,7 @@ jQuery(function($) {
 			$( document.body ).on( 'checkout_error', function() { pco_wc.failOrder( 'checkout_error' ); } );
 			// Run interval untill we find a hashtag or timer runs out.
 			pco_wc.interval = setInterval( function() { pco_wc.checkUrl(  ); }, 500 );
+			this.getPaysonOrder();
 		},
 
 		paymentInitiationVerified: function () {
@@ -134,6 +135,26 @@ jQuery(function($) {
 					+ '</li></ul></div>'
 				);
 			}
+		},
+
+		getPaysonOrder: function () {
+			$.ajax({
+				type: 'POST',
+				url: pco_wc_params.get_order_url,
+				data: {
+					nonce: pco_wc_params.get_order_nonce
+				},
+				dataType: 'json',
+				success: function(data) {
+
+				},
+				error: function(data) {
+
+				},
+				complete: function(data) {
+
+				}
+			});
 		},
 
 		/*
