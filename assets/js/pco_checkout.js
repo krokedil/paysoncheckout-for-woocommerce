@@ -157,6 +157,50 @@ jQuery(function($) {
 			});
 		},
 
+		fillForm: function (customer) {
+			var firstName = ( ( 'firstName' in customer ) ? customer.firstName : '' );
+			var lastName = ( ( 'lastName' in customer ) ? customer.lastName : '' );
+			var city = ( ( 'city' in customer ) ? customer.city : '' );
+			var countryCode = ( ( 'countryCode' in customer ) ? customer.countryCode : '' );
+			var email = ( ( 'email' in customer ) ? customer.email : '' );
+			var phone = ( ( 'phone' in customer ) ? customer.phone : '' );
+			var postalCode = ( ( 'postalCode' in customer ) ? customer.postalCode : '' );
+			var street = ( ( 'street' in customer ) ? customer.street : '' );
+
+			// billing first name
+			$( '#billing_first_name' ).val( firstName );
+			// shipping first name
+			$( '#shipping_first_name' ).val( firstName );
+
+			if (customer.type === 'business') {
+				lastName = '-';
+			}
+			// billing last name
+			$( '#billing_last_name' ).val(lastName);
+			// shipping last name.
+			$( '#shipping_last_name' ).val(lastName);
+			// billing country
+			$('#billing_country').val(countryCode);
+			// shipping country
+			$('#shipping_country').val(countryCode)
+			// billing street
+			$('#billing_address_1').val(street);
+			// shipping street
+			$('#shipping_address_1').val(street);
+			// billing city
+			$('#billing_city').val(city);
+			// shipping city
+			$('#shipping_city').val(city);
+			// billing postal code
+			$('#billing_postcode').val(postalCode);
+			// shipping postal code
+			$('#shipping_postcode').val(postalCode);
+			// billing phone
+			$( '#billing_phone' ).val(phone);
+			// billing email
+			$('#billing_email').val(email);
+		},
+
 		/*
 		 * Update the payson order. Happens on updated_checkout event.
 		 */
