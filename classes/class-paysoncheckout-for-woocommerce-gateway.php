@@ -183,34 +183,9 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$payment_id   = WC()->session->get( 'payson_payment_id' );
 		$payson_order = pco_wc_get_order( $payment_id );
 		$order        = wc_get_order( $order_id );
-		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
-			// Update the payson order with woocommerce order id.
-			$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
-			// Check for error.
-			if ( is_wp_error( $payson_order ) ) {
-				// If error save error message.
-				$code          = $payson_order->get_error_code();
-				$message       = $payson_order->get_error_message();
-				$text          = __( 'Payson API Error on set order reference: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
-				$formated_text = sprintf( $text, $code, $message );
-				$order->add_order_note( $formated_text );
-				$order->set_status( 'on-hold' );
-
-				return false;
-			}
-			// Set post meta and complete order.
-			update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
-			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
-			$order->payment_complete( $payson_order['purchaseId'] );
-			return true;
-		} else {
-			// If failed then extract error message and return. Its not used right now, but might be used later.
-			$error_message = __( 'Error processing order. Please try again', 'woocommerce-gateway-paysoncheckout' );
-			if ( is_wp_error( $payson_order ) ) {
-				$error_message = $payson_order->get_error_message();
-			}
-			return $error_message;
-		}
+		$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
+		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+		return true;
 	}
 
 	/**
