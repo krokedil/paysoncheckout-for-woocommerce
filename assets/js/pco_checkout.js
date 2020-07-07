@@ -28,12 +28,8 @@ jQuery(function($) {
 		 */
 		documentReady: function() {
 			pco_wc.pcoFreeze();
-			
 			// Extra checkout fields.
-			pco_wc.setFormFieldValues();
-			pco_wc.checkFormData();
 			pco_wc.moveExtraCheckoutFields();
-			$('#order_comments').val( localStorage.getItem( 'pco_wc_order_comment' ) );
 		},
 
 		/*
@@ -391,49 +387,6 @@ jQuery(function($) {
 		},
 
 		/**
-		 * Checks for form Data on the page, and sets the checkout fields session storage.
-		 */
-		checkFormData: function() {
-			let form = $('form[name="checkout"] input, form[name="checkout"] select, textarea');
-				let requiredFields = [];
-				let fieldData = {};
-				// Get all form fields.
-				for ( i = 0; i < form.length; i++ ) { 
-					// Check if the form has a name set.
-					if ( form[i]['name'] !== '' ) {
-						let name    = form[i]['name'];
-						let field = $('*[name="' + name + '"]');
-						let required = ( $('p#' + name + '_field').hasClass('validate-required') ? true : false );
-						// Only keep track of non standard WooCommerce checkout fields
-						if ($.inArray(name, pco_wc_params.standard_woo_checkout_fields) == '-1' && name.indexOf('[qty]') < 0 && name.indexOf( 'shipping_method' ) < 0 && name.indexOf( 'payment_method' ) < 0 ) {
-							// Only keep track of required fields for validation.
-							if ( required === true ) {
-								requiredFields.push(name);
-							}
-							// Get the value from the field.
-							let value = '';
-							if( field.is(':checkbox') ) {
-								if( field.is(':checked') ) {
-									value = form[i].value;
-								}
-							} else if( field.is(':radio') ) {
-								if( field.is(':checked') ) {
-									value = $( 'input[name="' + name + '"]:checked').val();
-								}
-							} else {
-								value = form[i].value
-							}
-							// Set field data with values.
-							fieldData[name] = value;
-						}
-					}
-				}
-				sessionStorage.setItem( 'PCORequiredFields', JSON.stringify( requiredFields ) );
-				sessionStorage.setItem( 'PCOFieldData', JSON.stringify( fieldData ) );
-				pco_wc.validateRequiredFields();
-		},
-
-		/**
 		 * Validates the required fields, checks if they have a value set.
 		 */
 		validateRequiredFields: function() {
@@ -480,34 +433,6 @@ jQuery(function($) {
 				$('html, body').animate({
 					scrollTop: etop
 				}, 1000);
-			}
-		},
-
-		/**
-		 * Sets the form fields values from the session storage.
-		 */
-		setFormFieldValues: function() {
-			let form_data = JSON.parse( sessionStorage.getItem( 'PCOFieldData' ) );
-			if( form_data !== null ) {
-				$.each( form_data, function( name, value ) {
-					let field = $('*[name="' + name + '"]');
-					let saved_value = value;
-					// Check if field is a checkbox
-					if( field.is(':checkbox') ) {
-						if( saved_value !== '' ) {
-							field.prop('checked', true);
-						}
-					} else if( field.is(':radio') ) {
-						for ( x = 0; x < field.length; x++ ) {
-							if( field[x].value === value ) {
-								$(field[x]).prop('checked', true);
-							}
-						}
-					} else {
-						field.val( saved_value );
-					}
-
-				});
 			}
 		},
 
