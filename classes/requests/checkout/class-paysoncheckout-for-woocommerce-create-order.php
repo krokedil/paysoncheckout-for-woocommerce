@@ -16,11 +16,12 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 	/**
 	 * Makes the request
 	 *
+	 * @param string $order_id The WooCommerce order id.
 	 * @return array
 	 */
-	public function request() {
+	public function request( $order_id = null ) {
 		$request_url  = $this->enviroment . 'Checkouts';
-		$request_args = apply_filters( 'pco_create_order_args', $this->get_request_args() );
+		$request_args = apply_filters( 'pco_create_order_args', $this->get_request_args( $order_id ) );
 		$response     = wp_remote_request( $request_url, $request_args );
 		$code         = wp_remote_retrieve_response_code( $response );
 		$payment_id   = 'NULL';
@@ -39,14 +40,15 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 	/**
 	 * Gets the request body.
 	 *
+	 * @param string $order_id The WooCommerce order id.
 	 * @return array
 	 */
-	public function get_body() {
+	public function get_body( $order_id ) {
 		return array(
-			'merchant' => PCO_WC()->merchant_urls->get_merchant_urls(),
+			'merchant' => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
 			'order'    => array(
 				'currency' => get_woocommerce_currency(),
-				'items'    => PCO_WC()->cart_items->get_cart_items(),
+				'items'    => ( null === $order_id ) ? PCO_WC()->cart_items->get_cart_items() : PCO_WC()->order_items->get_order_items( $order_id ),
 			),
 			'gui'      => PCO_WC()->gui->get_gui(),
 		);
@@ -55,13 +57,14 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 	/**
 	 * Gets the request args for the API call.
 	 *
+	 * @param string $order_id The WooCommerce order id.
 	 * @return array
 	 */
-	public function get_request_args() {
+	public function get_request_args( $order_id ) {
 		return array(
 			'headers' => $this->get_headers(),
 			'method'  => 'POST',
-			'body'    => wp_json_encode( $this->get_body() ),
+			'body'    => wp_json_encode( $this->get_body( $order_id ) ),
 		);
 	}
 }

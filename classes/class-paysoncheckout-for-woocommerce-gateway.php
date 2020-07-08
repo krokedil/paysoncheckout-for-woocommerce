@@ -50,6 +50,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			'subscription_reactivation',
 			'subscription_amount_changes',
 			'subscription_date_changes',
+			'subscription_payment_method_change',
+			'subscription_payment_method_change_admin',
 			'multiple_subscriptions',
 		);
 
@@ -64,6 +66,13 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_available() {
+		$is_pay_for_order = false;
+		if ( is_wc_endpoint_url( 'order-pay' ) ) {
+			$is_pay_for_order = true;
+			global $wp;
+			$order_id = $wp->query_vars['order-pay'];
+			$order    = wc_get_order( $order_id );
+		}
 		$is_subscription = false;
 		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
 			$is_subscription = true;
@@ -80,11 +89,21 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 				}
 				// Don't display the payment method if we have an order with to low amount.
 				if ( ! $is_subscription ) { // Not needed for subscriptions.
-					if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
-						return false;
-					}
-					if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
-						return false;
+					if ( $is_pay_for_order ) { // Check if is pay for order page.
+
+						if ( $order->get_total() < 4 && 'SEK' === get_woocommerce_currency() ) {
+							return false;
+						}
+						if ( $order->get_total() === 0 && 'EUR' === get_woocommerce_currency() ) {
+							return false;
+						}
+					} else {
+						if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
+							return false;
+						}
+						if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
+							return false;
+						}
 					}
 				}
 			}
