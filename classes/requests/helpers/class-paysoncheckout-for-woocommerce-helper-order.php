@@ -57,6 +57,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 			'unitPrice' => $this->get_product_unit_price( $order_item ), // Float.
 			'quantity'  => $order_item->get_quantity(), // Float.
 			'taxRate'   => $this->get_product_tax_rate( $order, $order_item ), // Float.
+			'reference' => $this->get_product_sku( $order_item ), // String.
 		);
 	}
 
@@ -113,6 +114,17 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 			'taxRate'   => array_sum( $fee->get_taxes() ) / $fee->get_amount(), // Float.
 			'reference' => $fee->get_id(), // String.
 		);
+	}
+
+	/**
+	 * Gets the product SKU.
+	 *
+	 * @param object $order_item The WooCommerce order item.
+	 * @return string
+	 */
+	public function get_product_sku( $order_item ) {
+		$product = wc_get_product( $order_item['product_id'] );
+		return $product->get_sku();
 	}
 
 	/**
