@@ -90,6 +90,11 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		 * @return void
 		 */
 		public function init() {
+
+			if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+				return;
+			}
+
 			load_plugin_textdomain( 'woocommerce-gateway-paysoncheckout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
 
