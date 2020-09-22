@@ -133,7 +133,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 */
 	public function process_payment( $order_id ) {
 		$order = wc_get_order( $order_id );
-
 		// Save payment type and run $order->payment_complete() if all looks good.
 		if ( ! $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {
 			$process_payment = $this->process_payson_payment_in_order( $order_id );
@@ -141,7 +140,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 				return;
 			}
 		}
-
 		return array(
 			'result'   => 'success',
 			'redirect' => $this->get_return_url( $order ),
@@ -199,7 +197,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return bool|string
 	 */
 	public function process_standard_payson_order( $order_id ) {
-		$payment_id   = WC()->session->get( 'payson_payment_id' );
+		$payment_id   = ( ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
 		$payson_order = pco_wc_get_order( $payment_id );
 		$order        = wc_get_order( $order_id );
 		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
