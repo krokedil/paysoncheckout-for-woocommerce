@@ -3,6 +3,7 @@ Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
 Tested up to: 5.4.0
+Requires PHP: 5.6
 WC requires at least: 3.0
 WC tested up to: 4.0.1
 License: GPLv3
