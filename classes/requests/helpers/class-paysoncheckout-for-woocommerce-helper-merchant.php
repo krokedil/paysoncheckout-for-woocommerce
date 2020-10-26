@@ -17,7 +17,6 @@ class PaysonCheckout_For_WooCommerce_Helper_Merchant {
 	/**
 	 * Returns the merchant URLs.
 	 *
-	 * @param string $order_id The WooCommerce order id.
 	 * @return array
 	 */
 	public function get_merchant_urls() {
@@ -31,7 +30,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Merchant {
 		$integration_info = 'krokedil_woocommerce|' . PAYSONCHECKOUT_VERSION . '|' . WC()->version;
 
 		return array(
-			'checkoutUri'     => $checkout_url, // String.
+			'checkoutUri'     => wc_get_checkout_url(), // String.
 			'confirmationUri' => $confirmation_uri, // String.
 			'notificationUri' => get_home_url() . '/wc-api/PCO_WC_Notification', // String.
 			'termsUri'        => get_permalink( wc_get_page_id( 'terms' ) ), // String.
