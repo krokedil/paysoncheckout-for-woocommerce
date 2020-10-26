@@ -68,6 +68,8 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		// Confirm the order.
 		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
 			$this->confirm_recurring_payson_order( $order_id );
+		} else {
+			$this->confirm_payson_order( $order_id );
 		}
 
 		pco_wc_unset_sessions();
@@ -116,6 +118,25 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		// Set payment complete if all is successfull.
 		$order->payment_complete( $payson_order['purchaseId'] );
 		return true;
+	}
+
+	/**
+	 * Confirm a normal WooCommerce order.
+	 *
+	 * @param int $order_id The WooCommerce order id.
+	 * @return bool|void
+	 */
+	public function confirm_payson_order( $order_id ) {
+		$payment_id   = ( ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
+		$payson_order = pco_wc_get_order( $payment_id );
+		$order        = wc_get_order( $order_id );
+		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
+			// Set post meta and complete order.
+			update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
+			$order->payment_complete( $payson_order['purchaseId'] );
+			return true;
+		}
 	}
 
 }
