@@ -37,15 +37,49 @@ function pco_wc_show_snippet( $subscription = false ) {
 }
 
 /**
+ * Prints the PaysonCheckout snippet for on pay for order page.
+ *
+ * @return void
+ */
+function pco_wc_show_pay_for_order_snippet() {
+	if ( ! isset( $_GET['pco_confirm'] ) ) {
+		global $wp;
+		$order_id = $wp->query_vars['order-pay'];
+
+		// Create the order and maybe set payment id.
+		$payson_order = pco_wc_create_order( $order_id );
+		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
+			WC()->session->set( 'payson_payment_id', $payson_order['id'] );
+		}
+		if ( is_wp_error( $payson_order ) ) {
+			// If error print error message.
+			$code    = $payson_order->get_error_code();
+			$message = $payson_order->get_error_message();
+			$text    = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s'
+			?>
+		<ul class="woocommerce-error" role="alert">
+			<li><?php echo sprintf( $text, $code, $message ); ?></li>
+		</ul>
+			<?php
+			// Then unset the payment id session to force a new order to be created on page load.
+			WC()->session->__unset( 'payson_payment_id' );
+		} else {
+			$snippet = $payson_order['snippet'];
+			echo $snippet;
+		}
+	}
+}
+
+/**
  * Prints the thank you page snippet for PaysonCheckout. Does not display error messages.
  *
- * @param int $order_id WooCommerce order id.
+ * @param int  $order_id WooCommerce order id.
  * @param bool $subscription is this a subscription order.
  * @return void
  */
 function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
 	$order = wc_get_order( $order_id );
-	if( $subscription ) {
+	if ( $subscription ) {
 		$payment_id = get_post_meta( $order_id, '_payson_subscription_id', true );
 	} else {
 		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
@@ -150,14 +184,25 @@ function pco_maybe_show_validation_error_message() {
 /**
  * Creates either a normal order or a subscription order.
  *
+ * @param string $order_id The WooCommerce order id.
  * @return array
  */
-function pco_wc_create_order() {
-	// Check if the cart has a subscription.
-	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
-		return PCO_WC()->create_recurring_order->request();
+function pco_wc_create_order( $order_id = null ) {
+	if ( null === $order_id ) {
+		// Check if the cart has a subscription.
+		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+			return PCO_WC()->create_recurring_order->request();
+		}
+		return PCO_WC()->create_order->request();
+	} else {
+		$order = wc_get_order( $order_id );
+		// Check if the order has a subscription.
+		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+			$subscription_id = WC()->session->get( 'payson_payment_id' );
+			return PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
+		}
+		return PCO_WC()->create_order->request( $order_id );
 	}
-	return PCO_WC()->create_order->request();
 }
 
 /**

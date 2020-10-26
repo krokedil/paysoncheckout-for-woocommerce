@@ -1,8 +1,8 @@
 <?php // phpcs:ignore
 /**
- * Plugin Name:     PaysonCheckout 2.0 for WooCommerce
+ * Plugin Name:     PaysonCheckout for WooCommerce
  * Plugin URI:      http://krokedil.com/
- * Description:     Provides a PaysonCheckout 2.0 payment gateway for WooCommerce.
+ * Description:     Provides a PaysonCheckout payment gateway for WooCommerce.
  * Version:         2.3.4
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
@@ -90,6 +90,11 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		 * @return void
 		 */
 		public function init() {
+
+			if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+				return;
+			}
+
 			load_plugin_textdomain( 'woocommerce-gateway-paysoncheckout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
 
@@ -97,6 +102,9 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 
 			// Load scripts.
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ) );
+
+			// Redirect for Pay for order purchases.
+			add_action( 'wp_head', array( $this, 'redirect_to_thankyou' ) );
 
 			// Set variables for shorthand access to classes.
 			// Requests.
@@ -257,6 +265,22 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 					PAYSONCHECKOUT_VERSION
 				);
 				wp_enqueue_style( 'pco' );
+			}
+		}
+
+		public function redirect_to_thankyou() {
+			$pco_confirm = filter_input( INPUT_GET, 'pco_confirm', FILTER_SANITIZE_STRING );
+			$wc_order_id = filter_input( INPUT_GET, 'wc_order_id', FILTER_SANITIZE_STRING );
+
+			if ( ! empty( $pco_confirm ) && ! empty( $wc_order_id ) ) {
+				PaysonCheckout_For_WooCommerce_Logger::log( $wc_order_id . ': Confirmation endpoint hit for pay for order purchase.' );
+
+				$order = wc_get_order( $wc_order_id );
+				// Confirm, redirect and exit.
+				PaysonCheckout_For_WooCommerce_Logger::log( $wc_order_id . ': Confirm the Payson pay for order purchase from the confirmation page.' );
+				( new PaysonCheckout_For_WooCommerce_Gateway() )->process_standard_payson_order( $wc_order_id );
+				header( 'Location:' . $order->get_checkout_order_received_url() );
+				exit;
 			}
 		}
 	}

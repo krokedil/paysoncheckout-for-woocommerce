@@ -50,6 +50,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			'subscription_reactivation',
 			'subscription_amount_changes',
 			'subscription_date_changes',
+			'subscription_payment_method_change',
+			'subscription_payment_method_change_admin',
 			'multiple_subscriptions',
 		);
 
@@ -64,6 +66,13 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_available() {
+		$is_pay_for_order = false;
+		if ( is_wc_endpoint_url( 'order-pay' ) ) {
+			$is_pay_for_order = true;
+			global $wp;
+			$order_id = $wp->query_vars['order-pay'];
+			$order    = wc_get_order( $order_id );
+		}
 		$is_subscription = false;
 		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
 			$is_subscription = true;
@@ -80,11 +89,21 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 				}
 				// Don't display the payment method if we have an order with to low amount.
 				if ( ! $is_subscription ) { // Not needed for subscriptions.
-					if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
-						return false;
-					}
-					if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
-						return false;
+					if ( $is_pay_for_order ) { // Check if is pay for order page.
+
+						if ( $order->get_total() < 4 && 'SEK' === get_woocommerce_currency() ) {
+							return false;
+						}
+						if ( $order->get_total() === 0 && 'EUR' === get_woocommerce_currency() ) {
+							return false;
+						}
+					} else {
+						if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
+							return false;
+						}
+						if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
+							return false;
+						}
 					}
 				}
 			}
@@ -101,7 +120,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	public function get_icon() {
 		$icon_src   = 'https://www.payson.se/sites/all/files/images/external/payson.png';
 		$icon_width = '85';
-		$icon_html  = '<img src="' . $icon_src . '" alt="PaysonCheckout 2.0" style="max-width:' . $icon_width . 'px"/>';
+		$icon_html  = '<img src="' . $icon_src . '" alt="PaysonCheckout" style="max-width:' . $icon_width . 'px"/>';
 		return apply_filters( 'wc_payson_icon_html', $icon_html );
 	}
 
@@ -124,7 +143,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		if ( is_wp_error( $result ) ) {
 			return false;
 		}
-
 		return array(
 			'result'   => 'success',
 			'redirect' => '#payson-success' . base64_encode( microtime() ), //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- Base64 used to give a unique nondescript string.
@@ -214,7 +232,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 }
 
 /**
- * Add PaysonCheckout 2.0 payment gateway
+ * Add PaysonCheckout payment gateway
  *
  * @wp_hook woocommerce_payment_gateways
  * @param  array $methods All registered payment methods.
