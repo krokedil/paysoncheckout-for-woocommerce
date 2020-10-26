@@ -22,20 +22,9 @@ class PaysonCheckout_For_WooCommerce_Helper_Merchant {
 	public function get_merchant_urls() {
 		// Maybe set the confirmation URI to include payment id.
 		$confirmation_uri_args = array( 'pco_confirm' => '1' );
-		/*
-		if ( WC()->session->get( 'payson_payment_id' ) ) {
-			$confirmation_uri_args['pco_payment_id'] = WC()->session->get( 'payson_payment_id' );
-		}*/
-		$confirmation_uri = add_query_arg(
+		$confirmation_uri      = add_query_arg(
 			$confirmation_uri_args,
 			wc_get_checkout_url()
-		);
-
-		// Set validation URI query args.
-		$validation_uri_args = array( 'pco_session_id' => PCO_WC()->session->get_session_id() );
-		$validation_uri      = add_query_arg(
-			$validation_uri_args,
-			get_home_url() . '/wc-api/PCO_WC_Validation'
 		);
 
 		$integration_info = 'krokedil_woocommerce|' . PAYSONCHECKOUT_VERSION . '|' . WC()->version;

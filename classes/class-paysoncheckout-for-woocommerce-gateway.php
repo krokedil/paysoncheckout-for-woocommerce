@@ -113,20 +113,57 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return array
 	 */
 	public function process_payment( $order_id ) {
+		error_log( '1' );
 		$order = wc_get_order( $order_id );
-
-		// Save payment type and run $order->payment_complete() if all looks good.
-		if ( ! $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {
-			$process_payment = $this->process_payson_payment_in_order( $order_id );
-			if ( true !== $process_payment ) {
-				return;
-			}
+		// Confirm the order.
+		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+			error_log( '2' );
+			$result = $this->update_recurring_reference( $order_id );
+		} else {
+			error_log( '3' );
+			$result = $this->update_order_reference( $order_id );
 		}
+		error_log( var_export( $result, true ) );
+		error_log( '4' );
+
+		if ( is_wp_error( $result ) ) {
+			error_log( '5' );
+			return false;
+		}
+		error_log( '6' );
 
 		return array(
 			'result'   => 'success',
 			'redirect' => '#payson-success' . base64_encode( microtime() ), //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- Base64 used to give a unique nondescript string.
 		);
+	}
+
+	/**
+	 * Update the recurring reference.
+	 *
+	 * @param int $order_id The WooCommerce order id.
+	 * @return array|WP_Error
+	 */
+	public function update_recurring_reference( $order_id ) {
+		$payment_id   = WC()->session->get( 'payson_payment_id' );
+		$payson_order = pco_wc_get_order( $payment_id, true );
+		$payson_order = PCO_WC()->update_recurring_reference->request( $order_id, $payson_order );
+		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+		return $payson_order;
+	}
+
+	/**
+	 * Update the order reference.
+	 *
+	 * @param int $order_id The WooCommerce order id.
+	 * @return array|WP_Error
+	 */
+	public function update_order_reference( $order_id ) {
+		$payment_id   = WC()->session->get( 'payson_payment_id' );
+		$payson_order = pco_wc_get_order( $payment_id );
+		$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
+		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+		return $payson_order;
 	}
 
 	/**
@@ -156,81 +193,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 */
 	public function init_form_fields() {
 		$this->form_fields = include PAYSONCHECKOUT_PATH . '/includes/paysoncheckout-for-woocommerce-form-fields.php';
-	}
-
-	/**
-	 * Processes the Payson Payment and sets post metas.
-	 *
-	 * @param string $order_id The WooCommerce order id.
-	 * @return bool|string
-	 */
-	public function process_payson_payment_in_order( $order_id ) {
-		$order = wc_get_order( $order_id );
-		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
-			return $this->process_recurring_payson_order( $order_id );
-		} else {
-			return $this->process_standard_payson_order( $order_id );
-		}
-	}
-
-	/**
-	 * Processes the Payson Payment and sets post metas.
-	 *
-	 * @param string $order_id The WooCommerce order id.
-	 * @return bool|string
-	 */
-	public function process_standard_payson_order( $order_id ) {
-		$payment_id   = WC()->session->get( 'payson_payment_id' );
-		$payson_order = pco_wc_get_order( $payment_id );
-		$order        = wc_get_order( $order_id );
-		$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
-		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
-		return true;
-	}
-
-	/**
-	 * Processes the Payson Payment and sets post metas.
-	 *
-	 * @param string $order_id The WooCommerce order id.
-	 * @return bool|string
-	 */
-	public function process_recurring_payson_order( $order_id ) {
-		$order           = wc_get_order( $order_id );
-		$subscription_id = WC()->session->get( 'payson_payment_id' );
-		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
-		foreach ( $subcriptions as $subcription ) {
-			update_post_meta( $subcription->get_id(), '_payson_subscription_id', $subscription_id );
-		}
-
-		// If subscription is free, then return true.
-		if ( 0 >= $order->get_total() ) {
-			update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
-			$order->payment_complete( $subscription_id );
-			return true;
-		}
-		// Make payment.
-		$payson_order = PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
-		if ( is_wp_error( $payson_order ) ) {
-			// If error save error message.
-			$code          = $payson_order->get_error_code();
-			$message       = $payson_order->get_error_message();
-			$text          = __( 'Payson API Error on make recurring payment: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
-			$formated_text = sprintf( $text, $code, $message );
-			$order->add_order_note( $formated_text );
-			$order->set_status( 'on-hold' );
-
-			return false;
-		}
-
-		// Save meta data to order and subscriptions.
-		update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
-		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
-
-		$order->add_order_note( __( 'Subscription payment made with Payson, subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
-
-		// Set payment complete if all is successfull.
-		$order->payment_complete( $payson_order['purchaseId'] );
-		return true;
 	}
 
 	/**

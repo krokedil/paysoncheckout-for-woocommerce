@@ -23,15 +23,17 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 	public function request( $subscription_id, $order_id ) {
 		$request_url  = $this->enviroment . 'RecurringPayments';
 		$request_args = apply_filters( 'pco_create_recurring_payment_args', $this->get_request_args( $subscription_id, $order_id ) );
-		$response     = wp_remote_request( $request_url, $request_args );
-		$code         = wp_remote_retrieve_response_code( $response );
+		error_log( var_export( $request_args, true ) );
+		$response = wp_remote_request( $request_url, $request_args );
+		error_log( var_export( $response, true ) );
+		$code = wp_remote_retrieve_response_code( $response );
 		// Log the request.
 		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $subscription_id, 'POST', 'Payson create recurring payment request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
 
 		$formated_response = $this->process_response( $response, $request_args, $request_url );
-
-		if ( isset( $formated_response['status'] ) && 'denied' === $formated_response['status'] ) {
+		error_log( var_export( $formated_response, true ) );
+		if ( is_wp_error( $formated_response ) || ( isset( $formated_response['status'] ) && 'denied' === $formated_response['status'] ) ) {
 			$data              = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
 			$formated_response = new WP_Error( wp_remote_retrieve_response_code( $response ), __( 'Scheduled payment denied by Payson.', 'woocommerce-gateway-paysoncheckout' ), $data );
 		}
