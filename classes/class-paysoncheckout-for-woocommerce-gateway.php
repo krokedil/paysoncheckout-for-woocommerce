@@ -113,24 +113,17 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return array
 	 */
 	public function process_payment( $order_id ) {
-		error_log( '1' );
 		$order = wc_get_order( $order_id );
 		// Confirm the order.
 		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
-			error_log( '2' );
 			$result = $this->update_recurring_reference( $order_id );
 		} else {
-			error_log( '3' );
 			$result = $this->update_order_reference( $order_id );
 		}
-		error_log( var_export( $result, true ) );
-		error_log( '4' );
 
 		if ( is_wp_error( $result ) ) {
-			error_log( '5' );
 			return false;
 		}
-		error_log( '6' );
 
 		return array(
 			'result'   => 'success',
