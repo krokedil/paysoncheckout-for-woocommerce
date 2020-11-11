@@ -47,7 +47,7 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		$order_key    = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_STRING );
 
 		// Return if we dont have our parameters set.
-		if ( empty( $pco_confirm ) || empty( $pco_order_id ) || empty( $order_key ) ) {
+		if ( empty( $pco_confirm ) || empty( $order_key ) ) {
 			return;
 		}
 
@@ -55,6 +55,16 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 
 		// Return if we cant find an order id.
 		if ( empty( $order_id ) ) {
+			return;
+		}
+
+		// Get the pco_order_id if we don't have one.
+		if ( empty( $pco_order_id ) ) {
+			$pco_order_id = get_post_meta( $order_id, '_payson_checkout_id' );
+		}
+
+		// Return if we still don't have a pco_order_id.
+		if ( empty( $pco_order_id ) ) {
 			return;
 		}
 
@@ -83,7 +93,7 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 	 */
 	public function confirm_recurring_payson_order( $order_id ) {
 		$order           = wc_get_order( $order_id );
-		$subscription_id = WC()->session->get( 'payson_payment_id' );
+		$subscription_id = ( ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
 		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
 		foreach ( $subcriptions as $subcription ) {
 			update_post_meta( $subcription->get_id(), '_payson_subscription_id', $subscription_id );
@@ -115,7 +125,7 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 
 		$order->add_order_note( __( 'Subscription payment made with Payson, subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
 
-		// Set payment complete if all is successfull.
+		// Set payment complete if all is successful.
 		$order->payment_complete( $payson_order['purchaseId'] );
 		return true;
 	}

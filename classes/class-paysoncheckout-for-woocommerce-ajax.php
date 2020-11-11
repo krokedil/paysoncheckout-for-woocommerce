@@ -231,28 +231,50 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			wp_send_json_error( 'bad_nonce' );
 			exit;
 		}
-
 		$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
-		if ( 'false' === $_POST['pco'] ) {
-			// Set chosen payment method to first gateway that is not PaysonCheckout for WooCommerce.
-			$first_gateway = reset( $available_gateways );
-			if ( 'paysoncheckout' !== $first_gateway->id ) {
-				WC()->session->set( 'chosen_payment_method', $first_gateway->id );
-			} else {
-				$second_gateway = next( $available_gateways );
-				WC()->session->set( 'chosen_payment_method', $second_gateway->id );
-			}
-		} else {
-			WC()->session->set( 'chosen_payment_method', 'paysoncheckout' );
-		}
 
-		WC()->payment_gateways()->set_current_gateway( $available_gateways );
-		$redirect = wc_get_checkout_url();
-		$data     = array(
-			'redirect' => $redirect,
-		);
-		wp_send_json_success( $data );
-		wp_die();
+		if ( ! empty( $_POST['order_id'] ) ) { // Handle pay for order page switch payment method.
+			$order = wc_get_order( $_POST['order_id'] );
+			if ( 'false' === $_POST['pco'] ) {
+				$first_gateway = reset( $available_gateways );
+				if ( 'paysoncheckout' !== $first_gateway->id ) {
+					$order->set_payment_method( $first_gateway->id );
+				} else {
+					$second_gateway = next( $available_gateways );
+					$order->set_payment_method( $second_gateway->id );
+				}
+			} else {
+				$order->set_payment_method( 'paysoncheckout' );
+			}
+			$order->save();
+			$redirect = $order->get_checkout_payment_url();
+			$data     = array(
+				'redirect' => $redirect,
+			);
+			wp_send_json_success( $data );
+			wp_die();
+		} else { // Handle checkout page switch payment method.
+			if ( 'false' === $_POST['pco'] ) {
+				// Set chosen payment method to first gateway that is not PaysonCheckout for WooCommerce.
+				$first_gateway = reset( $available_gateways );
+				if ( 'paysoncheckout' !== $first_gateway->id ) {
+					WC()->session->set( 'chosen_payment_method', $first_gateway->id );
+				} else {
+					$second_gateway = next( $available_gateways );
+					WC()->session->set( 'chosen_payment_method', $second_gateway->id );
+				}
+			} else {
+				WC()->session->set( 'chosen_payment_method', 'paysoncheckout' );
+			}
+
+			WC()->payment_gateways()->set_current_gateway( $available_gateways );
+			$redirect = wc_get_checkout_url();
+			$data     = array(
+				'redirect' => $redirect,
+			);
+			wp_send_json_success( $data );
+			wp_die();
+		}
 	}
 }
 PaysonCheckout_For_WooCommerce_AJAX::init();

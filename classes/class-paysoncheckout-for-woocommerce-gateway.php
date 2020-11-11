@@ -13,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Gateway class.
  */
 class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
-
 	/**
 	 * Class constructor.
 	 */
@@ -73,43 +72,53 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			$order_id = $wp->query_vars['order-pay'];
 			$order    = wc_get_order( $order_id );
 		}
+
 		$is_subscription = false;
 		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
 			$is_subscription = true;
 		}
-		if ( 'yes' === $this->enabled ) {
-			if ( ! is_admin() ) {
-				// Currency check.
-				if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ), true ) ) {
-					return false;
-				}
-				// Required fields check.
-				if ( ! $this->merchant_id || ! $this->api_key ) {
-					return false;
-				}
-				// Don't display the payment method if we have an order with to low amount.
-				if ( ! $is_subscription ) { // Not needed for subscriptions.
-					if ( $is_pay_for_order ) { // Check if is pay for order page.
 
-						if ( $order->get_total() < 4 && 'SEK' === get_woocommerce_currency() ) {
-							return false;
-						}
-						if ( $order->get_total() === 0 && 'EUR' === get_woocommerce_currency() ) {
-							return false;
-						}
-					} else {
-						if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
-							return false;
-						}
-						if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
-							return false;
-						}
-					}
+		// Check if is enabled.
+		if ( 'yes' !== $this->enabled ) {
+			return false;
+		}
+
+		// Check if we are on an admin page.
+		if ( is_admin() ) {
+			return false;
+		}
+
+		// Currency check.
+		if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ), true ) ) {
+			return false;
+		}
+
+		// Required fields check.
+		if ( ! $this->merchant_id || ! $this->api_key ) {
+			return false;
+		}
+
+		// Don't display the payment method if we have an order with to low amount.
+		if ( ! $is_subscription ) { // Not needed for subscriptions.
+			if ( $is_pay_for_order ) { // Check if is pay for order page.
+				if ( $order->get_total() < 4 && 'SEK' === get_woocommerce_currency() ) {
+					return false;
+				}
+				if ( $order->get_total() === 0 && 'EUR' === get_woocommerce_currency() ) {
+					return false;
+				}
+			} else {
+				if ( WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
+					return false;
+				}
+				if ( WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
+					return false;
 				}
 			}
-			return true;
 		}
-		return false;
+
+		// All good, return true.
+		return true;
 	}
 
 	/**
@@ -143,6 +152,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		if ( is_wp_error( $result ) ) {
 			return false;
 		}
+
 		return array(
 			'result'   => 'success',
 			'redirect' => '#payson-success' . base64_encode( microtime() ), //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- Base64 used to give a unique nondescript string.
@@ -182,9 +192,9 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 *
 	 * @param string $order_id The WooCommerce order ID.
 	 * @param float  $amount The amount to be refunded.
-	 * @param string $reasson The reasson given for the refund.
+	 * @param string $reason The reason given for the refund.
 	 */
-	public function process_refund( $order_id, $amount = null, $reasson = '' ) {
+	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 
 		$order = wc_get_order( $order_id );
 		// Refund full amount.
