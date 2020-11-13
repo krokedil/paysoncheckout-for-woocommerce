@@ -97,6 +97,16 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 	 * Update the Payson order.
 	 */
 	public static function pco_wc_update_checkout() {
+
+		if ( ! WC()->cart->needs_payment() ) {
+			wp_send_json_success(
+				array(
+					'refreshZeroAmount' => 'refreshZeroAmount',
+				)
+			);
+			wp_die();
+		}
+
 		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_update_checkout' ) ) { // phpcs: ignore.
 			wp_send_json_error( 'bad_nonce' );
 			exit;
