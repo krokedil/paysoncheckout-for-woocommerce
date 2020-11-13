@@ -49,7 +49,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 		$body = array(
 			'subscriptionId'  => $subscription_id,
 			'notificationUri' => get_home_url() . '/wc-api/PCO_WC_Notification',
-			'merchant'        => PCO_WC()->merchant_urls->get_merchant_urls(),
+			'merchant'        => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
 			'order'           => array(
 				'currency' => get_woocommerce_currency(),
 				'items'    => PCO_WC()->order_items->get_order_items( $order_id ),

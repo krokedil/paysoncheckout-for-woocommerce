@@ -43,7 +43,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Order extends PaysonChecko
 	 */
 	public function get_body() {
 		return array(
-			'merchant'  => PCO_WC()->merchant_urls->get_merchant_urls(),
+			'merchant'  => PCO_WC()->merchant_urls->get_merchant_urls( null ),
 			'customer'  => PCO_WC()->customer->get_customer_data(),
 			'gui'       => PCO_WC()->gui->get_gui(),
 			'agreement' => PCO_WC()->agreement->get_agreement(),
