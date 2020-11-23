@@ -84,9 +84,7 @@ jQuery(function($) {
 			// Run interval until we find a hashtag or timer runs out.
 			pco_wc.interval = setInterval( function() { pco_wc.checkUrl(  ); }, 500 );
 			// Get payson order.
-			this.getPaysonOrder();
-			// Submit wc order.
-			this.submitForm();
+			pco_wc.getPaysonOrder();
 		},
 
 		paymentInitiationVerified: function () {
@@ -151,10 +149,11 @@ jQuery(function($) {
 
 				},
 				complete: function(data) {
-					var customer = null;
-					if (data.hasOwnProperty('customer')) {
+					if (data.responseJSON.data.hasOwnProperty('customer')) {
 						// set data from wc form
-						this.fillForm(customer);
+						pco_wc.fillForm(data.responseJSON.data.customer);
+						// Submit wc order.
+						pco_wc.submitForm();
 					}
 				}
 			});

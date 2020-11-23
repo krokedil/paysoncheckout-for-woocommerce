@@ -179,6 +179,13 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			wp_send_json_error( $formated_text );
 			wp_die();
 		}
+
+		// Add - as last name if its missing. Happens when its a B2B purchase.
+		if( empty( $payson_order['customer']['lastName'] ) ) {
+			$payson_order['customer']['lastName'] = '-';
+		}
+
+
 		wp_send_json_success( $payson_order );
 		wp_die();
 	}
