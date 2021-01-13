@@ -76,14 +76,8 @@ jQuery(function($) {
 		*/
 		paymentInitiated: function(event) {
 			event.preventDefault();
-			// Empty current hash.
-			window.location.hash = '';
-			// Check for any errors.
-			pco_wc.timeout = setTimeout( function() { pco_wc.failOrder(  'timeout' ); }, pco_wc_params.timeout_time * 1000 );
-			$( document.body ).on( 'checkout_error', function() { pco_wc.failOrder( 'checkout_error' ); } );
-			// Run interval until we find a hashtag or timer runs out.
-			pco_wc.interval = setInterval( function() { pco_wc.checkUrl(  ); }, 500 );
-			// Get payson order.
+
+			// Get payson order and submit the WC order.
 			pco_wc.getPaysonOrder();
 		},
 
@@ -96,42 +90,25 @@ jQuery(function($) {
 			iframe.contentWindow.postMessage('paymentInitiationCancelled', '*');
 		},
 
-		checkUrl: function(  ) {
-			if ( window.location.hash ) {
-				var currentHash = window.location.hash;
-				if ( -1 < currentHash.indexOf( '#payson-success' ) ) {
-					this.paymentInitiationVerified();
-					// Clear the interval.
-					clearInterval(pco_wc.interval);
-					// Remove the timeout.
-					clearTimeout( pco_wc.timeout );
-					// Remove the processing class from the form.
-					// pco_wc.checkoutFormSelector.removeClass( 'processing' );
-					$( '.woocommerce-checkout-review-order-table' ).unblock();
-					$( pco_wc.checkoutFormSelector ).unblock();
-				}
-			}
-		},
-
-		failOrder: function( event ) {
+		failOrder: function( event, error_message ) {
 			// Send false and cancel
 			this.paymentInitiationCancelled();
-			// Clear the interval.
-			clearInterval(pco_wc.interval);
-			// Remove the timeout.
-			clearTimeout( pco_wc.timeout );
+		
 			// Renable the form.
 			$( 'body' ).trigger( 'updated_checkout' );
-			// pco_wc.checkoutFormSelector.removeClass( 'processing' );
+			$( pco_wc.checkoutFormSelector ).removeClass( 'processing' );
 			$( pco_wc.checkoutFormSelector ).unblock();
-			if ( 'timeout' === event ) {
-				$('#pco-timeout').remove();
-				$('form.checkout').prepend(
-					'<div id="pco-timeout" class="woocommerce-NoticeGroup woocommerce-NoticeGroup-updateOrderReview"><ul class="woocommerce-error" role="alert"><li>'
-					+  pco_wc.timeout_message
-					+ '</li></ul></div>'
-				);
-			}
+			$( '.woocommerce-checkout-review-order-table' ).unblock();
+
+			// Print error messages, and trigger checkout_error, and scroll to notices.
+			$( '.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message' ).remove();
+			$( 'form.checkout' ).prepend( '<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + error_message + '</div>' ); // eslint-disable-line max-len
+			$( 'form.checkout' ).removeClass( 'processing' ).unblock();
+			$( 'form.checkout' ).find( '.input-text, select, input:checkbox' ).trigger( 'validate' ).blur();
+			$( document.body ).trigger( 'checkout_error' , [ error_message ] );
+			$( 'html, body' ).animate( {
+				scrollTop: ( $( 'form.checkout' ).offset().top - 100 )
+			}, 1000 );
 		},
 
 		getPaysonOrder: function () {
@@ -207,7 +184,7 @@ jQuery(function($) {
 			if ( 0 < $( 'form.checkout #terms' ).length ) {
 				$( 'form.checkout #terms' ).prop( 'checked', true );
 			}
-			$( 'form.checkout' ).submit();
+			pco_wc.submitOrder();
 		},
 
 		/*
@@ -229,7 +206,6 @@ jQuery(function($) {
 				},
 				complete: function(data) {
 					let result = data.responseJSON;
-					console.log( result );
 					if( ! result.success ) {
 						// Remove any old errors from Payson and print new error.
 						$('.payson-error').remove();
@@ -293,7 +269,6 @@ jQuery(function($) {
 
 		// When "Change to another payment method" is clicked.
 		changeFromPco: function(e) {
-			console.log( 'button press' );
 			e.preventDefault();
 
 			$(pco_wc.checkoutFormSelector).block({
@@ -390,56 +365,6 @@ jQuery(function($) {
 		},
 
 		/**
-		 * Validates the required fields, checks if they have a value set.
-		 */
-		validateRequiredFields: function() {
-			// Get data from session storage.
-			let requiredFields = JSON.parse( sessionStorage.getItem( 'PCORequiredFields' ) );
-			let fieldData = JSON.parse( sessionStorage.getItem( 'PCOFieldData' ) );
-			// Check if all data is set for required fields.
-			let allValid = true;
-			if ( requiredFields !== null ) {
-				for( i = 0; i < requiredFields.length; i++ ) {
-					fieldName = requiredFields[i];
-					if ( '' === fieldData[fieldName] ) {
-						allValid = false;
-					}
-				}
-			}
-			pco_wc.maybeFreezeIframe( allValid );
-		},
-
-		/**
-		 * Maybe freezes the iframe to prevent anyone from completing the order before filling in all required fields.
-		 * 
-		 * @param {boolean} allValid 
-		 */
-		maybeFreezeIframe: function( allValid ) {
-			if ( true === allValid ) {
-				pco_wc.blocked = false;
-				$('#pco-required-fields-notice').remove();
-				pco_wc.pcoResume();
-			} else 	if( ! $('#pco-required-fields-notice').length ) { // Only if we dont have an error message already.
-				pco_wc.blocked = true;
-				pco_wc.maybePrintValidationMessage();
-				pco_wc.pcoFreeze();
-			}
-		},
-
-		/**
-		 * Maybe prints the validation error message.
-		 */
-		maybePrintValidationMessage: function() {
-			if ( true === pco_wc.blocked && ! $('#pco-required-fields-notice').length ) {
-				$('form.checkout').prepend( '<div id="pco-required-fields-notice" class="woocommerce-NoticeGroup woocommerce-NoticeGroup-updateOrderReview"><ul class="woocommerce-error" role="alert"><li>' +  pco_wc_params.required_fields_text + '</li></ul></div>' );
-				var etop = $('form.checkout').offset().top;
-				$('html, body').animate({
-					scrollTop: etop
-				}, 1000);
-			}
-		},
-
-		/**
 		 * Moves all non standard fields to the extra checkout fields.
 		 */
 		moveExtraCheckoutFields: function() {
@@ -457,6 +382,65 @@ jQuery(function($) {
 			}
 		},
 
+		/**
+		 * Submit the order using the WooCommerce AJAX function.
+		 */
+		submitOrder: function() {
+			$( '.woocommerce-checkout-review-order-table' ).block({
+				message: null,
+				overlayCSS: {
+					background: '#fff',
+					opacity: 0.6
+				}
+			});
+			$.ajax({
+				type: 'POST',
+				url: pco_wc_params.submit_order,
+				data: $('form.checkout').serialize(),
+				dataType: 'json',
+				success: function( data ) {
+					try {
+						if ( 'success' === data.result ) {
+							pco_wc.logToFile( 'Successfully placed order. Sending "paymentInitiationVerified" to Payson' );
+							pco_wc.paymentInitiationVerified();
+						} else {
+							throw 'Result failed';
+						}
+					} catch ( err ) {
+						if ( data.messages )  {
+							pco_wc.logToFile( 'Checkout error | ' + data.messages );
+							pco_wc.failOrder( 'submission', data.messages );
+						} else {
+							pco_wc.logToFile( 'Checkout error | No message' );
+							pco_wc.failOrder( 'submission', '<div class="woocommerce-error">' + 'Checkout error' + '</div>' );
+						}
+					}
+				},
+				error: function( data ) {
+					pco_wc.logToFile( 'AJAX error | ' + data );
+					pco_wc.failOrder( 'ajax-error', data );
+				}
+			});
+		},
+
+		/**
+		 * Logs the message to the PaysonCheckout log in WooCommerce.
+		 * @param {string} message 
+		 */
+		logToFile: function( message ) {
+			$.ajax(
+				{
+					url: pco_wc_params.log_to_file_url,
+					type: 'POST',
+					dataType: 'json',
+					data: {
+						message: message,
+						nonce: pco_wc_params.log_to_file_nonce
+					}
+				}
+			);
+		},
+
 		/*
 		 * Initiates the script and sets the triggers for the functions.
 		 */
@@ -469,7 +453,6 @@ jQuery(function($) {
 				pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
 				// Updated Checkout.
 				pco_wc.bodyEl.on('updated_checkout', pco_wc.updatePaysonOrder );
-				pco_wc.bodyEl.on('updated_checkout', pco_wc.maybePrintValidationMessage	);
 				
 				// Change from PCO.
 				
@@ -479,7 +462,6 @@ jQuery(function($) {
 				// Extra checkout fields.
 				pco_wc.bodyEl.on('blur', pco_wc.extraFieldsSelectorText, pco_wc.checkFormData);
 				pco_wc.bodyEl.on('change', pco_wc.extraFieldsSelectorNonText, pco_wc.checkFormData);
-				pco_wc.bodyEl.on('click', 'input#terms', pco_wc.checkFormData);
 				
 				// Payson Event listeners.
 				document.addEventListener( 'PaysonEmbeddedAddressChanged', function( data ) { pco_wc.addressChanged( data ) } );
