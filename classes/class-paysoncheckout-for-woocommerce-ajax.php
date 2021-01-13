@@ -31,6 +31,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			'pco_wc_checkout_error'        => true,
 			'pco_wc_change_payment_method' => true,
 			'pco_wc_update_session'        => true,
+			'pco_wc_log_js'                => true,
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_woocommerce_' . $ajax_event, array( __CLASS__, $ajax_event ) );
@@ -282,6 +283,25 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			wp_send_json_success( $data );
 			wp_die();
 		}
+	}
+
+	/**
+	 * Logs messages from the JavaScript to the server log.
+	 *
+	 * @return void
+	 */
+	public static function pco_wc_log_js() {
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_key( $_POST['nonce'] ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'pco_wc_log_js' ) ) {
+			wp_send_json_error( 'bad_nonce' );
+			exit;
+		}
+		$posted_message    = isset( $_POST['message'] ) ? sanitize_text_field( wp_unslash( $_POST['message'] ) ) : '';
+		$payson_payment_id = WC()->session->get( 'payson_payment_id' );
+		$message           = "Frontend JS $payson_payment_id: $posted_message";
+		PaysonCheckout_For_WooCommerce_Logger::log( $message );
+		wp_send_json_success();
+		wp_die();
 	}
 }
 PaysonCheckout_For_WooCommerce_AJAX::init();

@@ -133,9 +133,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			$this->order_items   = new PaysonCheckout_For_WooCommerce_Helper_Order();
 
 			// Classes.
-			$this->session          = new PaysonCheckout_For_WooCommerce_Sessions();
 			$this->order_management = new PaysonCheckout_For_WooCommerce_Order_Management();
-			$this->backup_order     = new PaysonCheckout_For_WooCommerce_Backup_Order();
 			$this->subscriptions    = new PaysonCheckout_For_WooCommerce_Subscriptions();
 			do_action( 'payson_initiated' );
 		}
@@ -153,9 +151,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-ajax.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-callbacks.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-confirmation.php';
-			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-sessions.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-order-management.php';
-			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-backup-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-subscriptions.php';
 
 			// Request classes.
@@ -232,7 +228,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						true
 					);
 
-					$standard_woo_checkout_fields = array( 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_address_2', 'billing_postcode', 'billing_city', 'billing_phone', 'billing_email', 'billing_state', 'billing_country', 'billing_company', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_address_2', 'shipping_postcode', 'shipping_city', 'shipping_state', 'shipping_country', 'shipping_company', 'terms', 'account_username', 'account_password' );
+					$standard_woo_checkout_fields = array( 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_address_2', 'billing_postcode', 'billing_city', 'billing_phone', 'billing_email', 'billing_state', 'billing_country', 'billing_company', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_address_2', 'shipping_postcode', 'shipping_city', 'shipping_state', 'shipping_country', 'shipping_company', 'terms' );
 					$order_id                     = null;
 					$is_order_pay                 = false;
 					if ( is_wc_endpoint_url( 'order-pay' ) ) {
@@ -250,11 +246,11 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						'update_order_nonce'           => wp_create_nonce( 'pco_wc_update_checkout' ),
 						'change_payment_method_url'    => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
 						'change_payment_method_nonce'  => wp_create_nonce( 'pco_wc_change_payment_method' ),
-						'required_fields_text'         => __( 'Please fill in all required checkout fields.', 'woocommerce-gateway-paysoncheckout' ),
 						'get_order_url'                => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
 						'get_order_nonce'              => wp_create_nonce( 'pco_wc_get_order' ),
-						'timeout_message'              => __( 'Please try again, something went wrong with processing your order.', 'woocommerce-gateway-paysoncheckout' ),
-						'timeout_time'                 => apply_filters( 'pco_checkout_timeout_duration', 20 ),
+						'log_to_file_url'              => WC_AJAX::get_endpoint( 'pco_wc_log_js' ),
+				        'log_to_file_nonce'            => wp_create_nonce( 'pco_wc_log_js' ),
+						'submit_order'                 => WC_AJAX::get_endpoint( 'checkout' ),
 						'order_id'                     => $order_id,
 						'is_order_pay'                 => $is_order_pay,
 					);

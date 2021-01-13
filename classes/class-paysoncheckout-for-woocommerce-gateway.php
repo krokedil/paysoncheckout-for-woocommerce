@@ -155,7 +155,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 
 		return array(
 			'result'   => 'success',
-			'redirect' => '#payson-success' . base64_encode( microtime() ), //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- Base64 used to give a unique nondescript string.
 		);
 	}
 
