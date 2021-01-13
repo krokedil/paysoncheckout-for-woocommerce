@@ -49,7 +49,7 @@ class PaysonCheckout_For_WooCommerce_Update_Order extends PaysonCheckout_For_Woo
 		$body = array(
 			'status'   => $payson_data['status'],
 			'id'       => $payment_id,
-			'merchant' => PCO_WC()->merchant_urls->get_merchant_urls(),
+			'merchant' => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
 			'customer' => PCO_WC()->customer->get_customer_data( $payson_data ),
 			'order'    => array(
 				'currency' => get_woocommerce_currency(),

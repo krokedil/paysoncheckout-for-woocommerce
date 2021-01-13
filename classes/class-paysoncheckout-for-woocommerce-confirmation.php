@@ -13,69 +13,141 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Confirmation class.
  */
 class PaysonCheckout_For_WooCommerce_Confirmation {
+
+	/**
+	 * The reference the *Singleton* instance of this class.
+	 *
+	 * @var $instance
+	 */
+	protected static $instance;
+	/**
+	 * Returns the *Singleton* instance of this class.
+	 *
+	 * @return self::$instance The *Singleton* instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 	/**
 	 * Class constructor.
 	 */
 	public function __construct() {
-		add_action( 'pco_wc_before_checkout_form', array( $this, 'maybe_populate_wc_checkout' ) );
+		add_action( 'init', array( $this, 'pco_confirm_order' ) );
 	}
 
 	/**
-	 * Maybe populates the checkout fields.
-	 *
-	 * @return void
+	 * Confirm order
 	 */
-	public function maybe_populate_wc_checkout() {
-		// Get the payson order.
-		$payment_id   = WC()->session->get( 'payson_payment_id' );
-		$payson_order = pco_wc_get_order( $payment_id );
-		if ( is_wp_error( $payson_order ) ) {
-			// If error print error message.
-			$code    = $payson_order->get_error_code();
-			$message = $payson_order->get_error_message();
-			$text    = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s'
-			?>
-			<ul class="woocommerce-error" role="alert">
-				<li><?php echo sprintf( $text, $code, $message ); ?></li>
-			</ul>
-			<?php
+	public function pco_confirm_order() {
+		$pco_confirm  = filter_input( INPUT_GET, 'pco_confirm', FILTER_SANITIZE_STRING );
+		$pco_order_id = filter_input( INPUT_GET, 'pco_order_id', FILTER_SANITIZE_STRING );
+		$order_key    = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_STRING );
+
+		// Return if we dont have our parameters set.
+		if ( empty( $pco_confirm ) || empty( $order_key ) ) {
+			return;
+		}
+
+		$order_id = wc_get_order_id_by_order_key( $order_key );
+
+		// Return if we cant find an order id.
+		if ( empty( $order_id ) ) {
+			return;
+		}
+
+		// Get the pco_order_id if we don't have one.
+		if ( empty( $pco_order_id ) ) {
+			$pco_order_id = get_post_meta( $order_id, '_payson_checkout_id' );
+		}
+
+		// Return if we still don't have a pco_order_id.
+		if ( empty( $pco_order_id ) ) {
+			return;
+		}
+
+		$order = wc_get_order( $order_id );
+
+		// Check that the order status is correct before continuing.
+		if ( $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {
+			return;
+		}
+
+		// Confirm the order.
+		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+			$this->confirm_recurring_payson_order( $order_id );
 		} else {
-			$address       = $payson_order['customer'];
-			$customer_data = array();
+			$this->confirm_payson_order( $order_id );
+		}
 
-			// First name.
-			WC()->customer->set_billing_first_name( sanitize_text_field( $address['firstName'] ) );
-			WC()->customer->set_shipping_first_name( sanitize_text_field( $address['firstName'] ) );
-			// Last name.
-			$payson_lastname = sanitize_text_field( $address['lastName'] );
-			if ( 'business' === $payson_order['customer']['type'] ) {
-				$payson_lastname = '-';
-			}
-			WC()->customer->set_billing_last_name( sanitize_text_field( $payson_lastname ) );
-			WC()->customer->set_shipping_last_name( sanitize_text_field( $payson_lastname ) );
-			// Country.
-			WC()->customer->set_billing_country( strtoupper( sanitize_text_field( $address['countryCode'] ) ) );
-			WC()->customer->set_shipping_country( strtoupper( sanitize_text_field( $address['countryCode'] ) ) );
-			// Street address.
-			WC()->customer->set_billing_address_1( sanitize_text_field( $address['street'] ) );
-			WC()->customer->set_shipping_address_1( sanitize_text_field( $address['street'] ) );
-			// City.
-			WC()->customer->set_billing_city( sanitize_text_field( $address['city'] ) );
-			WC()->customer->set_shipping_city( sanitize_text_field( $address['city'] ) );
-			// Postcode.
-			WC()->customer->set_billing_postcode( sanitize_text_field( $address['postalCode'] ) );
-			WC()->customer->set_shipping_postcode( sanitize_text_field( $address['postalCode'] ) );
-			// Phone.
-			WC()->customer->set_billing_phone( sanitize_text_field( $address['phone'] ) );
-			// Email.
-			WC()->customer->set_billing_email( sanitize_text_field( $address['email'] ) );
+		pco_wc_unset_sessions();
+	}
 
-			// Save customer.
-			WC()->customer->save();
+	/**
+	 * Processes the Payson Payment and sets post metas.
+	 *
+	 * @param string $order_id The WooCommerce order id.
+	 * @return bool|string
+	 */
+	public function confirm_recurring_payson_order( $order_id ) {
+		$order           = wc_get_order( $order_id );
+		$subscription_id = ( ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
+		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
+		foreach ( $subcriptions as $subcription ) {
+			update_post_meta( $subcription->get_id(), '_payson_subscription_id', $subscription_id );
+		}
+
+		// If subscription is free, then return true.
+		if ( 0 >= $order->get_total() ) {
+			update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
+			$order->payment_complete( $subscription_id );
+			return true;
+		}
+		// Make payment.
+		$payson_order = PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
+		if ( is_wp_error( $payson_order ) ) {
+			// If error save error message.
+			$code          = $payson_order->get_error_code();
+			$message       = $payson_order->get_error_message();
+			$text          = __( 'Payson API Error on make recurring payment: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
+			$formated_text = sprintf( $text, $code, $message );
+			$order->add_order_note( $formated_text );
+			$order->set_status( 'on-hold' );
+
+			return false;
+		}
+
+		// Save meta data to order and subscriptions.
+		update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
+		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
+
+		$order->add_order_note( __( 'Subscription payment made with Payson, subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
+
+		// Set payment complete if all is successful.
+		$order->payment_complete( $payson_order['purchaseId'] );
+		return true;
+	}
+
+	/**
+	 * Confirm a normal WooCommerce order.
+	 *
+	 * @param int $order_id The WooCommerce order id.
+	 * @return bool|void
+	 */
+	public function confirm_payson_order( $order_id ) {
+		$payment_id   = ( ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
+		$payson_order = pco_wc_get_order( $payment_id );
+		$order        = wc_get_order( $order_id );
+		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
+			// Set post meta and complete order.
+			update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
+			$order->payment_complete( $payson_order['purchaseId'] );
+			return true;
 		}
 	}
-}
 
-if ( isset( $_GET['pco_confirm'] ) ) {
-	new PaysonCheckout_For_WooCommerce_Confirmation();
 }
+PaysonCheckout_For_WooCommerce_Confirmation::get_instance();

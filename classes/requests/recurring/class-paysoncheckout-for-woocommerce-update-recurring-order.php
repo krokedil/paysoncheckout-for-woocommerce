@@ -49,7 +49,7 @@ class PaysonCheckout_For_WooCommerce_Update_Recurring_Order extends PaysonChecko
 		$body = array(
 			'status'    => $payson_data['status'],
 			'id'        => $payment_id,
-			'merchant'  => PCO_WC()->merchant_urls->get_merchant_urls(),
+			'merchant'  => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
 			'customer'  => PCO_WC()->customer->get_customer_data( $payson_data ),
 			'gui'       => PCO_WC()->gui->get_gui(),
 			'agreement' => PCO_WC()->agreement->get_agreement(),

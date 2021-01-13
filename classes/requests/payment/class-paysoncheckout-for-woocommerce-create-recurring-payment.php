@@ -30,8 +30,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
 
 		$formated_response = $this->process_response( $response, $request_args, $request_url );
-
-		if ( isset( $formated_response['status'] ) && 'denied' === $formated_response['status'] ) {
+		if ( is_wp_error( $formated_response ) || ( isset( $formated_response['status'] ) && 'denied' === $formated_response['status'] ) ) {
 			$data              = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
 			$formated_response = new WP_Error( wp_remote_retrieve_response_code( $response ), __( 'Scheduled payment denied by Payson.', 'woocommerce-gateway-paysoncheckout' ), $data );
 		}
@@ -50,7 +49,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 		$body = array(
 			'subscriptionId'  => $subscription_id,
 			'notificationUri' => get_home_url() . '/wc-api/PCO_WC_Notification',
-			'merchant'        => PCO_WC()->merchant_urls->get_merchant_urls(),
+			'merchant'        => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
 			'order'           => array(
 				'currency' => get_woocommerce_currency(),
 				'items'    => PCO_WC()->order_items->get_order_items( $order_id ),

@@ -31,6 +31,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			'pco_wc_checkout_error'        => true,
 			'pco_wc_change_payment_method' => true,
 			'pco_wc_update_session'        => true,
+			'pco_wc_log_js'                => true,
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_woocommerce_' . $ajax_event, array( __CLASS__, $ajax_event ) );
@@ -149,7 +150,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 
 		wp_send_json_success(
 			array(
-				'address'   => $payson_order['customer'],
+				'address'   => is_array( $payson_order ) ? $payson_order['customer'] : null,
 				'changed'   => $changed,
 				'pco_nonce' => wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce', true, false ),
 			)
@@ -179,6 +180,13 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			wp_send_json_error( $formated_text );
 			wp_die();
 		}
+
+		// Add - as last name if its missing. Happens when its a B2B purchase.
+		if( empty( $payson_order['customer']['lastName'] ) ) {
+			$payson_order['customer']['lastName'] = '-';
+		}
+
+
 		wp_send_json_success( $payson_order );
 		wp_die();
 	}
@@ -231,27 +239,68 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			wp_send_json_error( 'bad_nonce' );
 			exit;
 		}
-
 		$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
-		if ( 'false' === $_POST['pco'] ) {
-			// Set chosen payment method to first gateway that is not PaysonCheckout for WooCommerce.
-			$first_gateway = reset( $available_gateways );
-			if ( 'paysoncheckout' !== $first_gateway->id ) {
-				WC()->session->set( 'chosen_payment_method', $first_gateway->id );
-			} else {
-				$second_gateway = next( $available_gateways );
-				WC()->session->set( 'chosen_payment_method', $second_gateway->id );
-			}
-		} else {
-			WC()->session->set( 'chosen_payment_method', 'paysoncheckout' );
-		}
 
-		WC()->payment_gateways()->set_current_gateway( $available_gateways );
-		$redirect = wc_get_checkout_url();
-		$data     = array(
-			'redirect' => $redirect,
-		);
-		wp_send_json_success( $data );
+		if ( ! empty( $_POST['order_id'] ) ) { // Handle pay for order page switch payment method.
+			$order = wc_get_order( $_POST['order_id'] );
+			if ( 'false' === $_POST['pco'] ) {
+				$first_gateway = reset( $available_gateways );
+				if ( 'paysoncheckout' !== $first_gateway->id ) {
+					$order->set_payment_method( $first_gateway->id );
+				} else {
+					$second_gateway = next( $available_gateways );
+					$order->set_payment_method( $second_gateway->id );
+				}
+			} else {
+				$order->set_payment_method( 'paysoncheckout' );
+			}
+			$order->save();
+			$redirect = $order->get_checkout_payment_url();
+			$data     = array(
+				'redirect' => $redirect,
+			);
+			wp_send_json_success( $data );
+			wp_die();
+		} else { // Handle checkout page switch payment method.
+			if ( 'false' === $_POST['pco'] ) {
+				// Set chosen payment method to first gateway that is not PaysonCheckout for WooCommerce.
+				$first_gateway = reset( $available_gateways );
+				if ( 'paysoncheckout' !== $first_gateway->id ) {
+					WC()->session->set( 'chosen_payment_method', $first_gateway->id );
+				} else {
+					$second_gateway = next( $available_gateways );
+					WC()->session->set( 'chosen_payment_method', $second_gateway->id );
+				}
+			} else {
+				WC()->session->set( 'chosen_payment_method', 'paysoncheckout' );
+			}
+
+			WC()->payment_gateways()->set_current_gateway( $available_gateways );
+			$redirect = wc_get_checkout_url();
+			$data     = array(
+				'redirect' => $redirect,
+			);
+			wp_send_json_success( $data );
+			wp_die();
+		}
+	}
+
+	/**
+	 * Logs messages from the JavaScript to the server log.
+	 *
+	 * @return void
+	 */
+	public static function pco_wc_log_js() {
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_key( $_POST['nonce'] ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'pco_wc_log_js' ) ) {
+			wp_send_json_error( 'bad_nonce' );
+			exit;
+		}
+		$posted_message    = isset( $_POST['message'] ) ? sanitize_text_field( wp_unslash( $_POST['message'] ) ) : '';
+		$payson_payment_id = WC()->session->get( 'payson_payment_id' );
+		$message           = "Frontend JS $payson_payment_id: $posted_message";
+		PaysonCheckout_For_WooCommerce_Logger::log( $message );
+		wp_send_json_success();
 		wp_die();
 	}
 }

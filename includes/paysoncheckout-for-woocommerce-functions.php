@@ -49,7 +49,7 @@ function pco_wc_show_pay_for_order_snippet() {
 		// Create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order( $order_id );
 		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
-			WC()->session->set( 'payson_payment_id', $payson_order['id'] );
+			update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
 		}
 		if ( is_wp_error( $payson_order ) ) {
 			// If error print error message.
@@ -61,8 +61,8 @@ function pco_wc_show_pay_for_order_snippet() {
 			<li><?php echo sprintf( $text, $code, $message ); ?></li>
 		</ul>
 			<?php
-			// Then unset the payment id session to force a new order to be created on page load.
-			WC()->session->__unset( 'payson_payment_id' );
+			// Remove the post meta so that we can create a new order with payson on an error.
+			delete_post_meta( $order_id, '_payson_checkout_id' );
 		} else {
 			$snippet = $payson_order['snippet'];
 			echo $snippet;
@@ -185,7 +185,7 @@ function pco_maybe_show_validation_error_message() {
  * Creates either a normal order or a subscription order.
  *
  * @param string $order_id The WooCommerce order id.
- * @return array
+ * @return array|WP_Error
  */
 function pco_wc_create_order( $order_id = null ) {
 	if ( null === $order_id ) {
@@ -240,4 +240,38 @@ function pco_check_valid_order_status( $payson_order ) {
 	}
 	// If we get here return true.
 	return true;
+}
+
+
+/**
+ * Confirms and finishes the Payson Order for processing.
+ *
+ * @param string $pco_order_id payson order id.
+ * @param int    $order_id The WooCommerce Order id.
+ * @return void
+ */
+function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
+	if ( $order_id ) {
+		$order = wc_get_order( $order_id );
+		// If the order is already completed, return.
+		if ( null !== $order->get_date_paid() ) {
+			return;
+		}
+
+		// Get the Payson order.
+		$payson_order = pco_wc_get_order( $pco_order_id );
+		if ( ! is_wp_error( $payson_order ) ) {
+			if ( 'readyToShip' === $payson_order['status'] ) {
+				$order->payment_complete( $pco_order_id );
+				$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $pco_order_id );
+				$order->save();
+			} else {
+				$order->set_status( 'on-hold', __( 'Invalid status for payson order', 'payson-checkout-for-woocommerce' ) );
+				$order->save();
+			}
+		} else {
+			$order->set_status( 'on-hold', __( 'Waiting for verification from Payson notification callback', 'payson-checkout-for-woocommerce' ) );
+			$order->save();
+		}
+	}
 }
