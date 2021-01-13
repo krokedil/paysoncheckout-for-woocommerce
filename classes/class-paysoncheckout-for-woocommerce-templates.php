@@ -31,12 +31,12 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 */
 	public function override_template( $template, $template_name ) {
 		if ( is_checkout() ) {
-			// Don't display PCO template if we have a cart that doesn't needs payment.
-			if ( ! WC()->cart->needs_payment() ) {
-				return $template;
-			}
 			// PaysonCheckout Checkout.
 			if ( 'checkout/form-checkout.php' === $template_name ) {
+				// Don't display PCO template if we have a cart that doesn't needs payment.
+				if ( ! WC()->cart->needs_payment() ) {
+					return $template;
+				}
 				$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 				if ( locate_template( 'woocommerce/paysoncheckout-checkout.php' ) ) {
 					$paysoncheckout_template = locate_template( 'woocommerce/paysoncheckout-checkout.php' );
@@ -68,6 +68,37 @@ class PaysonCheckout_For_WooCommerce_Templates {
 								if ( ! isset( $_GET['confirm'] ) ) {
 									$template = $paysoncheckout_template;
 								}
+							}
+						}
+					}
+				}
+			}
+
+			// PaysonCheckout Pay for order.
+			if ( 'checkout/form-pay.php' === $template_name ) {
+				global $wp;
+				$order_id           = $wp->query_vars['order-pay'];
+				$order              = wc_get_order( $order_id );
+				$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+				if ( array_key_exists( 'paysoncheckout', $available_gateways ) ) {
+					if ( locate_template( 'woocommerce/paysoncheckout-pay.php' ) ) {
+						$paysoncheckout_pay_template = locate_template( 'woocommerce/paysoncheckout-pay.php' );
+					} else {
+						$paysoncheckout_pay_template = PAYSONCHECKOUT_PATH . '/templates/paysoncheckout-pay.php';
+					}
+
+					if ( 'paysoncheckout' === $order->get_payment_method() ) {
+						if ( ! isset( $_GET['confirm'] ) ) {
+							$template = $paysoncheckout_pay_template;
+						}
+					}
+
+					// If chosen payment method does not exist and PCO is the first gateway.
+					if ( empty( $order->get_payment_method() ) ) {
+						reset( $available_gateways );
+						if ( 'paysoncheckout' === key( $available_gateways ) ) {
+							if ( ! isset( $_GET['confirm'] ) ) {
+								$template = $paysoncheckout_template;
 							}
 						}
 					}
