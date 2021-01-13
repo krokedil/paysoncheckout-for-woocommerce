@@ -211,6 +211,11 @@ jQuery(function($) {
 						$('.payson-error').remove();
 						$('.woocommerce-checkout-review-order-table').after( '<ul class="payson-error woocommerce-error" role="alert"><li>' + result.data + '</li></ul>' );
 					} else {
+
+						if(result.success && result.data.refreshZeroAmount){
+							window.location.reload();
+						}
+
 						// Set address data if we have it.
 						if( result.data.address !== null ) {
 							pco_wc.addressData = result.data.address;
