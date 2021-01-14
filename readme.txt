@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.01.12    - version 3.0.1 =
+* Fix           - Fixed a JavaScript error causing a order to not be properly created in WooCommerce that happens on some servers.
+
 = 2021.01.13    - version 3.0.0 =
 * Major         - Major rewrite of the entire flow for the checkout process. Implementing a frontend event to speed up the checkout process, and compatibility with other plugins.
 * Feature       - Support for extra checkout fields.
