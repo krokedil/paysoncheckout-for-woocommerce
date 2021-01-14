@@ -463,11 +463,7 @@ jQuery(function($) {
 				
 				// Catch changes to order notes.
 				pco_wc.bodyEl.on('change', '#order_comments', pco_wc.updateOrderComment);
-				
-				// Extra checkout fields.
-				pco_wc.bodyEl.on('blur', pco_wc.extraFieldsSelectorText, pco_wc.checkFormData);
-				pco_wc.bodyEl.on('change', pco_wc.extraFieldsSelectorNonText, pco_wc.checkFormData);
-				
+								
 				// Payson Event listeners.
 				document.addEventListener( 'PaysonEmbeddedAddressChanged', function( data ) { pco_wc.addressChanged( data ) } );
 				document.addEventListener( 'PaysonEmbeddedCheckoutResult', function( data ) { pco_wc.checkoutResult( data ) } );
