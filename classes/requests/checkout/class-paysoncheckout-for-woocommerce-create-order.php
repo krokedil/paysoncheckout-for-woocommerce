@@ -51,6 +51,7 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 	public function get_body( $order_id ) {
 		return array(
 			'merchant' => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
+			'customer' => PCO_WC()->customer->get_customer_data( $payson_data ),
 			'order'    => array(
 				'currency' => get_woocommerce_currency(),
 				'items'    => ( null === $order_id ) ? PCO_WC()->cart_items->get_cart_items() : PCO_WC()->order_items->get_order_items( $order_id ),
