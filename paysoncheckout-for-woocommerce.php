@@ -144,6 +144,10 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		 * @return void
 		 */
 		public function include_files() {
+			if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+				return;
+			}
+
 			// Includes Classes.
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-gateway.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-templates.php';
