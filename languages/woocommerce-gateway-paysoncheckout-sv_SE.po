@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Swedish\n"
-"Last-Translator: admin <michael@krokedil.se>\n"
+"Last-Translator: \n"
 "Report-Msgid-Bugs-To: http://krokedil.se\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:"
@@ -18,10 +18,10 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "POT-Creation-Date: 2019-04-15 10:03+0000\n"
-"PO-Revision-Date: 2019-04-15 10:11+0000\n"
+"PO-Revision-Date: 2021-01-26 09:12+0000\n"
 "Language: sv_SE\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.2.2; wp-4.9.10"
+"X-Loco-Version: 2.5.0; wp-5.5.3"
 
 #: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:22
 msgid "Payson"
@@ -152,15 +152,15 @@ msgstr "Aktivera PaysonCheckout testläge"
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:55
 msgid "Enable Order Management"
-msgstr "Akrivera Order Hantering"
+msgstr "Aktivera Orderhantering"
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:57
 msgid ""
 "Enable Payson order capture on WooCommerce order completion and Payson order "
 "cancellation on WooCommerce order cancellation"
 msgstr ""
-"Aktivera Payson order aktivering när WooCommerce order färdigställs och "
-"avbryt Payson order när WooCommerce order avbryts."
+"Aktivera Payson orderhantering när WooCommerce order färdigställs och avbryt "
+"Payson order när WooCommerce order avbryts."
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:61
 msgid "Color Scheme"

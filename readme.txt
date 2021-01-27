@@ -37,6 +37,12 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.01.27    - version 3.0.2 =
+* Enhancement   - Send customer data in the create call to PaysonCheckout if the customer is a pre existing customer.
+* Localization  - Updated Swedish translation.
+* Fix           - Fixed some error notices.
+* Fix           - Fixed an error that would happen if you deactivated WooCommerce but kept PaysonCheckout active.
+
 = 2021.01.12    - version 3.0.1 =
 * Fix           - Fixed a JavaScript error causing a order to not be properly created in WooCommerce that happens on some servers.
 

@@ -376,13 +376,22 @@ jQuery(function($) {
 			// Move order comments.
 			$('.woocommerce-additional-fields').appendTo('#pco-extra-checkout-fields');
 
-			let form = $('form[name="checkout"] input, form[name="checkout"] select, textarea');
+			let form = $('form[name="checkout"] input, form[name="checkout"] select, textarea');			
 			for ( i = 0; i < form.length; i++ ) {
-				let name = form[i]['name'];
+				let name = form[i].name;
+				// Check if field is inside the order review.
+				if( $( 'table.woocommerce-checkout-review-order-table' ).find( form[i] ).length ) {
+					continue;
+				}
+
 				// Check if this is a standard field.
-				if ( $.inArray( name, pco_wc_params.standard_woo_checkout_fields ) === -1 ) {
+				if ( -1 === $.inArray( name, pco_wc_params.standard_woo_checkout_fields ) ) {					
 					// This is not a standard Woo field, move to our div.
-					$('p#' + name + '_field').appendTo('#pco-extra-checkout-fields');
+					if ( 0 < $( 'p#' + name + '_field' ).length ) {
+						$( 'p#' + name + '_field' ).appendTo( '#pco-extra-checkout-fields' );
+					} else {
+						$( 'input[name="' + name + '"]' ).closest( 'p' ).appendTo( '#pco-extra-checkout-fields' );
+					}
 				}
 			}
 		},

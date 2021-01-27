@@ -146,7 +146,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 	public function get_shipping() {
 		$packages        = WC()->shipping->get_packages();
 		$chosen_methods  = WC()->session->get( 'chosen_shipping_methods' );
-		$chosen_shipping = $chosen_methods[0];
+		$chosen_shipping = ( ! empty( $chosen_methods ) ) ? $chosen_methods[0] : null;
 		foreach ( $packages as $i => $package ) {
 			foreach ( $package['rates'] as $method ) {
 				if ( $chosen_shipping === $method->id ) {
