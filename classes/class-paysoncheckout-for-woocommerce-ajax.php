@@ -28,7 +28,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			'pco_wc_address_changed'       => true,
 			'pco_wc_update_checkout'       => true,
 			'pco_wc_get_order'             => true,
-			'pco_wc_checkout_error'        => true,
 			'pco_wc_change_payment_method' => true,
 			'pco_wc_update_session'        => true,
 			'pco_wc_log_js'                => true,
@@ -180,7 +179,9 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		}
 
 		// Get the payson order.
-		$payson_order = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
+		$subscription = ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) ? true : false;
+
+		$payson_order = ( $subscription ) ? PCO_WC()->get_recurring_order->request( WC()->session->get( 'payson_payment_id' ) ) : PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );		
 		if ( is_wp_error( $payson_order ) ) {
 			// If error return error message.
 			$code          = $payson_order->get_error_code();
@@ -198,44 +199,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 
 
 		wp_send_json_success( $payson_order );
-		wp_die();
-	}
-
-	/**
-	 * Creates a fallback order on Checkout error JS event.
-	 *
-	 * @return void
-	 */
-	public static function pco_wc_checkout_error() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_checkout_error' ) ) { // phpcs: ignore.
-			wp_send_json_error( 'bad_nonce' );
-			exit;
-		}
-
-		// Get the payson order.
-		$payson_order = PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
-		if ( is_wp_error( $payson_order ) ) {
-			// If error return error message.
-			$code          = $payson_order->get_error_code();
-			$message       = $payson_order->get_error_message();
-			$text          = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
-			$formated_text = sprintf( $text, $code, $message );
-			wp_send_json_error( $formated_text );
-			wp_die();
-		}
-
-		// Get error message.
-		if ( ! empty( $_POST['error_message'] ) ) { // Input var okay.
-			$error_message = 'Error message: ' . sanitize_text_field( trim( $_POST['error_message'] ) );
-		} else {
-			$error_message = 'Error message could not be retreived';
-		}
-
-		// Create the order and send redirect url.
-		$order_id     = PCO_WC()->backup_order->checkout_error( $payson_order, $error_message );
-		$order        = wc_get_order( $order_id );
-		$redirect_url = $order->get_checkout_order_received_url();
-		wp_send_json_success( $redirect_url );
 		wp_die();
 	}
 
