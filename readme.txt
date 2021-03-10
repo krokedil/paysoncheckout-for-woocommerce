@@ -37,6 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.03.10    - version 3.0.3 =
+* Fix           - Fixed a possible 404 error when placing a subscription order.
+* Fix           - Fixed an error notice.
+
 = 2021.01.27    - version 3.0.2 =
 * Enhancement   - Send customer data in the create call to PaysonCheckout if the customer is a pre existing customer.
 * Localization  - Updated Swedish translation.
