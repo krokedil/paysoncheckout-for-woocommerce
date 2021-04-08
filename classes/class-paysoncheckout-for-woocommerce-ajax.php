@@ -97,8 +97,15 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 	 * Update the Payson order.
 	 */
 	public static function pco_wc_update_checkout() {
+		
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_update_checkout' ) ) { // phpcs: ignore.
+			wp_send_json_error( 'bad_nonce' );
+			exit;
+		}
 
-		if ( ! WC()->cart->needs_payment() ) {
+		$subscription = ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) ? true : false;
+
+		if ( ! $subscription && ! WC()->cart->needs_payment() ) {
 			wp_send_json_success(
 				array(
 					'refreshZeroAmount' => 'refreshZeroAmount',
@@ -106,12 +113,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			);
 			wp_die();
 		}
-
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_update_checkout' ) ) { // phpcs: ignore.
-			wp_send_json_error( 'bad_nonce' );
-			exit;
-		}
-		$subscription = ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) ? true : false;
 
 		// Get the payson order.
 		$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_order->request( WC()->session->get( 'payson_payment_id' ) ) : PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
