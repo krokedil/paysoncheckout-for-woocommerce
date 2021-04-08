@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.04.08    - version 3.0.4 =
+* Fix           - Fixed an infinite reload of the checkout page when you had a free trial subscription.
+
 = 2021.03.10    - version 3.0.3 =
 * Fix           - Fixed a possible 404 error when placing a subscription order.
 * Fix           - Fixed an error notice.
