@@ -49,6 +49,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 		$body = array(
 			'subscriptionId'  => $subscription_id,
 			'notificationUri' => get_home_url() . '/wc-api/PCO_WC_Notification',
+			'expirationDate'  => $this->get_expiration_date(),
 			'merchant'        => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
 			'order'           => array(
 				'currency' => get_woocommerce_currency(),
@@ -76,5 +77,19 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Payment extends PaysonChec
 			'method'  => 'POST',
 			'body'    => wp_json_encode( $this->get_body( $subscription_id, $order_id ) ),
 		);
+	}
+
+	/**
+	 * Get the expiration date.
+	 *
+	 * @return string
+	 */
+	public function get_expiration_date() {
+		$payson_settings = get_option( 'woocommerce_paysoncheckout_settings' );
+		$expiration_time = ( isset( $payson_settings['recurring_invoice_expiration'] ) ) ? $payson_settings['recurring_invoice_expiration'] : 7;
+		$date            = new DateTime();
+		$date->modify( '+' . $expiration_time . ' day' );
+
+		return $date->format( 'Y-m-d' ) . 'T' . $date->format( 'H:i:s' );
 	}
 }

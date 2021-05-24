@@ -3,7 +3,7 @@
  * Plugin Name:     PaysonCheckout for WooCommerce
  * Plugin URI:      http://krokedil.com/
  * Description:     Provides a PaysonCheckout payment gateway for WooCommerce.
- * Version:         3.0.4
+ * Version:         3.1.0
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
  * Developer:       Krokedil
@@ -12,7 +12,7 @@
  * Domain Path:     /languages
  *
  * WC requires at least: 3.0
- * WC tested up to: 5.1.0
+ * WC tested up to: 5.3.0
  *
  * Copyright:       © 2016-2021 Krokedil.
  * License:         GNU General Public License v3.0
@@ -253,7 +253,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 						'get_order_url'                => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
 						'get_order_nonce'              => wp_create_nonce( 'pco_wc_get_order' ),
 						'log_to_file_url'              => WC_AJAX::get_endpoint( 'pco_wc_log_js' ),
-				        'log_to_file_nonce'            => wp_create_nonce( 'pco_wc_log_js' ),
+						'log_to_file_nonce'            => wp_create_nonce( 'pco_wc_log_js' ),
 						'submit_order'                 => WC_AJAX::get_endpoint( 'checkout' ),
 						'order_id'                     => $order_id,
 						'is_order_pay'                 => $is_order_pay,
