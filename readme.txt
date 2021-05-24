@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.6.0
+Tested up to: 5.7.2
 Requires PHP: 5.6
 WC requires at least: 3.0
-WC tested up to: 4.7.0
+WC tested up to: 5.3.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.05.24    - version 3.1.0 =
+* Feature       - Add support for expiration date for recurring payments. You can set the number of days you want the recurring payment to expire in with Payson.
+
 = 2021.04.08    - version 3.0.4 =
 * Fix           - Fixed an infinite reload of the checkout page when you had a free trial subscription.
 
