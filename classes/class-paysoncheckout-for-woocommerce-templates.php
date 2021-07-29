@@ -20,6 +20,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_login_form', 10 );
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_coupon_form', 20 );
 		add_action( 'pco_wc_before_snippet', 'pco_wc_show_another_gateway_button', 20 );
+		add_action( 'pco_wc_after_checkout_form', array( $this, 'pco_wc_after_checkout_form' ) );
 	}
 
 	/**
@@ -144,6 +145,15 @@ class PaysonCheckout_For_WooCommerce_Templates {
 		<div id="pco-extra-checkout-fields">
 		</div>
 		<?php
+	}
+
+	/**
+	 * Trigger actions after the checkout form.
+	 *
+	 * @return void
+	 */
+	public function pco_wc_after_checkout_form() {
+		do_action( 'woocommerce_after_checkout_form' );
 	}
 }
 new PaysonCheckout_For_WooCommerce_Templates();
