@@ -83,11 +83,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			return false;
 		}
 
-		// Check if we are on an admin page.
-		if ( is_admin() ) {
-			return false;
-		}
-
 		// Currency check.
 		if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ), true ) ) {
 			return false;
@@ -154,7 +149,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		}
 
 		return array(
-			'result'   => 'success',
+			'result' => 'success',
 		);
 	}
 
