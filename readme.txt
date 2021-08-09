@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.7.2
+Tested up to: 5.8.0
 Requires PHP: 5.6
 WC requires at least: 3.0
-WC tested up to: 5.3.0
+WC tested up to: 5.5.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,12 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.08.09    - version 3.2.0 =
+* Feature       - Added a setting to set which default customer type to use for the checkout. B2C for Business to Customer, the current default. And B2B for Business to Business. 
+* Enhancement   - Added support for Facebook Pixels through the Facebook for WooCommerce plugin.
+* Fix           - Removed a check that caused Payson to not be listed as an available checkout option on admin pages.
+* Fix           - Fixed an issue causing an incorrect tax amount to be set for fees when using the pay for order feature in WooCommerce.
+
 = 2021.05.24    - version 3.1.0 =
 * Feature       - Add support for expiration date for recurring payments. You can set the number of days you want the recurring payment to expire in with Payson.
 
