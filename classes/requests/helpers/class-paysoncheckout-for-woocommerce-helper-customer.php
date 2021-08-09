@@ -18,6 +18,8 @@ class PaysonCheckout_For_WooCommerce_Helper_Customer {
 	public function get_customer_data( $payson_data = null ) {
 		// If we dont have an order from Payson.
 		if ( null === $payson_data ) {
+			$options = get_option( 'woocommerce_paysoncheckout_settings' );
+			$type    = ( isset( $options['default_customer_type'] ) && 'b2b' === $options['default_customer_type'] ) ? 'business' : 'person';
 			return array(
 				'city'           => WC()->customer->get_billing_city(),
 				'countryCode'    => WC()->customer->get_billing_country(),
@@ -27,7 +29,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Customer {
 				'postalCode'     => WC()->customer->get_billing_postcode(),
 				'street'         => WC()->customer->get_billing_address_1(),
 				'phone'          => WC()->customer->get_billing_phone(),
-				'type'           => '',
+				'type'           => $type,
 				'IdentityNumber' => '',
 			);
 		} else {
