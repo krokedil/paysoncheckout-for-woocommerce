@@ -37,6 +37,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.08.20    - version 3.2.1 =
+* Enhancement   - Improved checks before we cancel an order with Payson to prevent canceling a Payson order incorrectly.
+* Fix           - PHP 8.0 compatability.
+* Fix           - Changed how we handle recurring payments with WooCommerce subscriptions. They will now first be created as Pending payment pending a callback from Payson when the order has been approved.
+
 = 2021.08.09    - version 3.2.0 =
 * Feature       - Added a setting to set which default customer type to use for the checkout. B2C for Business to Customer, the current default. And B2B for Business to Business. 
 * Enhancement   - Added support for Facebook Pixels through the Facebook for WooCommerce plugin.

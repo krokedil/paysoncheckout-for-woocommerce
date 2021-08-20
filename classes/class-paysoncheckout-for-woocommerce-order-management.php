@@ -38,6 +38,11 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return;
 		}
 
+		// Check if the order has been paid.
+		if ( empty( $order->get_date_paid() ) ) {
+			return;
+		}
+
 		// Check payson settings to see if we have the ordermanagement enabled.
 		$payson_settings  = get_option( 'woocommerce_paysoncheckout_settings' );
 		$order_management = 'yes' === $payson_settings['order_management'] ? true : false;

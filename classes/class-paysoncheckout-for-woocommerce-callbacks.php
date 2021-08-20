@@ -52,14 +52,21 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		if ( isset( $_GET['checkout'] ) ) {
 			$payment_id   = $_GET['checkout'];
 			$subscription = false;
+			$payson_order = pco_wc_get_order( $payment_id, $subscription );
 		} elseif ( isset( $_GET['subscription'] ) ) {
 			$payment_id   = $_GET['subscription'];
 			$subscription = true;
+			$payson_order = pco_wc_get_order( $payment_id, $subscription );
+		} elseif ( isset( $_GET['payment'] ) ) {
+			$payment_id   = $_GET['payment'];
+			$subscription = true;
+			$payson_order = PCO_WC()->get_recurring_payment->request( $payment_id );
+			$this->process_recurring_payment( $payment_id, $payson_order );
+			header( 'HTTP/1.1 200 OK' );
+			die();
 		}
 
 		if ( isset( $payment_id ) ) {
-
-			$payson_order = pco_wc_get_order( $payment_id, $subscription );
 			if ( is_wp_error( $payson_order ) ) {
 				PaysonCheckout_For_WooCommerce_Logger::log( 'Could not get order in notification callback. Payment ID: ' . $payment_id . 'Is subscription order: ' . $subscription );
 			} else {
@@ -73,6 +80,24 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	}
 
 	public function pco_check_for_order_callback( $payment_id, $subscription ) {
+
+		$order = $this->get_wc_order_by_payment_id( $payment_id );
+
+		// Did we get a match?
+		if ( $order ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order->get_id() );
+		} else {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. We could NOT find Payment id ' . $payment_id );
+		}
+	}
+
+	/**
+	 * Gets the WooCommerce order from a Payson payment id.
+	 *
+	 * @param string $payment_id The Payson payment id.
+	 * @return WC_Order
+	 */
+	public function get_wc_order_by_payment_id( $payment_id ) {
 		$query          = new WC_Order_Query(
 			array(
 				'limit'          => -1,
@@ -87,32 +112,55 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$order_id_match = '';
 
 		foreach ( $orders as $order_id ) {
-			if ( $subscription ) {
-				$order_payment_id = get_post_meta( $order_id, '_payson_subscription_id', true );
-			} else {
-				$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
-			}
+			$subscription_id  = get_post_meta( $order_id, '_payson_subscription_id', true );
+			$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
 
-			if ( $order_payment_id === $payment_id ) {
+			if ( $order_payment_id === $payment_id || $subscription_id === $payment_id ) {
 				$order_id_match = $order_id;
 				break;
 			}
 		}
 
-		// Did we get a match?
-		if ( $order_id_match ) {
-			$order = wc_get_order( $order_id_match );
+		if ( empty( $order_id_match ) ) {
+			return null;
+		}
+		return wc_get_order( $order_id_match );
+	}
 
-			if ( $order ) {
-				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order_id_match );
-			} else {
-				// No order, why?
-				PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order_id_match . '. But we could not instantiate an order object' );
+	/**
+	 * Handles the callback for recurring payments to complete the subscription renewal attached to the order.
+	 *
+	 * @param string $payment_id The Payson Payment id.
+	 * @param array  $payson_order The Payson order.
+	 * @return bool
+	 */
+	public function process_recurring_payment( $payment_id, $payson_order ) {
+		if ( is_wp_error( $payson_order ) ) {
+			return false;
+		}
+
+		$order = $this->get_wc_order_by_payment_id( $payment_id );
+
+		if ( wcs_order_contains_renewal( $order ) && 'readyToShip' === $payson_order['status'] ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order approved by Payson: ' . $payment_id );
+			$order->add_order_note( sprintf( __( 'Subscription payment approved by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
+			$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
+			foreach ( $subscriptions as $subscription ) {
+				$subscription->payment_complete( $payson_order['purchaseId'] );
+			}
+		} elseif ( wcs_order_contains_renewal( $order ) && 'denied' === $payson_order['status'] ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order denied by Payson: ' . $payment_id );
+			$order->add_order_note( sprintf( __( 'Subscription payment denied by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
+			$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
+			foreach ( $subscriptions as $subscription ) {
+				$subscription->payment_failed();
 			}
 		} else {
-			// No order found - create a new
-			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. We could NOT find Payment id ' . $payment_id );
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order is not a renewal in WooCommerce, or has a different status: ' . $payson_order['status'] . ' Payment id: ' . $payment_id );
+			return false;
 		}
+
+		return true;
 	}
 }
 new PaysonCheckout_For_WooCommerce_Callbacks();
