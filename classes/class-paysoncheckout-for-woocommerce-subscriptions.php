@@ -23,8 +23,8 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 	/**
 	 * Creates a recurring payment with Payson.
 	 *
-	 * @param string $renewal_total The total price for the order.
-	 * @param object $renewal_order The WooCommerce order for the renewal.
+	 * @param string   $renewal_total The total price for the order.
+	 * @param WC_Order $renewal_order The WooCommerce order for the renewal.
 	 */
 	public function trigger_scheduled_payment( $renewal_total, $renewal_order ) {
 		$order_id = $renewal_order->get_id();
@@ -53,10 +53,10 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 		} else {
 			update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
 			// translators: %s Payson order id.
-			$renewal_order->add_order_note( sprintf( __( 'Subscription payment made with Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
-			foreach ( $subscriptions as $subscription ) {
-				$subscription->payment_complete( $payson_order['purchaseId'] );
-			}
+			$renewal_order->add_order_note( sprintf( __( 'Pending subscription payment made with Payson, waiting on confirmation from Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
+			// Set transaction id and wait for callback to complete the order.
+			$renewal_order->set_transaction_id( $payson_order['purchaseId'] );
+			$renewal_order->save();
 		}
 	}
 }
