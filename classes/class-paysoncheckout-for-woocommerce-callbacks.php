@@ -144,6 +144,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		if ( wcs_order_contains_renewal( $order ) && 'readyToShip' === $payson_order['status'] ) {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order approved by Payson: ' . $payment_id );
 			$order->add_order_note( sprintf( __( 'Subscription payment approved by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
+			update_post_meta( $order->get_id(), '_payson_renewal_confirmed', true );
 			$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
 			foreach ( $subscriptions as $subscription ) {
 				$subscription->payment_complete( $payson_order['purchaseId'] );

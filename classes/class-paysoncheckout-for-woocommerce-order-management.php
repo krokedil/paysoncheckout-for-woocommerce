@@ -114,6 +114,18 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return;
 		}
 
+		// If it is a subscription, check if the order has been confirmed.
+		if (
+			class_exists( 'WC_Subscriptions' )
+			&& wcs_order_contains_renewal( $order )
+			&& empty( get_post_meta( $order->get_id(), '_payson_renewal_confirmed', true ) )
+		) {
+			$order->add_order_note( __( 'Please wait for Payson to confirm the order before processing the order.', 'woocommerce-gateway-payson' ) );
+			$order->set_status( 'on-hold' );
+			$order->save();
+			return;
+		}
+
 		// Check payson settings to see if we have the ordermanagement enabled.
 		$payson_settings  = get_option( 'woocommerce_paysoncheckout_settings' );
 		$order_management = 'yes' === $payson_settings['order_management'] ? true : false;
@@ -132,6 +144,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		if ( empty( $payment_id ) ) {
 			$order->add_order_note( __( 'PaysonCheckout reservation could not be activated. Missing Payson payment id.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->set_status( 'on-hold' );
+			$order->save();
 			return;
 		}
 
@@ -139,6 +152,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		if ( get_post_meta( $order_id, '_paysoncheckout_reservation_activated', true ) ) {
 			$order->add_order_note( __( 'Could not activate PaysonCheckout reservation, PaysonCheckout reservation is already activated.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->set_status( 'on-hold' );
+			$order->save();
 			return;
 		}
 
@@ -152,6 +166,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$formated_text = sprintf( $text, $code, $message );
 			$order->add_order_note( $formated_text );
 			$order->set_status( 'on-hold' );
+			$order->save();
 			return;
 		}
 		// Set new order status.
@@ -175,9 +190,11 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$formated_text = sprintf( $text, $code, $message );
 			$order->add_order_note( $formated_text );
 			$order->set_status( 'on-hold' );
+			$order->save();
 		} else {
 			$order->add_order_note( __( 'PaysonCheckout reservation could not be activatied.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->set_status( 'on-hold' );
+			$order->save();
 		}
 	}
 
