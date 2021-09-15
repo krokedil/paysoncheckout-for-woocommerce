@@ -5,7 +5,7 @@ Requires at least: 4.5
 Tested up to: 5.8.0
 Requires PHP: 5.6
 WC requires at least: 3.0
-WC tested up to: 5.5.2
+WC tested up to: 5.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.09.15    - version 3.2.2 =
+* Enhancement   - Add support to confirm orders in WooCommerce using the callback from Payson. This will help in cases where customers dont return to the checkout after completing the 3DS step.
+* Enhancement   - Add support to be able to handle recurring payment callbacks from Payson when they confirm the order.
+
 = 2021.08.20    - version 3.2.1 =
 * Enhancement   - Improved checks before we cancel an order with Payson to prevent canceling a Payson order incorrectly.
 * Fix           - PHP 8.0 compatability.
