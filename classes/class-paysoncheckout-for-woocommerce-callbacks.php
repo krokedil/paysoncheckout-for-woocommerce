@@ -72,7 +72,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			} else {
 				if ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) {
 					PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . json_encode( $_GET ) . ' URL: ' . $_SERVER['REQUEST_URI'] );
-					wp_schedule_single_event( time() + 120, 'pco_check_for_order', array( $payment_id, $subscription ) );
+					wp_schedule_single_event( time() + 10, 'pco_check_for_order', array( $payment_id, $subscription ) );
 				}
 				header( 'HTTP/1.1 200 OK' );
 			}
@@ -80,12 +80,23 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	}
 
 	public function pco_check_for_order_callback( $payment_id, $subscription ) {
-
 		$order = $this->get_wc_order_by_payment_id( $payment_id );
 
 		// Did we get a match?
 		if ( $order ) {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. Payment id ' . $payment_id . '. already exist in order ID ' . $order->get_id() );
+			$order_confirmation = PaysonCheckout_For_WooCommerce_Confirmation::get_instance();
+
+			if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+				$result = $order_confirmation->confirm_recurring_payson_order( $order->get_id() );
+			} else {
+				$result = $order_confirmation->confirm_payson_order( $order->get_id() );
+			}
+
+			if ( $result ) {
+				$order->add_order_note( __( 'Order confirmed on a callback from Payson.', 'woocommerce-gateway-payson' ) );
+				PaysonCheckout_For_WooCommerce_Logger::log( 'Order confirmed on a callback from Payson. Payment id: ' . $payment_id . ' Order id: ' . $order->get_id() );
+			}
 		} else {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. We could NOT find Payment id ' . $payment_id );
 		}
