@@ -129,10 +129,13 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
 		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
 
-		$order->add_order_note( __( 'Subscription payment made with Payson, subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
-
-		// Set payment complete if all is successful.
-		$order->payment_complete( $payson_order['purchaseId'] );
+		if ( 'readyToShip' === $payson_order['status'] ) {
+			// Set payment complete if all is successful.
+			$order->add_order_note( __( 'Subscription payment made with Payson, subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
+			$order->payment_complete( $payson_order['purchaseId'] );
+		} else {
+			$order->add_order_note( __( 'Subscription payment registered with Payson. Pending approval. subscription ID: ', 'payson-checkout-for-woocommerce' ) . $subscription_id );
+		}
 		return true;
 	}
 

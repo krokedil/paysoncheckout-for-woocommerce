@@ -72,7 +72,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			} else {
 				if ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) {
 					PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . json_encode( $_GET ) . ' URL: ' . $_SERVER['REQUEST_URI'] );
-					wp_schedule_single_event( time() + 10, 'pco_check_for_order', array( $payment_id, $subscription ) );
+					wp_schedule_single_event( time() + 120, 'pco_check_for_order', array( $payment_id, $subscription ) );
 				}
 				header( 'HTTP/1.1 200 OK' );
 			}
@@ -88,7 +88,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			$order_confirmation = PaysonCheckout_For_WooCommerce_Confirmation::get_instance();
 
 			if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
-				$result = $order_confirmation->confirm_recurring_payson_order( $order->get_id() );
+				$result = true;
 			} else {
 				$result = $order_confirmation->confirm_payson_order( $order->get_id() );
 			}
@@ -152,24 +152,24 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 
 		$order = $this->get_wc_order_by_payment_id( $payment_id );
 
-		if ( wcs_order_contains_renewal( $order ) && 'readyToShip' === $payson_order['status'] ) {
+		if ( 'readyToShip' === $payson_order['status'] ) {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order approved by Payson: ' . $payment_id );
 			$order->add_order_note( sprintf( __( 'Subscription payment approved by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
 			update_post_meta( $order->get_id(), '_payson_renewal_confirmed', true );
+			if ( ! wcs_order_contains_renewal( $order ) ) {
+				$order->payment_complete( $payment_id );
+			}
 			$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
 			foreach ( $subscriptions as $subscription ) {
 				$subscription->payment_complete( $payson_order['purchaseId'] );
 			}
-		} elseif ( wcs_order_contains_renewal( $order ) && 'denied' === $payson_order['status'] ) {
+		} elseif ( 'denied' === $payson_order['status'] ) {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order denied by Payson: ' . $payment_id );
 			$order->add_order_note( sprintf( __( 'Subscription payment denied by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
 			$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
 			foreach ( $subscriptions as $subscription ) {
 				$subscription->payment_failed();
 			}
-		} else {
-			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order is not a renewal in WooCommerce, or has a different status: ' . $payson_order['status'] . ' Payment id: ' . $payment_id );
-			return false;
 		}
 
 		return true;
