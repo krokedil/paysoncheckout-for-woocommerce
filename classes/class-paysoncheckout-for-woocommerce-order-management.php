@@ -349,6 +349,15 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 					$order->add_order_note( $formated_text );
 					return false;
 				}
+
+				// If Payson do not accept the refund, the totalCreditedAmount we sent, and the one they respond with, will not match.
+				if ( $payson_order_tmp['order']['totalCreditedAmount'] !== $payson_order['order']['totalCreditedAmount'] ) {
+
+					$order->add_order_note( __( 'Credited amount mismatch', 'payson-checkout-for-woocommerce' ) );
+					return false;
+
+				}
+
 				$order->add_order_note( __( 'PaysonCheckout reservation was successfully refunded for ', 'woocommerce-gateway-paysoncheckout' ) . wc_price( abs( $refund_order->get_total() ) ) );
 				return true;
 	}
