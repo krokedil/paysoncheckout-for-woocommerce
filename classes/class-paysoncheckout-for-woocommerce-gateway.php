@@ -187,17 +187,11 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @param string $order_id The WooCommerce order ID.
 	 * @param float  $amount The amount to be refunded.
 	 * @param string $reason The reason given for the refund.
+	 * @return boolean Did the refund process go through or not?
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 
-		$order = wc_get_order( $order_id );
-		// Refund full amount.
-		if ( $amount === $order->get_total() ) {
-			return PCO_WC()->order_management->refund_full_payment( $order_id );
-		} else {
-			// TODO - Refund partial.
-			return PCO_WC()->order_management->refund_partial_payment( $order_id );
-		}
+		return PCO_WC()->order_management->refund_payment( $order_id );
 
 	}
 
