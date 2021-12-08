@@ -103,10 +103,10 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 					return false;
 				}
 			} else {
-				if ( WC()->cart->total < 10 && 'SEK' === get_woocommerce_currency() ) {
+				if ( WC()->cart && WC()->cart->total < 10 && 'SEK' === get_woocommerce_currency() ) {
 					return false;
 				}
-				if ( WC()->cart->total < 1 && 'EUR' === get_woocommerce_currency() ) {
+				if ( WC()->cart && WC()->cart->total < 1 && 'EUR' === get_woocommerce_currency() ) {
 					return false;
 				}
 			}
