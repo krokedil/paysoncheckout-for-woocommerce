@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.7.2
-Requires PHP: 5.6
-WC requires at least: 3.0
-WC tested up to: 5.3.0
+Tested up to: 5.8.2
+Requires PHP: 7.0
+WC requires at least: 4.0.0
+WC tested up to: 6.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,24 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2021.09.22    - version 3.2.3 =
+* Fix           - Fixed an issue with subscriptions not being placed correctly in some cases.
+
+= 2021.09.15    - version 3.2.2 =
+* Enhancement   - Add support to confirm orders in WooCommerce using the callback from Payson. This will help in cases where customers dont return to the checkout after completing the 3DS step.
+* Enhancement   - Add support to be able to handle recurring payment callbacks from Payson when they confirm the order.
+
+= 2021.08.20    - version 3.2.1 =
+* Enhancement   - Improved checks before we cancel an order with Payson to prevent canceling a Payson order incorrectly.
+* Fix           - PHP 8.0 compatability.
+* Fix           - Changed how we handle recurring payments with WooCommerce subscriptions. They will now first be created as Pending payment pending a callback from Payson when the order has been approved.
+
+= 2021.08.09    - version 3.2.0 =
+* Feature       - Added a setting to set which default customer type to use for the checkout. B2C for Business to Customer, the current default. And B2B for Business to Business. 
+* Enhancement   - Added support for Facebook Pixels through the Facebook for WooCommerce plugin.
+* Fix           - Removed a check that caused Payson to not be listed as an available checkout option on admin pages.
+* Fix           - Fixed an issue causing an incorrect tax amount to be set for fees when using the pay for order feature in WooCommerce.
+
 = 2021.05.24    - version 3.1.0 =
 * Feature       - Add support for expiration date for recurring payments. You can set the number of days you want the recurring payment to expire in with Payson.
 

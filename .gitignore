@@ -1,8 +1,5 @@
-.idea/modules.xml
-.idea/workspace.xml
-.idea/vcs.xml
-.idea/paysoncheckout-for-woocommerce.iml
-SyncToy_8bf1c734-e693-4692-b537-c790e6978d41.dat
+.idea/
+SyncToy_*.dat
 node_modules/
 package-lock.json
-/wp
+wp/

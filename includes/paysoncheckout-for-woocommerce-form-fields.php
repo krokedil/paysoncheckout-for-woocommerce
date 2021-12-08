@@ -64,6 +64,16 @@ $settings = array(
 		'label'   => __( 'Enable Payson order capture on WooCommerce order completion and Payson order cancellation on WooCommerce order cancellation', 'woocommerce-gateway-paysoncheckout' ),
 		'default' => 'yes',
 	),
+	'default_customer_type'        => array(
+		'title'   => __( 'Default customer type', 'woocommerce-gateway-paysoncheckout' ),
+		'type'    => 'select',
+		'label'   => __( 'Pick wich customer type you want to be the default for your checkout.', 'woocommerce-gateway-paysoncheckout' ),
+		'default' => 'b2c',
+		'options' => array(
+			'b2c' => 'B2C',
+			'b2b' => 'B2B',
+		),
+	),
 	'color_scheme'                 => array(
 		'title'       => __( 'Color Scheme', 'woocommerce-gateway-paysoncheckout' ),
 		'type'        => 'select',

@@ -31,7 +31,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 		// Get order fees.
 		$order_fees = $order->get_fees();
 		foreach ( $order_fees as $fee ) {
-			$formated_order_items[] = $this->get_fee( $fee );
+			$formated_order_items[] = $this->get_fee( $fee, $order );
 		}
 
 		// Get order shipping.
@@ -93,10 +93,16 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 		$tax_items = $order->get_items( 'tax' );
 		foreach ( $tax_items as $tax_item ) {
 			$rate_id = $tax_item->get_rate_id();
-			if ( key( $order_item->get_taxes()['total'] ) === $rate_id ) {
-				return round( WC_Tax::_get_tax_rate( $rate_id )['tax_rate'] / 100, 2 );
+			foreach ( $order_item->get_taxes()['total'] as $key => $value ) {
+				if ( '' !== $value ) {
+					if ( $rate_id === $key ) {
+						return round( WC_Tax::_get_tax_rate( $rate_id )['tax_rate'] / 100, 2 );
+					}
+				}
 			}
 		}
+		// If we get here, there is no tax set for the order item. Return zero.
+		return 0;
 	}
 
 	/**
@@ -105,12 +111,12 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 	 * @param object $fee A WooCommerce Fee.
 	 * @return array
 	 */
-	public function get_fee( $fee ) {
+	public function get_fee( $fee, $order ) {
 		return array(
 			'name'      => $fee->get_name(), // String.
-			'unitPrice' => $fee->get_amount(), // Float.
+			'unitPrice' => $fee->get_amount() + $fee->get_total_tax(), // Float.
 			'quantity'  => 1, // Float.
-			'taxRate'   => array_sum( $fee->get_taxes() ) / $fee->get_amount(), // Float.
+			'taxRate'   => $this->get_product_tax_rate( $order, $fee ), // Float.
 			'reference' => $fee->get_id(), // String.
 		);
 	}
