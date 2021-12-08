@@ -96,17 +96,17 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		// Don't display the payment method if we have an order with to low amount.
 		if ( ! $is_subscription ) { // Not needed for subscriptions.
 			if ( $is_pay_for_order ) { // Check if is pay for order page.
-				if ( $order->get_total() < 4 && 'SEK' === get_woocommerce_currency() ) {
+				if ( $order->get_total() < 10 && 'SEK' === get_woocommerce_currency() ) {
 					return false;
 				}
-				if ( $order->get_total() === 0 && 'EUR' === get_woocommerce_currency() ) {
+				if ( $order->get_total() < 1 && 'EUR' === get_woocommerce_currency() ) {
 					return false;
 				}
 			} else {
-				if ( WC()->cart && WC()->cart->total < 4 && 'SEK' === get_woocommerce_currency() ) {
+				if ( WC()->cart && WC()->cart->total < 10 && 'SEK' === get_woocommerce_currency() ) {
 					return false;
 				}
-				if ( WC()->cart && WC()->cart->total === 0 && 'EUR' === get_woocommerce_currency() ) {
+				if ( WC()->cart && WC()->cart->total < 1 && 'EUR' === get_woocommerce_currency() ) {
 					return false;
 				}
 			}
