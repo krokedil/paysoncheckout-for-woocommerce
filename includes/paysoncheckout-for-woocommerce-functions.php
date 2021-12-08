@@ -102,6 +102,10 @@ function pco_wc_maybe_create_payson_order( $subscription = false ) {
 	// Check if we have a payment id. If we do get the order. Also check if previous session was a subscription or not.
 	if ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription || is_order_received_page() ) {
 		$payson_order = pco_wc_get_order( null, $subscription );
+
+		// Check if the initial selected currency for the order has been changed - if so, force a new checkout session.
+		pco_compare_currencies();
+
 		// Check if Payson order is WP_Error.
 		if ( is_wp_error( $payson_order ) ) {
 			pco_wc_force_new_checkout_session();
@@ -274,4 +278,16 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
 			$order->save();
 		}
 	}
+}
+
+/**
+ * Checks whether the initial currency for the order has remained the same throughout the checkout process.
+ * If the currency changes, a new Payson Checkout session will be forced.
+ *
+ * @return void
+ */
+function pco_compare_currencies() {
+	if ( strtolower( WC()->session->get( 'selected_currency' ) ) !== strtolower( get_woocommerce_currency() ) ) {
+		pco_wc_force_new_checkout_session();
+	};
 }
