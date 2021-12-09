@@ -101,24 +101,23 @@ function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
 function pco_wc_maybe_create_payson_order( $subscription = false ) {
 	// Check if we have a payment id. If we do get the order. Also check if previous session was a subscription or not.
 	if ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription || is_order_received_page() ) {
-		$payson_order = pco_wc_get_order( null, $subscription );
 
 		// Check if the initial selected currency for the order has been changed - if so, force a new checkout session.
 		if ( ! pco_compare_currencies() ) {
 			pco_wc_force_new_checkout_session();
-			return;
+		}
 
-		} else {
-			// Check if Payson order is WP_Error.
-			if ( is_wp_error( $payson_order ) ) {
-				pco_wc_force_new_checkout_session();
-			}
+		$payson_order = pco_wc_get_order( null, $subscription );
 
-			// Check if the order has a valid status and not on confirmation page or thank you page..
-			if ( ! is_order_received_page() && ! pco_check_valid_order_status( $payson_order ) && ! isset( $_GET['pco_confirm'] ) ) {
-				// If not clear session and rerun function to get a new order.
-				pco_wc_force_new_checkout_session();
-			}
+		// Check if Payson order is WP_Error.
+		if ( is_wp_error( $payson_order ) ) {
+			pco_wc_force_new_checkout_session();
+		}
+
+		// Check if the order has a valid status and not on confirmation page or thank you page..
+		if ( ! is_order_received_page() && ! pco_check_valid_order_status( $payson_order ) && ! isset( $_GET['pco_confirm'] ) ) {
+			// If not clear session and rerun function to get a new order.
+			pco_wc_force_new_checkout_session();
 		}
 	} else {
 		// Else create the order and maybe set payment id.
