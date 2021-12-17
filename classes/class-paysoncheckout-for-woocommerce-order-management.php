@@ -151,7 +151,6 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		// If this reservation was already activated, do nothing.
 		if ( get_post_meta( $order_id, '_paysoncheckout_reservation_activated', true ) ) {
 			$order->add_order_note( __( 'Could not activate PaysonCheckout reservation, PaysonCheckout reservation is already activated.', 'woocommerce-gateway-paysoncheckout' ) );
-			$order->set_status( 'on-hold' );
 			$order->save();
 			return;
 		}
