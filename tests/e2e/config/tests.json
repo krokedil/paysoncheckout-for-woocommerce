@@ -1,0 +1,17 @@
+[
+	{
+		"name": "[30] Buy 2 virtual/downloadable products (0% and 25% Tax)",
+		"loggedIn": false,
+		"inclusiveTax": "no",
+		"shippingInIframe": "yes",
+		"products": [
+			"Test Product - (Virtual, Downloadable, 0% Tax, Stock Quantity)",
+			"Test Product - (Virtual, Downloadable, 25% Tax, Stock Quantity)"
+		],
+		"shippingMethod": "",
+		"coupons": "",
+		"customerType": "company",
+		"expectedTotal": 3352.50,
+		"expectedOrderLines": 2
+	}
+]
