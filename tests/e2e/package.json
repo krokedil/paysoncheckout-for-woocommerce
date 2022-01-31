@@ -43,11 +43,8 @@
     "docker:restart": "npm run docker:down && npm run docker:up",
     "jettison": "jest --detectOpenHandles",
     "wp:install": "node ./cli/install.js",
-    "e2e:test": "yarn docker:up && yarn wp:install && yarn jettison && yarn docker:down",
-    
-    
-
-    "e2e:tryout": "yarn docker:up && yarn wp:install && yarn jettison"
+    "e2e:tryout": "yarn docker:up && yarn wp:install && yarn jettison",
+    "e2e:test": "yarn docker:up && yarn wp:install && yarn jettison && yarn docker:down"
 
   },
   "version": "1.0.0"
