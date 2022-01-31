@@ -1,11 +1,11 @@
 import Oauth from "oauth-1.0a";
 import crypto from "crypto";
 import axios from "axios";
-import kcoURLS from "../helpers/urls";
+import pcoURLS from "../helpers/urls";
 
 const consumerKey = "ck_6b26ae8bf280ffe5fd140d793ff14243c56a343a";
 const consumerSecret = "cs_4b7dc229c7f65cf54e5e30c5dc79287c2eae16d2";
-const { API_BASE_URL } = kcoURLS;
+const { API_BASE_URL } = pcoURLS;
 const httpMethods = {
 	get: "GET",
 	post: "POST",

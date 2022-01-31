@@ -1,96 +1,96 @@
 const timeOutTime = 2500;
 
-const setCustomerType = async (page, kcoIframe, customerType) => {
-	if (await kcoIframe.$('[data-cid="am.customer_type"]')) {
-		let inputField = await kcoIframe.$('[data-cid="am.customer_type"]');
+const setCustomerType = async (page, pcoIframe, customerType) => {
+	if (await pcoIframe.$('[data-cid="am.customer_type"]')) {
+		let inputField = await pcoIframe.$('[data-cid="am.customer_type"]');
 		await inputField.click();
 		await page.waitForTimeout(0.1 * timeOutTime);
 		if (customerType === "person") {
-			await kcoIframe.click('[data-cid="row person"]');
-			await kcoIframe.waitForTimeout(1 * timeOutTime);
+			await pcoIframe.click('[data-cid="row person"]');
+			await pcoIframe.waitForTimeout(1 * timeOutTime);
 		} else if (customerType === "company") {
-			await kcoIframe.click('[data-cid="row organization"]');
-			await kcoIframe.waitForTimeout(1 * timeOutTime);
+			await pcoIframe.click('[data-cid="row organization"]');
+			await pcoIframe.waitForTimeout(1 * timeOutTime);
 		}
 	}
 };
 
-const processKcoForm = async (page, kcoIframe, customerType) => {
-	if (await kcoIframe.$("[data-cid='am.postal_code']")) {
-		let inputField = await kcoIframe.$("[data-cid='am.postal_code']");
+const processPcoForm = async (page, pcoIframe, customerType) => {
+	if (await pcoIframe.$("[data-cid='am.postal_code']")) {
+		let inputField = await pcoIframe.$("[data-cid='am.postal_code']");
 		await inputField.click({ clickCount: 3 });
 		await inputField.type("67131");
-		await kcoIframe.waitForTimeout(0.5 * timeOutTime);
+		await pcoIframe.waitForTimeout(0.5 * timeOutTime);
 	}
 
 	if (customerType === "company") {
-		if (await kcoIframe.$("[data-cid='am.organization_registration_id']")) {
-			let inputField = await kcoIframe.$(
+		if (await pcoIframe.$("[data-cid='am.organization_registration_id']")) {
+			let inputField = await pcoIframe.$(
 				"[data-cid='am.organization_registration_id']"
 			);
 			await inputField.click({ clickCount: 3 });
 			await inputField.type("002031-0132");
-			await kcoIframe.waitForTimeout(1 * timeOutTime);
+			await pcoIframe.waitForTimeout(1 * timeOutTime);
 		}
-	} else if (await kcoIframe.$("[data-cid='am.email']")) {
-    let inputField = await kcoIframe.$("[data-cid='am.email']");
+	} else if (await pcoIframe.$("[data-cid='am.email']")) {
+    let inputField = await pcoIframe.$("[data-cid='am.email']");
 		await inputField.click({ clickCount: 3 });
     await inputField.type("e2e@krokedil.se");
-    await kcoIframe.waitForTimeout(1 * timeOutTime);
+    await pcoIframe.waitForTimeout(1 * timeOutTime);
   }
 
-	if (await kcoIframe.$("[data-cid='am.continue_button']")) {
-		await kcoIframe.click('[data-cid="am.continue_button"]');
+	if (await pcoIframe.$("[data-cid='am.continue_button']")) {
+		await pcoIframe.click('[data-cid="am.continue_button"]');
 	}
 
 	await page.waitForTimeout(0.5 * timeOutTime);
 
 	if (customerType === "company") {
-		if (await kcoIframe.$("[data-cid='am.email']")) {
-			let inputField = await kcoIframe.$("[data-cid='am.email']");
+		if (await pcoIframe.$("[data-cid='am.email']")) {
+			let inputField = await pcoIframe.$("[data-cid='am.email']");
 			await inputField.click({ clickCount: 3 });
 			await inputField.type("e2e@krokedil.se");
 		}
 
-		if (await kcoIframe.$("[data-cid='am.organization_name']")) {
-			let inputField = await kcoIframe.$("[data-cid='am.organization_name']");
+		if (await pcoIframe.$("[data-cid='am.organization_name']")) {
+			let inputField = await pcoIframe.$("[data-cid='am.organization_name']");
 			await inputField.click({ clickCount: 3 });
 			await inputField.type("Krokedil");
 		}
 	}
 
-	if (await kcoIframe.$("[data-cid='am.given_name']")) {
-		let inputField = await kcoIframe.$("[data-cid='am.given_name']");
+	if (await pcoIframe.$("[data-cid='am.given_name']")) {
+		let inputField = await pcoIframe.$("[data-cid='am.given_name']");
 		await inputField.click({ clickCount: 3 });
 		await inputField.type("Test");
 	}
 
-	if (await kcoIframe.$("[data-cid='am.family_name']")) {
-		let inputField = await kcoIframe.$("[data-cid='am.family_name']");
+	if (await pcoIframe.$("[data-cid='am.family_name']")) {
+		let inputField = await pcoIframe.$("[data-cid='am.family_name']");
 		await inputField.click({ clickCount: 3 });
 		await inputField.type("Testsson");
 	}
 
-	if (await kcoIframe.$("[data-cid='am.street_address']")) {
-		let inputField = await kcoIframe.$("[data-cid='am.street_address']");
+	if (await pcoIframe.$("[data-cid='am.street_address']")) {
+		let inputField = await pcoIframe.$("[data-cid='am.street_address']");
 		await inputField.click({ clickCount: 3 });
 		await inputField.type("Hamngatan 2");
 	}
 
-	if (await kcoIframe.$("[data-cid='am.city']")) {
-		let inputField = await kcoIframe.$("[data-cid='am.city']");
+	if (await pcoIframe.$("[data-cid='am.city']")) {
+		let inputField = await pcoIframe.$("[data-cid='am.city']");
 		await inputField.click({ clickCount: 3 });
 		await inputField.type("Arvika");
 	}
 
-	if (await kcoIframe.$("[data-cid='am.phone']")) {
-		let inputField = await kcoIframe.$("[data-cid='am.phone']");
+	if (await pcoIframe.$("[data-cid='am.phone']")) {
+		let inputField = await pcoIframe.$("[data-cid='am.phone']");
 		await inputField.click({ clickCount: 3 });
 		await inputField.type("0701234567");
 	}
 
-	if (await kcoIframe.$("[data-cid='am.continue_button']")) {
-		await kcoIframe.click('[data-cid="am.continue_button"]');
+	if (await pcoIframe.$("[data-cid='am.continue_button']")) {
+		await pcoIframe.click('[data-cid="am.continue_button"]');
 	}
 
 	await page.waitForTimeout(3.5 * timeOutTime);
@@ -98,12 +98,12 @@ const processKcoForm = async (page, kcoIframe, customerType) => {
 
 const processShipping = async (
 	page,
-	kcoIframe,
+	pcoIframe,
 	shippingMethod,
 	shippingInIframe
 ) => {
 	if (shippingInIframe === "yes") {
-		let shippingSelection = await kcoIframe.$$(
+		let shippingSelection = await pcoIframe.$$(
 			'[data-cid="SHIPMO-shipping-option-basic"]'
 		);
 
@@ -123,9 +123,9 @@ const processShipping = async (
 	}
 };
 
-const completeOrder = async (page, kcoIframe) => {
-	if (await kcoIframe.$("[data-cid='button.buy_button']")) {
-		await kcoIframe.click('[data-cid="button.buy_button"]');
+const completeOrder = async (page, pcoIframe) => {
+	if (await pcoIframe.$("[data-cid='button.buy_button']")) {
+		await pcoIframe.click('[data-cid="button.buy_button"]');
 	}
 
 	await page.waitForTimeout(4 * timeOutTime);
