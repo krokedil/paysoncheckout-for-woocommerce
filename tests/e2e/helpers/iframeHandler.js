@@ -218,7 +218,7 @@ const getOrderData = async (thankyouIframe) => {
 
 export default {
 	setCustomerType,
-	processKcoForm,
+	processPcoForm,
 	processShipping,
 	completeOrder,
 	getOrderData,
