@@ -30,6 +30,7 @@ let json = data;
 describe("Payson Checkout E2E tests", () => {
     beforeAll(async () => {
         try {
+
             json = await setup.setupStore(json);
 
             await utils.setOptions();
@@ -80,7 +81,7 @@ describe("Payson Checkout E2E tests", () => {
 
                 // Fill out Customer form.
                 await frame.type("input[id='PersonLookupEmail']", "test@krokedil.com");
-                await frame.type("input[id='PersonIdentityNumber']" , "");
+                await frame.type("input[id='PersonIdentityNumber']" , "4605092222");
                 await frame.type("input[id='PersonLookupPostalCode']" , "99999");
                 await frame.type("input[id='PersonLookupMandatoryPhoneNumber']" , "0720000000");
 
@@ -94,11 +95,15 @@ describe("Payson Checkout E2E tests", () => {
                 await page.waitForTimeout( timeOutTime);
                 await frame.click("button[id='SubmitComplete']");
                 
+            } catch(e) {
+                console.log("Error placing order", e)
+            }
 
-                // --------------- THANK YOU SNIPPET --------------- //
+			// --------------- POST PURCHASE CHECKS --------------- //
+
                 await page.waitForTimeout(3 * timeOutTime);
                 const value = await page.$eval(".entry-title", (e) => e.textContent);
-                expect(value).toBe("XOrdXer recXeived");
+                expect(value).toBe("Order received");
                 await page.waitForTimeout(3 * timeOutTime);
 
                 const elementHandleThankYou = await page.waitForSelector('iframe[id="paysonIframe"]');
@@ -107,20 +112,7 @@ describe("Payson Checkout E2E tests", () => {
                 const paysonTotal = await frameThankYou.$eval('#Amount', (e) => e.textContent);
                 const paysonTotalAsNumber = parseFloat(paysonTotal.replace(/\s/g, '').replace('SEK', '').replace(',', '.'));
 
-                console.log('Payson Total : ------- 1');
-                console.log(paysonTotal);
-
-                console.log('Payson Total As number: ------- 2');
-                console.log(paysonTotalAsNumber);
-
-                console.log('ARGS Total -----------3');
-                console.log (args.expectedTotal)
-
-                expect("-10").toBe(args.expectedTotal);
-
-            } catch(e) {
-                console.log("Error placing order", e)
-            }
+                expect(paysonTotalAsNumber).toBe(args.expectedTotal);
 
         }, 190000);
 });
