@@ -132,7 +132,7 @@ const completeOrder = async (page, kcoIframe) => {
 
 	const fullscreenIframe = await page
 		.frames()
-		.find((frame) => frame.name() === "klarna-fullscreen-iframe");
+		.find((frame) => frame.name() === "payson-fullscreen-iframe");
 
 	// Check if we have a fullscreenIframe. We might not, since the above step might have already completed the order in some cases.
 	if (fullscreenIframe) {
