@@ -81,15 +81,8 @@ describe("Payson Checkout E2E tests", () => {
                 const elementHandle = await page.waitForSelector('iframe[id="paysonIframe"]');
                 const frame = await elementHandle.contentFrame();
 
-
-
                 // Fill out Customer form.
-
-                await frame.$eval('#PersonLookupEmail', el => el.value = '')
-                await frame.$eval('#PersonIdentityNumber', el => el.value = '')
-                await frame.$eval('#PersonLookupPostalCode', el => el.value = '')
-                await frame.$eval('#PersonLookupMandatoryPhoneNumber', el => el.value = '')
-
+                await iframeHandler.clearCheckoutFields(page);
                 await page.waitForTimeout(timeOutTime / 25);
 
                 await frame.type("input[id='PersonLookupEmail']", "test@krokedil.com");
@@ -106,8 +99,6 @@ describe("Payson Checkout E2E tests", () => {
                 await frame.click("div[id='invoicePaymentSelector']");
                 await page.waitForTimeout( timeOutTime);
                 await frame.click("button[id='SubmitComplete']");
-
-
 
             } catch(e) {
                 console.log("Error placing order", e)
