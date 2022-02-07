@@ -190,9 +190,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean Did the refund process go through or not?
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-
 		return PCO_WC()->order_management->refund_payment( $order_id );
-
 	}
 
 	/**

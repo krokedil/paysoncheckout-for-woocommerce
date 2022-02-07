@@ -233,7 +233,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 					$continue = false;
 					foreach ( $refund_order->get_items() as $refund_item ) {
 						$product = $refund_item->get_product();
-						if ( $product->get_sku() === $payson_item['reference'] ) {
+						if ( $product->get_sku() === $payson_item['reference'] || (string) $product->get_id() === $payson_item['reference'] ) {
 							$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_item->get_total() + $refund_item->get_total_tax() );
 							$payson_order_tmp['order']['items'][ $key ] = $payson_item;
 							$continue                                   = true;
