@@ -34,6 +34,10 @@ class PaysonCheckout_For_WooCommerce_Logger {
 			}
 			self::$log->add( 'paysoncheckout', wp_json_encode( $message ) );
 		}
+
+		if ( isset( $data['response']['code'] ) && ( $data['response']['code'] < 200 || $data['response']['code'] > 299 ) ) {
+			self::log_to_db( $data );
+		}
 	}
 
 	/**
@@ -63,7 +67,7 @@ class PaysonCheckout_For_WooCommerce_Logger {
 	 * @return array
 	 */
 	public static function format_log( $payment_id, $method, $title, $request_args, $response, $code ) {
-		// Unset the snippet to prevent issues in the response.
+		// Unset the snipp et to prevent issues in the response.
 		if ( isset( $response['snippet'] ) ) {
 			unset( $response['snippet'] );
 		}
@@ -88,5 +92,23 @@ class PaysonCheckout_For_WooCommerce_Logger {
 			'timestamp'      => date( 'Y-m-d H:i:s' ),
 			'plugin_version' => PAYSONCHECKOUT_VERSION,
 		);
+	}
+
+	/**
+	 * Logs an event in the WP DB.
+	 *
+	 * @param array $data The data to be logged.
+	 */
+	public static function log_to_db( $data ) {
+		$logs = get_option( 'krokedil_debuglog_payson', array() );
+
+		if ( ! empty( $logs ) ) {
+			$logs = json_decode( $logs );
+		}
+
+		$logs   = array_slice( $logs, -14 );
+		$logs[] = $data;
+		$logs   = wp_json_encode( $logs );
+		update_option( 'krokedil_debuglog_payson', $logs );
 	}
 }

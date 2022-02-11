@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.8.0
+Tested up to: 5.9.0
 Requires PHP: 7.0
-WC requires at least: 4.0
-WC tested up to: 5.7.0
+WC requires at least: 4.0.0
+WC tested up to: 6.2.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,13 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2022.02.11    - version 3.3.0 =
+* Feature       - We will now save the last 15 requests to Payson that had an API error and display them on the WooCommerce status page. This should help with getting error messages when you need to debug issues without going through the logs. These will also be in the status report that you can send to us for support tickets.
+* Tweak         - Bumped required PHP version to 7.0.
+* Tweak			- Minimum order/cart amount to make PaysonCheckout available in checkout is now 10 SEK or 1 EUR.
+* Fix			- Improved control in detecting when requested refunds don't match up with what is actually refunded.
+* Fix			- Do not set WooCommerce order status to On hold in capture request if order has already been captured (in situations when capture has been done in Payson backoffice).
+
 = 2021.09.22    - version 3.2.3 =
 * Fix           - Fixed an issue with subscriptions not being placed correctly in some cases.
 
