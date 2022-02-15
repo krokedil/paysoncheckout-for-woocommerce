@@ -47,6 +47,7 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 			$text          = __( 'Payson API Error on make recurring payment: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 			$formated_text = sprintf( $text, $code, $message );
 			$renewal_order->add_order_note( $formated_text );
+
 			foreach ( $subscriptions as $subscription ) {
 				$subscription->payment_failed();
 			}

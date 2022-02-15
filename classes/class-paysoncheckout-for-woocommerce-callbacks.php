@@ -160,7 +160,13 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 				$order->payment_complete( $payment_id );
 			}
 			$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
+
+			if ( empty( $subscriptions ) ) {
+				PaysonCheckout_For_WooCommerce_Logger::log( "No Subscriptions found for the renewal order: {$order->get_id()}. Payson order id: {$payson_order['id']}" );
+			}
+
 			foreach ( $subscriptions as $subscription ) {
+				PaysonCheckout_For_WooCommerce_Logger::log( "Triggering payment complete for subscription: {$subscription->get_id()}. Payson order id: {$payson_order['id']}" );
 				$subscription->payment_complete( $payson_order['purchaseId'] );
 			}
 		} elseif ( 'denied' === $payson_order['status'] ) {
@@ -168,6 +174,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			$order->add_order_note( sprintf( __( 'Subscription payment denied by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
 			$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
 			foreach ( $subscriptions as $subscription ) {
+				PaysonCheckout_For_WooCommerce_Logger::log( "Triggering payment failed for subscription: {$subscription->get_id()}. Payson order id: {$payson_order['id']}" );
 				$subscription->payment_failed();
 			}
 		}
