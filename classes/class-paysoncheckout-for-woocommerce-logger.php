@@ -91,7 +91,32 @@ class PaysonCheckout_For_WooCommerce_Logger {
 			),
 			'timestamp'      => date( 'Y-m-d H:i:s' ),
 			'plugin_version' => PAYSONCHECKOUT_VERSION,
+			'stacktrace'     => self::get_stack(),
 		);
+	}
+
+	/**
+	 * Gets the stack for the request.
+	 *
+	 * @return array
+	 */
+	public static function get_stack() {
+		$debug_data = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- Data is not used for display.
+		$stack      = array();
+		foreach ( $debug_data as $data ) {
+			$extra_data = '';
+			if ( ! in_array( $data['function'], array( 'get_stack', 'format_log' ), true ) ) {
+				if ( in_array( $data['function'], array( 'do_action', 'apply_filters' ), true ) ) {
+					if ( isset( $data['object'] ) ) {
+						$priority   = $data['object']->current_priority();
+						$name       = key( $data['object']->current() );
+						$extra_data = $name . ' : ' . $priority;
+					}
+				}
+			}
+			$stack[] = $data['function'] . $extra_data;
+		}
+		return $stack;
 	}
 
 	/**
