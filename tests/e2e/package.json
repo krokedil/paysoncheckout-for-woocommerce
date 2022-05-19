@@ -1,0 +1,51 @@
+{
+  "author": "Miodrag Stojanovic <miodrag@krokedil.se>",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "axios-debug-log": "^0.8.4",
+    "crypto-js": "^4.0.0",
+    "dotenv": "^10.0.0",
+    "jest": "27.0.6",
+    "oauth-1.0a": "^2.2.6",
+    "puppeteer": "10.1.0",
+    "wait-on": "6.0.0"
+
+  },
+  "description": "Payson Checkout E2E",
+  "devDependencies": {
+    "@babel/cli": "7.16.7",
+    "@babel/core": "7.16.7",
+    "@babel/plugin-transform-runtime": "7.16.7",
+    "@babel/plugin-syntax-optional-chaining": "7.8.3",
+    "@babel/preset-env": "7.16.7",
+    "@babel/register": "7.16.7",
+    "@babel/runtime": "7.16.7",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "27.4.6",
+    "chalk": "^5.0.0",
+    "eslint": "7.32.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-prettier": "3.4.1",
+    "husky": "6.0.0",
+    "lint-staged": "10.5.4",
+    "prettier": "2.5.1",
+    "pretty-quick": "3.1.3"
+
+  },
+  "license": "GPL-3.0+",
+  "scripts": {
+    "lint": "npx eslint --ext .js ./tests --fix",
+    "test": "jest",
+    "docker:up": "docker-compose up -d --build",
+    "docker:down": "docker-compose down -v",
+    "docker:restart": "npm run docker:down && npm run docker:up",
+    "jettison": "jest --detectOpenHandles",
+    "wp:install": "node ./cli/install.js",
+    "e2e:tryout": "yarn docker:up && yarn wp:install && yarn jettison",
+    "e2e:test": "yarn docker:up && yarn wp:install && yarn jettison && yarn docker:down"
+
+  },
+  "version": "1.0.0"
+}
