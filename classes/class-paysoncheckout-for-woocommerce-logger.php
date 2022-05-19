@@ -134,6 +134,6 @@ class PaysonCheckout_For_WooCommerce_Logger {
 		$logs   = array_slice( $logs, -14 );
 		$logs[] = $data;
 		$logs   = wp_json_encode( $logs );
-		update_option( 'krokedil_debuglog_payson', $logs );
+		update_option( 'krokedil_debuglog_payson', $logs, false );
 	}
 }
