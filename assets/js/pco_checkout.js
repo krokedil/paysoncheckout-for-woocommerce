@@ -216,6 +216,10 @@ jQuery(function($) {
 							window.location.reload();
 						}
 
+						if(result.success && result.data.currenciesChanged){
+							window.location.reload();
+						}
+
 						// Set address data if we have it.
 						if( result.data.address !== null ) {
 							pco_wc.addressData = result.data.address;
@@ -345,8 +349,8 @@ jQuery(function($) {
 		 * Locks the iFrame. 
 		 */
 		pcoFreeze: function() {
-			let iframe = document.getElementById('paysonIframe');
-			iframe.contentWindow.postMessage('lock', '*');
+				let iframe = document.getElementById('paysonIframe');
+				iframe.contentWindow.postMessage('lock', '*');
 		},
 
 		/*
@@ -462,7 +466,7 @@ jQuery(function($) {
 			// Check if payson is the selected payment method before we do anything.
 			if( pco_wc.checkIfPaysonSelected() ) {
 				$(document).ready( pco_wc.documentReady() );
-				
+
 				// Update Checkout.
 				pco_wc.bodyEl.on('update_checkout', pco_wc.pcoFreeze );
 				// Updated Checkout.

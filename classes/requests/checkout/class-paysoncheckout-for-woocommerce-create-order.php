@@ -49,6 +49,10 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 	 * @return array
 	 */
 	public function get_body( $order_id ) {
+
+		// Store the initial currency.
+		WC()->session->set( 'pco_selected_currency', get_woocommerce_currency() );
+
 		return array(
 			'merchant' => PCO_WC()->merchant_urls->get_merchant_urls( $order_id ),
 			'customer' => PCO_WC()->customer->get_customer_data(),
