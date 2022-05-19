@@ -97,10 +97,18 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 	 * Update the Payson order.
 	 */
 	public static function pco_wc_update_checkout() {
-		
+
 		if ( ! wp_verify_nonce( $_POST['nonce'], 'pco_wc_update_checkout' ) ) { // phpcs: ignore.
 			wp_send_json_error( 'bad_nonce' );
 			exit;
+		}
+
+		if ( ! pco_compare_currencies() ) {
+			wp_send_json_success(
+				array(
+					'currenciesChanged' => 'currenciesChanged',
+				)
+			);
 		}
 
 		$subscription = ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) ? true : false;
@@ -182,7 +190,7 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		// Get the payson order.
 		$subscription = ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) ? true : false;
 
-		$payson_order = ( $subscription ) ? PCO_WC()->get_recurring_order->request( WC()->session->get( 'payson_payment_id' ) ) : PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );		
+		$payson_order = ( $subscription ) ? PCO_WC()->get_recurring_order->request( WC()->session->get( 'payson_payment_id' ) ) : PCO_WC()->get_order->request( WC()->session->get( 'payson_payment_id' ) );
 		if ( is_wp_error( $payson_order ) ) {
 			// If error return error message.
 			$code          = $payson_order->get_error_code();
@@ -194,10 +202,9 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		}
 
 		// Add - as last name if its missing. Happens when its a B2B purchase.
-		if( empty( $payson_order['customer']['lastName'] ) ) {
+		if ( empty( $payson_order['customer']['lastName'] ) ) {
 			$payson_order['customer']['lastName'] = '-';
 		}
-
 
 		wp_send_json_success( $payson_order );
 		wp_die();
