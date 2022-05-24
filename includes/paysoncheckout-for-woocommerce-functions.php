@@ -101,11 +101,49 @@ function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
 function pco_wc_maybe_create_payson_order( $subscription = false ) {
 	// Check if we have a payment id. If we do get the order. Also check if previous session was a subscription or not.
 	if ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription || is_order_received_page() ) {
+
+		// Check if the initial selected currency for the order has been changed - if so, force a new checkout session.
+		if ( ! pco_compare_currencies() ) {
+			pco_wc_force_new_checkout_session();
+		}
+
 		$payson_order = pco_wc_get_order( null, $subscription );
+
 		// Check if Payson order is WP_Error.
 		if ( is_wp_error( $payson_order ) ) {
 			pco_wc_force_new_checkout_session();
 		}
+
+		/* The order might have already been completed, but the customer was not redirected to the confirmation page. */
+		if ( 'readyToShip' === $payson_order['status'] ) {
+			$order = wc_get_orders(
+				array(
+					'payment_method' => 'paysoncheckout',
+					'meta_key'       => '_payson_checkout_id',
+					'meta_value'     => WC()->session->get( 'payson_payment_id' ),
+					'meta_compare'   => '=',
+					'limit'          => 1,
+				),
+			);
+
+			if ( count( $order ) > 0 ) {
+
+				wp_safe_redirect(
+					add_query_arg(
+						array(
+							'key'          => $order[0]->get_order_key(),
+							'pco_confirm'  => 'yes',
+							'pco_order_id' => WC()->session->get( 'payson_payment_id' ),
+						),
+						$order[0]->get_checkout_order_received_url()
+					)
+				);
+
+				pco_confirm_payson_order( WC()->session->get( 'payson_payment_id' ), $order[0]->get_id() );
+				exit;
+			}
+		}
+
 		// Check if the order has a valid status and not on confirmation page or thank you page..
 		if ( ! is_order_received_page() && ! pco_check_valid_order_status( $payson_order ) && ! isset( $_GET['pco_confirm'] ) ) {
 			// If not clear session and rerun function to get a new order.
@@ -274,4 +312,17 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
 			$order->save();
 		}
 	}
+}
+
+/**
+ * Checks whether the initial currency for the order has remained the same throughout the checkout process.
+ * If the currency changes, a new Payson Checkout session will be forced.
+ *
+ * @return void
+ */
+function pco_compare_currencies() {
+	if ( strtolower( WC()->session->get( 'pco_selected_currency' ) ) !== strtolower( get_woocommerce_currency() ) ) {
+		return false;
+	}
+	return true;
 }

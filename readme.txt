@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.9.0
+Tested up to: 5.9.3
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 6.2.0
+WC tested up to: 6.5.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,12 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2022.05.24    - version 3.4.0 =
+* Fix           - Fixed an issue where customer could not change the payment method of an existing subscription to Payson.
+* Enhancement   - Added stacktrace to log for troubleshooting purposes.
+* Tweak         - Log data is no longer autoloaded, only when needed.
+* Tweak         - A new Payson checkout session is created when the currency is changed.
+
 = 2022.02.11    - version 3.3.0 =
 * Feature       - We will now save the last 15 requests to Payson that had an API error and display them on the WooCommerce status page. This should help with getting error messages when you need to debug issues without going through the logs. These will also be in the status report that you can send to us for support tickets.
 * Tweak         - Bumped required PHP version to 7.0.
