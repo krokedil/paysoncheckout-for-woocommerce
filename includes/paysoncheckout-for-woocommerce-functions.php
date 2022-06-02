@@ -112,6 +112,7 @@ function pco_wc_maybe_create_payson_order( $subscription = false ) {
 		// Check if Payson order is WP_Error.
 		if ( is_wp_error( $payson_order ) ) {
 			pco_wc_force_new_checkout_session();
+			return $payson_order;
 		}
 
 		/* The order might have already been completed, but the customer was not redirected to the confirmation page. */
