@@ -321,7 +321,8 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
  * @return void
  */
 function pco_compare_currencies() {
-	if ( strtolower( WC()->session->get( 'pco_selected_currency' ) ) !== strtolower( get_woocommerce_currency() ) ) {
+	$currency = WC()->session->get( 'pco_selected_currency' );
+	if ( ! empty( $currency ) && strtolower( $currency ) !== strtolower( get_woocommerce_currency() ) ) {
 		return false;
 	}
 	return true;
