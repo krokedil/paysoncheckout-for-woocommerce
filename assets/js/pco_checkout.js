@@ -66,7 +66,9 @@ jQuery(function($) {
 				complete: function(data) {
 					// Set address data.
 					pco_wc.addressData = address;
-					pco_wc.setAddressData();
+					if (pco_wc.addressData !== null) {
+						pco_wc.setAddressData();
+					}
 				}
 			});
 		},
