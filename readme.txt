@@ -2,7 +2,7 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 5.9.3
+Tested up to: 6.0
 Requires PHP: 7.0
 WC requires at least: 4.0.0
 WC tested up to: 6.5.1
@@ -37,6 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2022.06.08    - version 3.4.1 =
+* Fix           - Fixed an issue that would cause the order review to update indefinitely if the cart contained a subscription product.
+* Fix           - Fixed a fatal error that some sometimes happen when a checkout session is reinitialized.
+
 = 2022.05.24    - version 3.4.0 =
 * Fix           - Fixed an issue where customer could not change the payment method of an existing subscription to Payson.
 * Enhancement   - Added stacktrace to log for troubleshooting purposes.
