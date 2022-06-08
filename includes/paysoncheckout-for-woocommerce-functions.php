@@ -112,6 +112,7 @@ function pco_wc_maybe_create_payson_order( $subscription = false ) {
 		// Check if Payson order is WP_Error.
 		if ( is_wp_error( $payson_order ) ) {
 			pco_wc_force_new_checkout_session();
+			return $payson_order;
 		}
 
 		/* The order might have already been completed, but the customer was not redirected to the confirmation page. */
@@ -321,7 +322,8 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
  * @return void
  */
 function pco_compare_currencies() {
-	if ( strtolower( WC()->session->get( 'pco_selected_currency' ) ) !== strtolower( get_woocommerce_currency() ) ) {
+	$currency = WC()->session->get( 'pco_selected_currency' );
+	if ( ! empty( $currency ) && strtolower( $currency ) !== strtolower( get_woocommerce_currency() ) ) {
 		return false;
 	}
 	return true;

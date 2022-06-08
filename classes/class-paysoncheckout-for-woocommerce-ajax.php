@@ -90,7 +90,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		WC()->cart->calculate_totals();
 
 		wp_send_json_success();
-		wp_die();
 	}
 
 	/**
@@ -119,7 +118,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 					'refreshZeroAmount' => 'refreshZeroAmount',
 				)
 			);
-			wp_die();
 		}
 
 		// Get the payson order.
@@ -131,7 +129,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			$text          = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 			$formated_text = sprintf( $text, $code, $message );
 			wp_send_json_error( $formated_text );
-			wp_die();
 		}
 		// Get needed variables from the payson order.
 		$payson_data = array(
@@ -152,7 +149,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			$text          = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 			$formated_text = sprintf( $text, $code, $message );
 			wp_send_json_error( $formated_text );
-			wp_die();
 		}
 
 		// If update order returned false, then we did not need to update the order so we need to use the tmp order from the get.
@@ -173,7 +169,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 				'pco_nonce' => wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce', true, false ),
 			)
 		);
-		wp_die();
 	}
 
 	/**
@@ -198,7 +193,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			$text          = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 			$formated_text = sprintf( $text, $code, $message );
 			wp_send_json_error( $formated_text );
-			wp_die();
 		}
 
 		// Add - as last name if its missing. Happens when its a B2B purchase.
@@ -207,7 +201,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		}
 
 		wp_send_json_success( $payson_order );
-		wp_die();
 	}
 
 	/**
@@ -241,7 +234,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 				'redirect' => $redirect,
 			);
 			wp_send_json_success( $data );
-			wp_die();
 		} else { // Handle checkout page switch payment method.
 			if ( 'false' === $_POST['pco'] ) {
 				// Set chosen payment method to first gateway that is not PaysonCheckout for WooCommerce.
@@ -262,7 +254,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 				'redirect' => $redirect,
 			);
 			wp_send_json_success( $data );
-			wp_die();
 		}
 	}
 
@@ -282,7 +273,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		$message           = "Frontend JS $payson_payment_id: $posted_message";
 		PaysonCheckout_For_WooCommerce_Logger::log( $message );
 		wp_send_json_success();
-		wp_die();
 	}
 }
 PaysonCheckout_For_WooCommerce_AJAX::init();
