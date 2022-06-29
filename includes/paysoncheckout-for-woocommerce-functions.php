@@ -124,7 +124,7 @@ function pco_wc_maybe_create_payson_order( $subscription = false ) {
 					'meta_value'     => WC()->session->get( 'payson_payment_id' ),
 					'meta_compare'   => '=',
 					'limit'          => 1,
-				),
+				)
 			);
 
 			if ( count( $order ) > 0 ) {

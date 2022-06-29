@@ -5,7 +5,7 @@ Requires at least: 4.5
 Tested up to: 6.0
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 6.5.1
+WC tested up to: 6.7.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2022.06.29    - version 3.4.2 =
+* Fix           - Fixed an issue that would cause a critical error on versions of PHP older than 7.3. The WooCommerce team [strongly recommends](https://woocommerce.com/document/update-php-wordpress/) upgrading to PHP 7.4 for better performance and security.
+
 = 2022.06.08    - version 3.4.1 =
 * Fix           - Fixed an issue that would cause the order review to update indefinitely if the cart contained a subscription product.
 * Fix           - Fixed a fatal error that some sometimes happen when a checkout session is reinitialized.
