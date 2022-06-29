@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2022.06.29    - version 3.4.2 =
+* Fix           - Fixed an issue that would cause a critical error on versions of PHP older than 7.3. The WooCommerce team [strongly recommends](https://woocommerce.com/document/update-php-wordpress/) upgrading to PHP 7.4 for better performance and security.
+
 = 2022.06.08    - version 3.4.1 =
 * Fix           - Fixed an issue that would cause the order review to update indefinitely if the cart contained a subscription product.
 * Fix           - Fixed a fatal error that some sometimes happen when a checkout session is reinitialized.
