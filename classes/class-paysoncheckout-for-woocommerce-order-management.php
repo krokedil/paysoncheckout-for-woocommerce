@@ -290,7 +290,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return false;
 		}
 
-		$order->add_order_note( __( 'PaysonCheckout reservation was successfully refunded for ', 'woocommerce-gateway-paysoncheckout' ) . wc_price( abs( $refund->get_total() ) ) );
+		$order->add_order_note( __( 'PaysonCheckout reservation was successfully refunded for ', 'woocommerce-gateway-paysoncheckout' ) . wc_price( abs( $refund_total_amount ) ) );
 		return true;
 	}
 
