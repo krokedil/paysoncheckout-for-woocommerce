@@ -210,16 +210,20 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		$subscription = $this->check_if_subscription( $order );
 
 		// Get the Payson order.
-		$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_payment->request( $payment_id ) : PCO_WC()->get_order->request( $payment_id );
+		$payson_order_tmp    = ( $subscription ) ? PCO_WC()->get_recurring_payment->request( $payment_id ) : PCO_WC()->get_order->request( $payment_id );
+		$refund_total_amount = 0.0;
 
 		foreach ( $payson_order_tmp['order']['items'] as $key => $payson_item ) {
 			$continue = false;
 			foreach ( $refund->get_items() as $refund_item ) {
 				$product = $refund_item->get_product();
 				if ( $product->get_sku() === $payson_item['reference'] || (string) $product->get_id() === $payson_item['reference'] ) {
-					$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_item->get_total() + $refund_item->get_total_tax() );
+					$refund_amount                              = $refund_item->get_total() + $refund_item->get_total_tax();
+					$payson_item['creditedAmount']             += $refund_amount;
 					$payson_order_tmp['order']['items'][ $key ] = $payson_item;
 					$continue                                   = true;
+
+					$refund_total_amount += abs( $refund_amount );
 					break;
 				}
 			}
@@ -231,9 +235,12 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$refund_shipping = $refund->get_shipping_method();
 
 			if ( $payson_item['name'] === $refund_shipping ) {
-				$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund->get_shipping_total() + $refund->get_shipping_tax() );
+				$refund_amount                              = $refund->get_shipping_total() + $refund->get_shipping_tax();
+				$payson_item['creditedAmount']             += $refund_amount;
 				$payson_order_tmp['order']['items'][ $key ] = $payson_item;
 				$continue                                   = true;
+
+				$refund_total_amount += abs( $refund_amount );
 				break;
 			}
 
@@ -243,16 +250,28 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 			foreach ( $refund->get_fees() as $refund_fee ) {
 				if ( $payson_item['name'] === $refund_fee->get_name() ) {
-					$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_fee->get_total() + $refund_fee->get_total_tax() );
+					$refund_amount                              = $refund_fee->get_total() + $refund_fee->get_total_tax();
+					$payson_item['creditedAmount']             += $refund_amount;
 					$payson_order_tmp['order']['items'][ $key ] = $payson_item;
 					$continue                                   = true;
+
+					$refund_total_amount += abs( $refund_amount );
 					break;
 				}
 			}
 		}
 
-		$payson_order_tmp['order']['totalCreditedAmount'] = $payson_order_tmp['order']['totalCreditedAmount'] + abs( $refund->get_total() );
-		$payson_order                                     = PCO_WC()->refund_order->request( $order_id, $payson_order_tmp, $payment_id, $subscription );
+		/*
+		 The $refund->get_total() cannot be used for refunding negative amount (e.g., -40) since WC will add the amount to refund, yielding a total less than
+		what the merchant intended to refund if they used a negative amount. We must therefore add the absolute value of all amounts to get the total amount to credit . */
+		$payson_order_tmp['order']['totalCreditedAmount'] += $refund_total_amount;
+
+		/* We should only calculate the absolute value _after_ we've added all the credited amount this is to support negative refund amount. E.g., 99.99 + (-40) != 99.99 + abs(-40). */
+		foreach ( $payson_order_tmp['order']['items'] as $key => $item ) {
+			$payson_order_tmp['order']['items'][ $key ]['creditedAmount'] = abs( $item['creditedAmount'] );
+		}
+
+		$payson_order = PCO_WC()->refund_order->request( $order_id, $payson_order_tmp, $payment_id, $subscription );
 
 		if ( is_wp_error( $payson_order ) ) {
 			// If error, save error message and return false.
