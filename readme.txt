@@ -37,6 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2022.08.08    - version 3.4.3 =
+* Fix           - Fixed the login button on the checkout page sometimes being displaced.
+* Tweak         - If the WC and Payson total amount differs, the customer will be notified about this.
+
 = 2022.06.29    - version 3.4.2 =
 * Fix           - Fixed an issue that would cause a critical error on versions of PHP older than 7.3. The WooCommerce team [strongly recommends](https://woocommerce.com/document/update-php-wordpress/) upgrading to PHP 7.4 for better performance and security.
 
