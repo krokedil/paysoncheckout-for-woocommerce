@@ -178,6 +178,16 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$payson_order = pco_wc_get_order( $payment_id );
 		$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
 		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+
+		$order        = wc_get_order( $order_id );
+		$total_amount = $payson_order['order']['totalPriceIncludingTax']; // Uses the same "major units" similar to WC_Order->get_total().
+
+		if ( abs( $total_amount - $order->get_total() ) > 3 ) {
+			$message = __( 'It seems like the WooCommerce and Payson total amount differs. Please, try again.', 'woocommerce-gateway-paysoncheckout' );
+			wc_add_notice( $message, 'error' );
+			return new WP_Error( $message );
+		}
+
 		return $payson_order;
 	}
 
