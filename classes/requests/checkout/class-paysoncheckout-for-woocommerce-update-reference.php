@@ -37,14 +37,14 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 			return $payson_data;
 		}
 
-		$response          = wp_remote_request( $request_url, $request_args );
-		$code              = wp_remote_retrieve_response_code( $response );
-		$formated_response = $this->process_response( $response, $request_args, $request_url );
+		$response           = wp_remote_request( $request_url, $request_args );
+		$code               = wp_remote_retrieve_response_code( $response );
+		$formatted_response = $this->process_response( $response, $request_args, $request_url );
 
 		// Log the request.
 		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update reference request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
-		return $formated_response;
+		return $formatted_response;
 	}
 
 	/**
