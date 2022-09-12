@@ -96,20 +96,6 @@ class PaysonCheckout_For_WooCommerce_Logger {
 	}
 
 	/**
-	 * Formats the log data to be logged.
-	 *
-	 * @param string $payment_id The Payson Payment ID.
-	 * @param string $method The method.
-	 * @param string $title The title for the log.
-	 * @param array  $request_args The request args.
-	 * @param array  $response The response.
-	 * @param string $code The status code.
-	 * @return array
-	 */
-	public static function format_error( $payment_id, $method, $title, $request_args, $response, $code ) {
-
-	}
-	/**
 	 * Gets the stack for the request.
 	 *
 	 * @return array
