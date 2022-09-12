@@ -18,10 +18,10 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 	 *
 	 * @param string|null $order_id The WooCommerce order id.
 	 * @param array       $payson_data The Payson order data.
-	 * @return array
+	 * @return array|WP_Error|false If the request could not be issued, FALSE is returned. Otherwise, WP_Error or an array.
 	 */
 	public function request( $order_id = null, $payson_data = null ) {
-		$payment_id   = null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ? WC()->session->get( 'payson_payment_id' ) : $payson_data['id'];
+		$payment_id   = WC()->session->get( 'payson_payment_id', null ) ?? WC()->session->get( 'payson_payment_id' ) ?? $payson_data['id'] ?? null;
 		$request_url  = $this->enviroment . 'Checkouts/' . $payment_id;
 		$request_args = apply_filters( 'pco_update_order_args', $this->get_request_args( $order_id, $payson_data ) );
 		if ( null !== WC()->session ) {
@@ -29,6 +29,14 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 				return false;
 			}
 		}
+
+		// If the PID is missing, and we have an WP_Error, an internal server error has most likely happened.
+		if ( empty( $payment_id ) && is_wp_error( $payson_data ) ) {
+			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update reference request.', $request_args, json_encode( $payson_data, true ), 500 );
+			PaysonCheckout_For_WooCommerce_Logger::log( $log );
+			return $payson_data;
+		}
+
 		$response          = wp_remote_request( $request_url, $request_args );
 		$code              = wp_remote_retrieve_response_code( $response );
 		$formated_response = $this->process_response( $response, $request_args, $request_url );
