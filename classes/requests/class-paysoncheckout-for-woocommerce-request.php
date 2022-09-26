@@ -42,14 +42,14 @@ class PaysonCheckout_For_WooCommerce_Request {
 	 * @return void
 	 */
 	public function set_enviroment() {
-		$live_enviroment = 'https://api.payson.se/2.0/';
-		$test_enviroment = 'https://test-api.payson.se/2.0/';
 		$payson_settings = get_option( 'woocommerce_paysoncheckout_settings' );
 
-		if ( 'no' === $payson_settings['testmode'] ) {
-			$this->enviroment = 'https://api.payson.se/2.0/';
-		} else {
-			$this->enviroment = 'https://test-api.payson.se/2.0/';
+		if ( ! empty( $payson_settings ) ) {
+			if ( 'no' === $payson_settings['testmode'] ) {
+				$this->enviroment = 'https://api.payson.se/2.0/';
+			} else {
+				$this->enviroment = 'https://test-api.payson.se/2.0/';
+			}
 		}
 	}
 
