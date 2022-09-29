@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 6.0
+Tested up to: 6.0.2
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 6.7.0
+WC tested up to: 6.9.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2022.09.29    - version 3.4.4 =
+* Fix           - Fixed a syntax error that causes a crash.
+* Tweak         - Verify that the Payson settings are properly loaded before modifying them.
+
 = 2022.08.08    - version 3.4.3 =
 * Fix           - Fixed the login button on the checkout page sometimes being displaced.
 * Tweak         - If the WC and Payson total amount differs, the customer will be notified about this.
