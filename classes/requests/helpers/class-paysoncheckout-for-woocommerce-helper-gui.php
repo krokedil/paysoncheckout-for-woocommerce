@@ -33,6 +33,11 @@ class PaysonCheckout_For_WooCommerce_Helper_GUI {
 	public function get_payson_language() {
 		$iso_code      = explode( '_', get_locale() );
 		$shop_language = $iso_code[0];
+
+		if ( function_exists( 'weglot_get_current_language' ) ) {
+			$shop_language = weglot_get_current_language();
+		}
+
 		switch ( $shop_language ) {
 			case 'sv':
 				$payson_language = 'sv';
