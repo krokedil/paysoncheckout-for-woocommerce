@@ -204,16 +204,13 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 	 * @return boolean Did the refund go through okay?
 	 */
 	public function refund_payment( $order_id ) {
-		$order           = wc_get_order( $order_id );
-		$refund          = $order->get_refunds()[0];
-		$refund_order_id = $refund->get_id();
-
+		$order        = wc_get_order( $order_id );
+		$refund_order = $order->get_refunds()[0];
 		$payment_id   = get_post_meta( $order_id, '_payson_checkout_id', true );
 		$subscription = $this->check_if_subscription( $order );
 
 		// Get the Payson order.
 		$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_payment->request( $payment_id ) : PCO_WC()->get_order->request( $payment_id );
-		$refund_order     = wc_get_order( $refund_order_id );
 
 		foreach ( $payson_order_tmp['order']['items'] as $key => $payson_item ) {
 			$continue = false;
