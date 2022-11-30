@@ -176,6 +176,13 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	public function update_order_reference( $order_id ) {
 		$payment_id   = WC()->session->get( 'payson_payment_id' );
 		$payson_order = pco_wc_get_order( $payment_id );
+		if ( is_wp_error( $payson_order ) ) {
+			// translators: %s is an error message either from WordPress or Payson.
+			$message = sprintf( __( 'The Payson order could not be retrieved: %s', 'woocommerce-gateway-paysoncheckout' ), $payson_order->get_error_message() );
+			wc_add_notice( $message, 'error' );
+			return new WP_Error( $message );
+		}
+
 		$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
 		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
 
