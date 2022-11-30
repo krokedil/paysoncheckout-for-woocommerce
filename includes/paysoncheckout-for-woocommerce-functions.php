@@ -78,7 +78,6 @@ function pco_wc_show_pay_for_order_snippet() {
  * @return void
  */
 function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
-	$order = wc_get_order( $order_id );
 	if ( $subscription ) {
 		$payment_id = get_post_meta( $order_id, '_payson_subscription_id', true );
 	} else {
