@@ -52,11 +52,17 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 	 * @return array Formated order item.
 	 */
 	public function get_order_item( $order, $order_item ) {
+		if ( $order_item['variation_id'] ) {
+			$product = wc_get_product( $order_item['variation_id'] );
+		} else {
+			$product = wc_get_product( $order_item['product_id'] );
+		}
 		return array(
 			'name'      => $this->get_product_name( $order_item ), // String.
 			'unitPrice' => $this->get_product_unit_price( $order_item ), // Float.
 			'quantity'  => $order_item->get_quantity(), // Float.
 			'taxRate'   => $this->get_product_tax_rate( $order, $order_item ), // Float.
+			'reference' => $this->get_product_sku( $product ), // String.
 		);
 	}
 
@@ -103,6 +109,22 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 		}
 		// If we get here, there is no tax set for the order item. Return zero.
 		return 0;
+	}
+
+	/**
+	 * Get the product sku or id.
+	 *
+	 * @param object $product The WooCommerce Product.
+	 * @return string
+	 */
+	public function get_product_sku( $product ) {
+		if ( $product->get_sku() ) {
+			$item_reference = $product->get_sku();
+		} else {
+			$item_reference = $product->get_id();
+		}
+
+		return $item_reference;
 	}
 
 	/**
