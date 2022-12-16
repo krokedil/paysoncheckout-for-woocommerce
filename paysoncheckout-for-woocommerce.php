@@ -11,8 +11,8 @@
  * Text Domain:     woocommerce-gateway-paysoncheckout
  * Domain Path:     /languages
  *
- * WC requires at least: 3.0
- * WC tested up to: 7.1.0
+ * WC requires at least: 4.0
+ * WC tested up to: 7.2.0
  *
  * Copyright:       © 2016-2022 Krokedil.
  * License:         GNU General Public License v3.0
