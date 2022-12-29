@@ -74,6 +74,18 @@ $settings = array(
 			'b2b' => 'B2B',
 		),
 	),
+	'checkout_layout'              => array(
+		'title'       => __( 'Checkout layout', 'woocommerce-gateway-paysoncheckout' ),
+		'type'        => 'select',
+		'options'     => array(
+			'one_column_checkout' => __( 'One column checkout', 'dintero-checkout-for-woocommerce' ),
+			'two_column_right'    => __( 'Two column checkout (Payson Checkout in right column)', 'woocommerce-gateway-paysoncheckout' ),
+			'two_column_left'     => __( 'Two column checkout (Payson Checkout in left column)', 'woocommerce-gateway-paysoncheckout' ),
+		),
+		'description' => __( 'Select the Checkout layout.', 'woocommerce-gateway-paysoncheckout' ),
+		'default'     => 'one_column_checkout',
+		'desc_tip'    => false,
+	),
 	'color_scheme'                 => array(
 		'title'       => __( 'Color Scheme', 'woocommerce-gateway-paysoncheckout' ),
 		'type'        => 'select',
