@@ -13,14 +13,18 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 * Class constructor
 	 */
 	public function __construct() {
+		$payson_settings       = get_option( 'woocommerce_paysoncheckout_settings' );
+		$this->checkout_layout = $payson_settings['checkout_layout'] ?? 'one_column_checkout';
+
 		add_filter( 'wc_get_template', array( $this, 'override_template' ), 10, 2 );
 		add_action( 'pco_wc_after_wrapper', array( $this, 'add_wc_form' ), 10 );
 		add_action( 'pco_wc_after_order_review', array( $this, 'add_extra_checkout_fields' ), 10 );
+		add_action( 'pco_wc_after_order_review', 'pco_wc_show_another_gateway_button', 20 );
 		add_action( 'pco_wc_before_checkout_form', 'pco_maybe_show_validation_error_message', 5 );
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_login_form', 10 );
 		add_action( 'pco_wc_before_checkout_form', 'woocommerce_checkout_coupon_form', 20 );
-		add_action( 'pco_wc_before_snippet', 'pco_wc_show_another_gateway_button', 20 );
 		add_action( 'pco_wc_after_checkout_form', array( $this, 'pco_wc_after_checkout_form' ) );
+		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 	}
 
 	/**
@@ -154,6 +158,46 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 */
 	public function pco_wc_after_checkout_form() {
 		do_action( 'woocommerce_after_checkout_form' );
+	}
+
+	/**
+	 * Add checkout page body class, embedded only.
+	 *
+	 * @param array $class CSS classes used in body tag.
+	 *
+	 * @return array
+	 */
+	public function add_body_class( $class ) {
+		if ( is_checkout() && ! is_wc_endpoint_url( 'order-received' ) ) {
+
+			// Don't display Payson body classes if we have a cart that doesn't need payment.
+			if ( method_exists( WC()->cart, 'needs_payment' ) && ! WC()->cart->needs_payment() ) {
+				return $class;
+			}
+
+			if ( WC()->session->get( 'chosen_payment_method' ) ) {
+				$first_gateway = WC()->session->get( 'chosen_payment_method' );
+			} else {
+				$available_payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+				reset( $available_payment_gateways );
+				$first_gateway = key( $available_payment_gateways );
+			}
+
+			if ( 'paysoncheckout' === $first_gateway && 'two_column_left' === $this->checkout_layout ) {
+				$class[] = 'payson-checkout-selected';
+				$class[] = 'payson-checkout-two-column-left';
+			}
+
+			if ( 'paysoncheckout' === $first_gateway && 'two_column_right' === $this->checkout_layout ) {
+				$class[] = 'payson-checkout-selected';
+				$class[] = 'payson-checkout-two-column-right';
+			}
+
+			if ( 'paysoncheckout' === $first_gateway && 'one_column_checkout' === $this->checkout_layout ) {
+				$class[] = 'payson-checkout-selected';
+			}
+		}
+		return $class;
 	}
 }
 new PaysonCheckout_For_WooCommerce_Templates();

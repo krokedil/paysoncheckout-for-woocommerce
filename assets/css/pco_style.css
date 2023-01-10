@@ -1,3 +1,4 @@
+/* @todo - remove pco-modal & pco-modal-content? */
 .pco-modal {
     position: fixed; /* Stay in place */
     z-index: 1000; /* Sit on top */
@@ -17,4 +18,36 @@
     border: 1px solid #888;
     max-width: 600px; /* Could be more or less, depending on screen size */
     text-align: center;
+}
+
+/* Checkout design */
+.payson-checkout-selected textarea[name="order_comments"] { 
+    resize: vertical; 
+}
+
+/* Desktop view / multi columns */
+@media only screen and (min-width : 769px) {
+
+    .payson-checkout-two-column-right #pco-wrapper {
+        display: grid;
+        grid-template-columns: 4fr 6fr;	
+        grid-column-gap: 70px;
+    }
+
+    .payson-checkout-two-column-left #pco-wrapper,
+    .payson-checkout-two-column-left-sf #pco-wrapper {
+        display: grid;
+        grid-template-columns: 6fr 4fr;	
+        grid-column-gap: 70px;
+    }
+
+    .payson-checkout-two-column-left #pco-order-review,
+    .payson-checkout-two-column-left-sf #pco-order-review {
+        order: 2;
+    }
+
+    .payson-checkout-two-column-left #pco-iframe,
+    .payson-checkout-two-column-left-sf #pco-iframe {
+        order: 1;
+    }
 }
