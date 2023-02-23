@@ -96,7 +96,12 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 
 		// If the order is already completed, return.
 		if ( null !== $order->get_date_paid() ) {
-			return;
+			return true;
+		}
+
+		// Check if we have set the subscription id already. To prevent issues with customers reloading the confirmation page.
+		if ( get_post_meta( $order_id, '_payson_subscription_id', true ) ) {
+			return true;
 		}
 
 		$subscription_id = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
