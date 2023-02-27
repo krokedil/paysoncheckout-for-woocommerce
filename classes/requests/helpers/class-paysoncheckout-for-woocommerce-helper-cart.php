@@ -107,7 +107,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Cart {
 	}
 
 	/**
-	 * Undocumented function
+	 * Get the product SKU (defaults to ID).
 	 *
 	 * @param object $product The WooCommerce Product.
 	 * @return string
