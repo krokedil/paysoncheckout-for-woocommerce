@@ -37,6 +37,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2023.02.28    - version 3.5.1 =
+* Fix           - Fix a fatal error caused by a check in PHP versions older than 8.0.0.
+
 = 2023.02.28    - version 3.5.0 =
 * Feature       - Added alternative checkout layouts.
 * Fix           - Fixed a fatal error that sometimes happens when updating the Payson order reference.
@@ -87,7 +90,7 @@ More information on how to get started can be found in the [plugin documentation
 * Fix           - Changed how we handle recurring payments with WooCommerce subscriptions. They will now first be created as Pending payment pending a callback from Payson when the order has been approved.
 
 = 2021.08.09    - version 3.2.0 =
-* Feature       - Added a setting to set which default customer type to use for the checkout. B2C for Business to Customer, the current default. And B2B for Business to Business. 
+* Feature       - Added a setting to set which default customer type to use for the checkout. B2C for Business to Customer, the current default. And B2B for Business to Business.
 * Enhancement   - Added support for Facebook Pixels through the Facebook for WooCommerce plugin.
 * Fix           - Removed a check that caused Payson to not be listed as an available checkout option on admin pages.
 * Fix           - Fixed an issue causing an incorrect tax amount to be set for fees when using the pay for order feature in WooCommerce.
@@ -172,7 +175,7 @@ More information on how to get started can be found in the [plugin documentation
 * Feature		- Added support for full order refunds with Payson.
 * Feature		- Better error handling and logging.
 * Feature		- Added stock, coupon and order total validation before completing checkout.
-* Feature       - Added filters to all request arguments. Create and update Payson order. 
+* Feature       - Added filters to all request arguments. Create and update Payson order.
 * Tweak			- Complete rewrite of plugin.
 * Tweak			- Only create a WooCommerce order when Payson payment is completed.
 * Tweak			- Update the order reference in Payson on WooCommerce payment complete.
@@ -195,7 +198,7 @@ More information on how to get started can be found in the [plugin documentation
 
 = 2018.05.04    - version 1.3.0 =
 * Feature       - Added support for handling payments of manually created orders (via Pay for order page).
-* Tweak         - Save _payson_checkout_id to WC order in thank you page if it hasn't been saved earlier. 
+* Tweak         - Save _payson_checkout_id to WC order in thank you page if it hasn't been saved earlier.
 
 = 2018.04.09    - version 1.2.3 =
 * Tweak			- Change priority to 999 for filter woocommerce_locate_template so that PaysonCheckout template file doesn't get overwritten by other plugins/themes.
@@ -207,7 +210,7 @@ More information on how to get started can be found in the [plugin documentation
 * Fix           - Unset payson_checkout_id session if communication error happens.
 
 = 2018.04.05    - version 1.2.1 =
-* Fix           - Refer to self in static function to avoid issues when processing order in WooCommerce checkout. 
+* Fix           - Refer to self in static function to avoid issues when processing order in WooCommerce checkout.
 * Fix           - Logging improvements.
 * Tweak         - Don't rely on session data in thank you page when trigger payment_complete().
 
@@ -228,7 +231,7 @@ More information on how to get started can be found in the [plugin documentation
 * Tweak			- Save order after adding customer data in ready to ship callback.
 
 = 2017.12.06    - version 1.1.12 =
-* Fix			- Re-add possibility to send items to Payson with price set to 0. 
+* Fix			- Re-add possibility to send items to Payson with price set to 0.
 * Fix           - Only include Krokedil compatibility functions if they don't already exist (compat w other plugins).
 
 
@@ -257,7 +260,7 @@ More information on how to get started can be found in the [plugin documentation
 = 2017.07.03    - version 1.1.6 =
 * Fix			- Shipping tax sent correctly to Payson.
 
-= 2017.07.03    - version 1.1.5 = 
+= 2017.07.03    - version 1.1.5 =
 * Fix			- Updated get_product_name() function (product name sent to Payson). Caused bug with WooCommerce 3.1.
 
 = 2017.05.31    - version 1.1.4 =
