@@ -22,7 +22,7 @@ class PaysonCheckout_For_WooCommerce_Refund_Order extends PaysonCheckout_For_Woo
 	 * @return array
 	 */
 	public function request( $order_id, $payson_data, $payment_id, $subscription = false ) {
-		$endpoint = ( ! $subscription ) ? 'Checkouts/' : 'RecurringSubscriptions/';
+		$endpoint = ( ! $subscription ) ? 'Checkouts/' : 'RecurringPayments/';
 
 		// Make the request.
 		$request_url       = $this->enviroment . $endpoint . $payment_id;

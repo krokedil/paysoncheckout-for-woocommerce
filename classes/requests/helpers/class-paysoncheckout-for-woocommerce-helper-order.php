@@ -57,6 +57,7 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 			'unitPrice' => $this->get_product_unit_price( $order_item ), // Float.
 			'quantity'  => $order_item->get_quantity(), // Float.
 			'taxRate'   => $this->get_product_tax_rate( $order, $order_item ), // Float.
+			'reference' => $this->get_product_sku( $order_item ), // String.
 		);
 	}
 
@@ -144,5 +145,22 @@ class PaysonCheckout_For_WooCommerce_Helper_Order {
 				'reference' => __( 'Shipping', 'payson-checkout-for-woocommerce' ), // String.
 			);
 		}
+	}
+
+	/**
+	 * Get the product SKU (defaults to ID).
+	 *
+	 * @param WC_Order_Item_Product $order_item The WooCommerce Product.
+	 * @return string
+	 */
+	public function get_product_sku( $order_item ) {
+		$product = $order_item->get_product();
+		if ( $product->get_sku() ) {
+			$item_reference = $product->get_sku();
+		} else {
+			$item_reference = $product->get_id();
+		}
+
+		return $item_reference;
 	}
 }
