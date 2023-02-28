@@ -37,6 +37,15 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2023.02.28    - version 3.5.0 =
+* Feature       - Added alternative checkout layouts.
+* Fix           - Fixed a fatal error that sometimes happens when updating the Payson order reference.
+* Fix           - Check if a session is available before attempting to retrieve the payment ID.
+* Fix           - Fixed an issue where when attempting to refund a recurring payment ("subscription"), 404 was returned.
+* Fix           - The Payson confirmation should now appear properly on the thank-you page in cases where the customer would reload the page.
+* Fix           - Fixed an issue where recurring payments would not be refunded due to a credit mismatch.
+* Tweak         - Modified the way we identify and retrieve the order to be refunded.
+
 = 2022.09.29    - version 3.4.4 =
 * Fix           - Fixed a syntax error that causes a crash.
 * Tweak         - Verify that the Payson settings are properly loaded before modifying them.
