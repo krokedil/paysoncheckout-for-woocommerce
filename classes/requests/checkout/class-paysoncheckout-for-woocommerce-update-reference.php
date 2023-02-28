@@ -21,7 +21,7 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 	 * @return array|WP_Error|false If the request could not be issued, FALSE is returned. Otherwise, WP_Error or an array.
 	 */
 	public function request( $order_id = null, $payson_data = null ) {
-		$payment_id   = WC()->session?->get( 'payson_payment_id' ) ?? $payson_data['id'] ?? null;
+		$payment_id   = null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ? WC()->session->get( 'payson_payment_id' ) : $payson_data['id'];
 		$request_url  = $this->enviroment . 'Checkouts/' . $payment_id;
 		$request_args = apply_filters( 'pco_update_order_args', $this->get_request_args( $order_id, $payson_data ) );
 		if ( null !== WC()->session ) {
