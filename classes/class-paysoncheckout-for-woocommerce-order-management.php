@@ -75,7 +75,17 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$formated_text = sprintf( $text, $code, $message );
 			$order->add_order_note( $formated_text );
 			return;
+
+			/// Check if the order has already been canceled through the merchant portal.
+		} else if (isset($payson_order_tmp['history']['canceled'])) {
+			update_post_meta( $order_id, '_paysoncheckout_reservation_cancelled', (new DateTime($payson_order_tmp['history']['canceled']))->format('Y-m-d H:i:s') );
+			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_tmp_order['status'] );
+			$order->add_order_note( __( 'PaysonCheckout reservation was successfully cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
+			$order->save();
+			return;
 		}
+
+
 		// Set new order status.
 		$payson_order_tmp['status'] = 'canceled';
 
@@ -167,6 +177,15 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$order->set_status( 'on-hold' );
 			$order->save();
 			return;
+
+			// Check if the order has already been activated through the merchant portal.
+		} else if (isset($payson_order_tmp['history']['shipped'])) {
+			update_post_meta( $order_id, '_paysoncheckout_reservation_activated', (new DateTime($payson_order_tmp['history']['shipped']))->format('Y-m-d H:i:s'));
+			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_order_tmp['status'] );
+			$order->add_order_note( __( 'PaysonCheckout reservation was successfully activated.', 'woocommerce-gateway-paysoncheckout' ) );
+			$order->save();
+			return;
+
 		}
 		// Set new order status.
 		$payson_order_tmp['status'] = 'shipped';
@@ -211,6 +230,12 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		// Get the Payson order.
 		$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_payment->request( $payment_id ) : PCO_WC()->get_order->request( $payment_id );
 		$refund_order     = $order->get_refunds()[0];
+
+		// Check if the order has already been _fully_ refunded through the merchant portal. This does not account for part refunds.
+		if ( $payson_order_tmp['order']['totalCreditedAmount'] === floatval($order->get_total())) {
+			$order->add_order_note( __( 'PaysonCheckout reservation was successfully refunded for ', 'woocommerce-gateway-paysoncheckout' ) . wc_price( abs( $refund_order->get_total() ) ) );
+			return true;
+		}
 
 		foreach ( $payson_order_tmp['order']['items'] as $key => $payson_item ) {
 			$continue = false;
@@ -264,12 +289,10 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return false;
 		}
 
-				// If Payson do not accept the refund, the totalCreditedAmount we sent, and the one they respond with, will not match.
+		// If Payson do not accept the refund, the totalCreditedAmount we sent, and the one they respond with, will not match.
 		if ( $payson_order_tmp['order']['totalCreditedAmount'] !== $payson_order['order']['totalCreditedAmount'] ) {
-
 			$order->add_order_note( __( 'Credited amount mismatch', 'payson-checkout-for-woocommerce' ) );
 			return false;
-
 		}
 
 		$order->add_order_note( __( 'PaysonCheckout reservation was successfully refunded for ', 'woocommerce-gateway-paysoncheckout' ) . wc_price( abs( $refund_order->get_total() ) ) );
