@@ -23,6 +23,7 @@ const config: PlaywrightTestConfig = {
 	globalSetup: require.resolve('./global-setup'),
 	globalTeardown: require.resolve('./global-teardown'),
 	use: {
+		headless: false,
 		actionTimeout: 0,
 		trace: CI ? 'off' : 'retain-on-failure',
 		storageState: './states/',

@@ -14,7 +14,6 @@ let guestContext: BrowserContext;
 let adminPage: Page;
 let guestPage: Page;
 
-
 const globalSetup = async (config: FullConfig) => {
 	const wcApiClient = await GetWcApiClient(BASE_URL ?? 'http://localhost:8080', CONSUMER_KEY ?? 'admin', CONSUMER_SECRET ?? 'password');
 
@@ -46,9 +45,10 @@ const globalSetup = async (config: FullConfig) => {
 }
 
 async function setupContexts(baseUrl: string, statesDir: string) {
-	adminContext = await chromium.launchPersistentContext(`${statesDir}/admin`, { headless: true, baseURL: baseUrl });
+	// Cant run headless, since Payson wont render the iframe for automated tests.
+	adminContext = await chromium.launchPersistentContext(`${statesDir}/admin`, { headless: false, baseURL: baseUrl });
 	adminPage = await adminContext.newPage();
-	guestContext = await chromium.launchPersistentContext(`${statesDir}/guest`, { headless: true, baseURL: baseUrl });
+	guestContext = await chromium.launchPersistentContext(`${statesDir}/guest`, { headless: false, baseURL: baseUrl });
 	guestPage = await guestContext.newPage();
 }
 
