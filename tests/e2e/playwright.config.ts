@@ -10,7 +10,7 @@ const {
 } = process.env;
 
 const config: PlaywrightTestConfig = {
-	fullyParallel: true,
+	fullyParallel: false,
 	testDir: './tests',
 	timeout: 60 * 2000,
 	expect: {
@@ -18,7 +18,7 @@ const config: PlaywrightTestConfig = {
 	},
 	forbidOnly: !!CI,
 	retries: 1,
-	workers: CI ? 4 : undefined,
+	workers: CI ? 1 : undefined,
 	reporter: CI ? [['list'], ['github'], ['./node_modules/@krokedil/wc-test-helper/lib/cjs/reporters/slack-reporter.js'], ['./node_modules/@krokedil/wc-test-helper/lib/cjs/reporters/github-reporter.js']] : [['list'], ['html']],
 	globalSetup: require.resolve('./global-setup'),
 	globalTeardown: require.resolve('./global-teardown'),
