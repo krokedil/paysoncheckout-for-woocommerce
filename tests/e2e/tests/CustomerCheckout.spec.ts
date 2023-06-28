@@ -2,6 +2,7 @@ import { GetWcApiClient, WcPages } from '@krokedil/wc-test-helper';
 import { test, expect } from '@playwright/test';
 import { APIRequestContext } from 'playwright-chromium';
 import { VerifyOrderRecieved } from '../utils/VerifyOrder';
+import { HandlePaysonIFrame } from '../utils/Utils';
 
 const {
 	CI,
@@ -96,12 +97,13 @@ test.describe('Customer Checkout @shortcode', () => {
 		await checkoutPage.goto();
 
 		// Place the order.
-		await checkoutPage.placeOrder();
+		//await checkoutPage.placeOrder();
 
 		// Wait for an AJAX call to /?wc-ajax=checkout to complete.
-		await page.waitForResponse('**/?wc-ajax=checkout');
+		//await page.waitForResponse('**/?wc-ajax=checkout');
 
 		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);

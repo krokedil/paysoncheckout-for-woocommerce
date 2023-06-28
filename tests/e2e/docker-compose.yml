@@ -92,6 +92,7 @@ services:
         wp plugin activate paysoncheckout-for-woocommerce
         wp option update woocommerce_default_country SE
         wp option update woocommerce_currency SEK
+        wp option update woocommerce_terms_page_id "3"
         exit 0
     volumes:
       - "../../:/var/www/html/wp-content/plugins/paysoncheckout-for-woocommerce"

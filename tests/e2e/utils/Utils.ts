@@ -1,4 +1,5 @@
-import { APIRequestContext, Page, request } from "@playwright/test";
+import { Frame } from "@playwright/test";
+import { APIRequestContext, Page, request, FrameLocator, Locator, expect } from "@playwright/test";
 
 const {
 	PAYSON_AGENT_ID,
@@ -33,4 +34,25 @@ export const SetPaysonSettings = async (wcApiClient: APIRequestContext) => {
 		// Update settings.
 		await wcApiClient.post('payment_gateways/paysoncheckout', { data: settings });
 	}
+}
+var iframe: FrameLocator
+
+export const HandlePaysonIFrame = async(page: Page) => {
+	iframe = page.frameLocator('#paysonIframe')
+
+	await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
+
+	await iframe.getByRole('link', { name: 'Continue without social security number' }).click();
+	
+	await iframe.locator('#SubmitAddress').click();
+
+	await iframe.getByRole('radio', { name: 'Bank account' }).click();
+	await iframe.getByRole('button', { name: 'Complete purchase' }).click();
+	await page.getByRole('button', { name: 'Simulate Accept' }).click();
+
+
+	//iframe.
+	//iframe.getBy
+
+	//iframe.
 }
