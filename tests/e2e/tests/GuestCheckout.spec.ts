@@ -1,6 +1,7 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 import { GetWcApiClient, WcPages } from '@krokedil/wc-test-helper';
 import { VerifyOrderRecieved } from '../utils/VerifyOrder';
+import { HandlePaysonIFrame } from '../utils/Utils';
 
 const {
 	BASE_URL,
@@ -36,7 +37,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -58,7 +59,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -80,7 +81,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -102,7 +103,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -124,7 +125,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -146,7 +147,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -168,7 +169,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -190,7 +191,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -212,7 +213,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -234,7 +235,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		// Go to the checkout page.
 		await checkoutPage.goto();
 
-		// TODO - Handle Payson Checkout
+		await HandlePaysonIFrame(page);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);

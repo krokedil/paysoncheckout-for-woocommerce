@@ -1,5 +1,6 @@
 import { AdminLogin, GetWcApiClient, WcPages } from '@krokedil/wc-test-helper';
 import { test, expect, APIRequestContext } from '@playwright/test';
+import { HandlePaysonIFrame } from '../utils/Utils';
 
 const {
 	CI,

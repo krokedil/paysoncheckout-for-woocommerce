@@ -8,11 +8,12 @@ const {
 
 export const GetPaysonClient = async (): Promise<APIRequestContext> => {
 	// TODO - Get payson client.
+	
 	return await request.newContext({
-		baseURL: ``,
+		baseURL: `https://test-api.payson.se/2.0/`,
 		extraHTTPHeaders: {
 			Authorization: `Basic ${Buffer.from(
-				``
+				`${PAYSON_AGENT_ID ?? 'admin'}:${PAYSON_API_KEY ?? 'password'}`
 			).toString('base64')}`,
 		},
 	});
@@ -37,22 +38,23 @@ export const SetPaysonSettings = async (wcApiClient: APIRequestContext) => {
 }
 var iframe: FrameLocator
 
-export const HandlePaysonIFrame = async(page: Page) => {
-	iframe = page.frameLocator('#paysonIframe')
-
-	await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
-
-	await iframe.getByRole('link', { name: 'Continue without social security number' }).click();
-	
+const FillPaysonPaymentDetails = async(iframe: FrameLocator) => {
+	await iframe.getByRole('textbox', { name: 'E-mail' }).fill('test.testsson@test.se')
+	await iframe.getByLabel('Personal ID number').fill('4606082222')
+	await iframe.getByRole('textbox', { name: 'Zip code' }).fill('99999')
+	await iframe.locator('#PersonLookupMandatoryPhoneNumber').fill('0720000000')
+}
+const FinishOrder = async(page: Page, iframe: FrameLocator) => {
 	await iframe.locator('#SubmitAddress').click();
 
 	await iframe.getByRole('radio', { name: 'Bank account' }).click();
 	await iframe.getByRole('button', { name: 'Complete purchase' }).click();
 	await page.getByRole('button', { name: 'Simulate Accept' }).click();
+}
+export const HandlePaysonIFrame = async(page: Page) => {
+	iframe = page.frameLocator('#paysonIframe')
+	await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 
-
-	//iframe.
-	//iframe.getBy
-
-	//iframe.
+	await FillPaysonPaymentDetails(iframe);
+	await FinishOrder(page, iframe);
 }
