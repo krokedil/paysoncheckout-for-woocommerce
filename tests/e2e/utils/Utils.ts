@@ -1,5 +1,6 @@
 import { Frame } from "@playwright/test";
 import { APIRequestContext, Page, request, FrameLocator, Locator, expect } from "@playwright/test";
+import { PaysonIFrame } from "../pages/PaysonIFrame"
 
 const {
 	PAYSON_AGENT_ID,
@@ -34,25 +35,8 @@ export const SetPaysonSettings = async (wcApiClient: APIRequestContext) => {
 		await wcApiClient.post('payment_gateways/paysoncheckout', { data: settings });
 	}
 }
-var iframe: FrameLocator
 
-const FillPaysonPaymentDetails = async(iframe: FrameLocator) => {
-	await iframe.getByRole('textbox', { name: 'E-mail' }).fill('test.testsson@test.se')
-	await iframe.getByLabel('Personal ID number').fill('4606082222')
-	await iframe.getByRole('textbox', { name: 'Zip code' }).fill('99999')
-	await iframe.locator('#PersonLookupMandatoryPhoneNumber').fill('0720000000')
-}
-const FinishOrder = async(page: Page, iframe: FrameLocator) => {
-	await iframe.locator('#SubmitAddress').click();
-
-	await iframe.getByRole('radio', { name: 'Bank account' }).click();
-	await iframe.getByRole('button', { name: 'Complete purchase' }).click();
-	await page.getByRole('button', { name: 'Simulate Accept' }).click();
-}
 export const HandlePaysonIFrame = async(page: Page) => {
-	iframe = page.frameLocator('#paysonIframe')
-	await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
-
-	await FillPaysonPaymentDetails(iframe);
-	await FinishOrder(page, iframe);
+	const paysonIFrame = new PaysonIFrame(page);
+	await paysonIFrame.handleIFrame();
 }
