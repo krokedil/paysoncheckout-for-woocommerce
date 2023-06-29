@@ -2,14 +2,14 @@ import { WcPages } from "@krokedil/wc-test-helper";
 import { expect } from "@playwright/test";
 import { GetPaysonClient } from "./Utils";
 
-export const VerifyOrderRecieved = async (orderRecievedPage: WcPages.OrderReceived, expectedStatus: string = 'processing') => {
+export const VerifyOrderRecieved = async (orderRecievedPage: WcPages.OrderReceived, expectedWCStatus: string = 'processing') => {
 	const pcClient = await GetPaysonClient();
 
 	// Get the WC Order.
 	const wcOrder = await orderRecievedPage.getOrder();
 
 	// Verify that the order has the correct status.
-	expect(wcOrder.status).toBe(expectedStatus);
+	expect(wcOrder.status).toBe(expectedWCStatus);
 
 	// Verify that the order has the correct payment method.
 	expect(wcOrder.payment_method).toBe('paysoncheckout');

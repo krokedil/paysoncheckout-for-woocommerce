@@ -1,6 +1,7 @@
 import { AdminLogin, GetWcApiClient, WcPages } from '@krokedil/wc-test-helper';
 import { test, expect, APIRequestContext } from '@playwright/test';
 import { HandlePaysonIFrame } from '../utils/Utils';
+import { VerifyOrderRecieved } from '../utils/VerifyOrder';
 
 const {
 	CI,
@@ -40,6 +41,7 @@ test.describe('Order management @shortcode', () => {
 			await checkoutPage.goto();
 
 			// TODO - Handle Payson Checkout
+			await HandlePaysonIFrame(page);
 
 			await expect(page).toHaveURL(/order-received/);
 
@@ -55,7 +57,8 @@ test.describe('Order management @shortcode', () => {
 			await adminSingleOrder.completeOrder();
 
 			// TODO - Verify that the order is captured.
-			expect(await adminSingleOrder.hasOrderNoteWithText('')).toBe(true);
+			expect(page.getByText('PaysonCheckout reservation was successfully activated.')).not.toBeUndefined();
+			expect(await adminSingleOrder.hasOrderNoteWithText('PaysonCheckout reservation was successfully activated.')).toBe(true);
 		});
 	});
 
@@ -69,6 +72,7 @@ test.describe('Order management @shortcode', () => {
 			await checkoutPage.goto();
 
 			// TODO - Handle Payson Checkout
+			await HandlePaysonIFrame(page);
 
 			await expect(page).toHaveURL(/order-received/);
 
@@ -84,7 +88,9 @@ test.describe('Order management @shortcode', () => {
 			await adminSingleOrder.cancelOrder();
 
 			// TODO - Verify that the order is cancelled.
-			expect(await adminSingleOrder.hasOrderNoteWithText('')).toBe(true);
+			//adminSingleOrder.
+			expect(page.getByText('PaysonCheckout reservation was successfully cancelled.')).not.toBeUndefined();
+			expect(await adminSingleOrder.hasOrderNoteWithText('PaysonCheckout reservation was successfully cancelled.')).toBe(true);
 		});
 	});
 
@@ -98,11 +104,11 @@ test.describe('Order management @shortcode', () => {
 
 			await checkoutPage.goto();
 
-			// TODO - Handle Payson Checkout
+			await HandlePaysonIFrame(page);
 
 			await expect(page).toHaveURL(/order-received/);
 
-			order = await orderRecievedPage.getOrder();
+			let order = await orderRecievedPage.getOrder();
 			orderId = order.id;
 		});
 
@@ -116,7 +122,8 @@ test.describe('Order management @shortcode', () => {
 			await adminSingleOrder.refundFullOrder(order, false);
 
 			// TODO - Verify that the order is refunded.
-			expect(await adminSingleOrder.hasOrderNoteWithText('')).toBe(true);
+			expect(page.getByText('PaysonCheckout reservation was successfully cancelled.')).not.toBeUndefined();
+			expect(await adminSingleOrder.hasOrderNoteWithText('PaysonCheckout reservation was successfully cancelled.')).toBe(true);
 		});
 	});
 
