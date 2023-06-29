@@ -40,7 +40,6 @@ test.describe('Order management @shortcode', () => {
 
 			await checkoutPage.goto();
 
-			// TODO - Handle Payson Checkout
 			await HandlePaysonIFrame(page);
 
 			await expect(page).toHaveURL(/order-received/);
@@ -56,7 +55,6 @@ test.describe('Order management @shortcode', () => {
 			await adminSingleOrder.goto();
 			await adminSingleOrder.completeOrder();
 
-			// TODO - Verify that the order is captured.
 			expect(page.getByText('PaysonCheckout reservation was successfully activated.')).not.toBeUndefined();
 			expect(await adminSingleOrder.hasOrderNoteWithText('PaysonCheckout reservation was successfully activated.')).toBe(true);
 		});
@@ -71,7 +69,6 @@ test.describe('Order management @shortcode', () => {
 
 			await checkoutPage.goto();
 
-			// TODO - Handle Payson Checkout
 			await HandlePaysonIFrame(page);
 
 			await expect(page).toHaveURL(/order-received/);
@@ -87,8 +84,6 @@ test.describe('Order management @shortcode', () => {
 			await adminSingleOrder.goto();
 			await adminSingleOrder.cancelOrder();
 
-			// TODO - Verify that the order is cancelled.
-			//adminSingleOrder.
 			expect(page.getByText('PaysonCheckout reservation was successfully cancelled.')).not.toBeUndefined();
 			expect(await adminSingleOrder.hasOrderNoteWithText('PaysonCheckout reservation was successfully cancelled.')).toBe(true);
 		});
@@ -108,7 +103,7 @@ test.describe('Order management @shortcode', () => {
 
 			await expect(page).toHaveURL(/order-received/);
 
-			let order = await orderRecievedPage.getOrder();
+			order = await orderRecievedPage.getOrder();
 			orderId = order.id;
 		});
 
@@ -121,9 +116,8 @@ test.describe('Order management @shortcode', () => {
 			await adminSingleOrder.completeOrder();
 			await adminSingleOrder.refundFullOrder(order, false);
 
-			// TODO - Verify that the order is refunded.
-			expect(page.getByText('PaysonCheckout reservation was successfully cancelled.')).not.toBeUndefined();
-			expect(await adminSingleOrder.hasOrderNoteWithText('PaysonCheckout reservation was successfully cancelled.')).toBe(true);
+			expect(page.getByText('Order status changed from Completed to Refunded.')).not.toBeUndefined();
+			expect(await adminSingleOrder.hasOrderNoteWithText('Order status changed from Completed to Refunded.')).toBe(true);
 		});
 	});
 
@@ -137,7 +131,7 @@ test.describe('Order management @shortcode', () => {
 
 			await checkoutPage.goto();
 
-			// TODO - Handle Payson Checkout
+			await HandlePaysonIFrame(page);
 
 			await expect(page).toHaveURL(/order-received/);
 
@@ -152,10 +146,10 @@ test.describe('Order management @shortcode', () => {
 			const adminSingleOrder = new WcPages.AdminSingleOrder(page, orderId);
 			await adminSingleOrder.goto();
 			await adminSingleOrder.completeOrder();
-			await adminSingleOrder.refundFullOrder(order, false);
+			await adminSingleOrder.refundPartialOrder(order, false);
 
-			// TODO - Verify that the order is refunded.
-			expect(await adminSingleOrder.hasOrderNoteWithText('')).toBe(true);
+			expect(page.getByText('PaysonCheckout reservation was successfully refunded for')).not.toBeUndefined();
+			expect(await adminSingleOrder.hasOrderNoteWithText('PaysonCheckout reservation was successfully refunded for')).toBe(true);;
 		});
 	});
 });

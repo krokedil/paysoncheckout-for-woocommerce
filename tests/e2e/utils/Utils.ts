@@ -7,8 +7,6 @@ const {
 } = process.env;
 
 export const GetPaysonClient = async (): Promise<APIRequestContext> => {
-	// TODO - Get payson client.
-	
 	return await request.newContext({
 		baseURL: `https://test-api.payson.se/2.0/`,
 		extraHTTPHeaders: {
