@@ -38,7 +38,9 @@ test.describe('Order management @shortcode', () => {
 			const checkoutPage = new WcPages.Checkout(page);
 			await cartPage.addtoCart(['simple-25']);
 
+			var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 			await checkoutPage.goto();
+			await response;
 
 			await HandlePaysonIFrame(page);
 
@@ -67,7 +69,9 @@ test.describe('Order management @shortcode', () => {
 			const checkoutPage = new WcPages.Checkout(page);
 			await cartPage.addtoCart(['simple-25']);
 
+			var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 			await checkoutPage.goto();
+			await response;
 
 			await HandlePaysonIFrame(page);
 
@@ -97,7 +101,9 @@ test.describe('Order management @shortcode', () => {
 			const checkoutPage = new WcPages.Checkout(page);
 			await cartPage.addtoCart(['simple-25']);
 
+			var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 			await checkoutPage.goto();
+			await response;
 
 			await HandlePaysonIFrame(page);
 
@@ -129,7 +135,9 @@ test.describe('Order management @shortcode', () => {
 			const checkoutPage = new WcPages.Checkout(page);
 			await cartPage.addtoCart(['simple-25']);
 
+			var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 			await checkoutPage.goto();
+			await response;
 
 			await HandlePaysonIFrame(page);
 

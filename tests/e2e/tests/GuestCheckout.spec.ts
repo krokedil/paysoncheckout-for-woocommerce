@@ -35,7 +35,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25', 'simple-25', 'simple-25', 'simple-25', 'simple-25', 'simple-25']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -57,7 +59,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25', 'simple-12', 'simple-06', 'simple-00']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -79,7 +83,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-virtual-downloadable-25', 'simple-virtual-downloadable-12', 'simple-virtual-downloadable-06', 'simple-virtual-downloadable-00']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -101,7 +107,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['variable-25-blue', 'variable-12-red', 'variable-12-red', 'variable-25-black', 'variable-12-black']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -123,7 +131,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -145,7 +155,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -167,7 +179,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -189,7 +203,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -211,7 +227,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
@@ -233,7 +251,9 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
 		await checkoutPage.goto();
+		await response;
 
 		await HandlePaysonIFrame(page);
 
