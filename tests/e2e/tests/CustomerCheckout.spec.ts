@@ -12,7 +12,7 @@ const {
 } = process.env;
 
 test.describe('Customer Checkout @shortcode', () => {
-	test.skip(CI !== undefined, 'Skipping tests in CI environment since its currently not working and giving a false negative.') // @TODO - Fix this test for CI.
+	//test.skip(CI !== undefined, 'Skipping tests in CI environment since its currently not working and giving a false negative.') // - Fix this test for CI.
 
 	test.use({ storageState: process.env.GUESTSTATE });
 
@@ -98,13 +98,6 @@ test.describe('Customer Checkout @shortcode', () => {
 		await checkoutPage.goto();
 		await response;
 
-		// Place the order.
-		//await checkoutPage.placeOrder();
-
-		// Wait for an AJAX call to /?wc-ajax=checkout to complete.
-		//await page.waitForResponse('**/?wc-ajax=checkout');
-
-		// TODO - Handle Payson Checkout
 		await HandlePaysonIFrame(page, true);
 
 		// Verify that the order was placed.

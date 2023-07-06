@@ -11,7 +11,7 @@ const {
 } = process.env;
 
 test.describe('Order management @shortcode', () => {
-	test.skip(CI !== undefined, 'Skipping tests in CI environment since its currently failing randomly without any reason during CI. Skipping to prevent false negative tests.') // @TODO - Fix this test for CI.
+	//test.skip(CI !== undefined, 'Skipping tests in CI environment since its currently failing randomly without any reason during CI. Skipping to prevent false negative tests.') // - Fix this test for CI.
 
 	test.use({ storageState: process.env.GUESTSTATE });
 
