@@ -35,7 +35,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25', 'simple-25', 'simple-25', 'simple-25', 'simple-25', 'simple-25']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 		await checkoutPage.goto();
 		await response;
 
@@ -59,7 +59,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25', 'simple-12', 'simple-06', 'simple-00']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 		await checkoutPage.goto();
 		await response;
 
@@ -83,7 +83,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-virtual-downloadable-25', 'simple-virtual-downloadable-12', 'simple-virtual-downloadable-06', 'simple-virtual-downloadable-00']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
 		await checkoutPage.goto();
 		await response;
 
@@ -107,7 +107,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['variable-25-blue', 'variable-12-red', 'variable-12-red', 'variable-25-black', 'variable-12-black']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 		await checkoutPage.goto();
 		await response;
 
@@ -122,7 +122,7 @@ test.describe('Guest Checkout @shortcode', () => {
 		await VerifyOrderRecieved(orderRecievedPage);
 	});
 
-	test('Can place order with separate shipping address', async ({ page }) => {
+	test('Can place order with Company name in billing address', async ({ page }) => { // Separate shipping not supported, only testing B2B checkout
 		const cartPage = new WcPages.Cart(page, wcApiClient);
 		const orderRecievedPage = new WcPages.OrderReceived(page, wcApiClient);
 		const checkoutPage = new WcPages.Checkout(page);
@@ -131,35 +131,12 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 		await checkoutPage.goto();
 		await response;
 
-		await HandlePaysonIFrame(page);
-
-		// Verify that the order was placed.
-		await expect(page).toHaveURL(/order-received/);
-
-		orderId = await orderRecievedPage.getOrderId();
-
-		// Verify the order details.
-		await VerifyOrderRecieved(orderRecievedPage);
-	});
-
-	test('Can place order with Company name in both billing and shipping address', async ({ page }) => {
-		const cartPage = new WcPages.Cart(page, wcApiClient);
-		const orderRecievedPage = new WcPages.OrderReceived(page, wcApiClient);
-		const checkoutPage = new WcPages.Checkout(page);
-
-		// Add products to the cart.
-		await cartPage.addtoCart(['simple-25']);
-
-		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
-		await checkoutPage.goto();
-		await response;
-
-		await HandlePaysonIFrame(page);
+		await HandlePaysonIFrame(page, false, true);
+		// Fix company payment
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -179,11 +156,15 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 		await checkoutPage.goto();
 		await response;
 
+		// Change shipping
+		await checkoutPage.selectShippingMethod('free shipping');
+
 		await HandlePaysonIFrame(page);
+		// Fix shipping option change
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);
@@ -203,9 +184,14 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
 		await checkoutPage.goto();
 		await response;
+
+		// Apply coupon and wait for two update_checkout events
+		await checkoutPage.applyCoupon('percent-10');
+		await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
+		await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 
 		await HandlePaysonIFrame(page);
 
@@ -227,9 +213,14 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
 		await checkoutPage.goto();
 		await response;
+		
+		// Apply coupon and wait for two update_checkout events
+		await checkoutPage.applyCoupon('fixed-10');
+		await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
+		await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 
 		await HandlePaysonIFrame(page);
 
@@ -251,9 +242,14 @@ test.describe('Guest Checkout @shortcode', () => {
 		await cartPage.addtoCart(['simple-25']);
 
 		// Go to the checkout page.
-		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); //Is this needed?
+		var response = page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
 		await checkoutPage.goto();
 		await response;
+
+		// Apply coupon and wait for two update_checkout events
+		await checkoutPage.applyCoupon('percent-100');
+		await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
+		await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200); 
 
 		await HandlePaysonIFrame(page);
 
