@@ -105,7 +105,7 @@ test.describe('Customer Checkout @shortcode', () => {
 		//await page.waitForResponse('**/?wc-ajax=checkout');
 
 		// TODO - Handle Payson Checkout
-		await HandlePaysonIFrame(page);
+		await HandlePaysonIFrame(page, true);
 
 		// Verify that the order was placed.
 		await expect(page).toHaveURL(/order-received/);

@@ -36,7 +36,7 @@ export const SetPaysonSettings = async (wcApiClient: APIRequestContext) => {
 	}
 }
 
-export const HandlePaysonIFrame = async(page: Page) => {
+export const HandlePaysonIFrame = async(page: Page, skipDetails: boolean = false) => {
 	const paysonIFrame = new PaysonIFrame(page);
-	await paysonIFrame.handleIFrame();
+	await paysonIFrame.handleIFrame(skipDetails);
 }

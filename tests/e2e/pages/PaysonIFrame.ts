@@ -32,8 +32,11 @@ export class PaysonIFrame {
         await this.page.getByRole('button', { name: 'Simulate Accept' }).click();
     }
 
-    async handleIFrame() {
-        await this.fillPaysonPaymentDetails();
+    async handleIFrame(skipDetails: boolean = false) {
+        if (!skipDetails) await this.fillPaysonPaymentDetails();
+        else {
+            await this.iframe.getByRole('link', { name: 'Continue without social security number' }).click(); // Do not use personal number, use the prefilled details instead
+        }
 
         await this.finishOrder();
     }
