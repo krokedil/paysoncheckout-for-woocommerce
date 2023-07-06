@@ -162,6 +162,7 @@ test.describe('Guest Checkout @shortcode', () => {
 
 		// Change shipping
 		await checkoutPage.selectShippingMethod('free shipping');
+		await page.waitForResponse(response => response.url().includes('pco_wc_update_checkout') && response.status() === 200);
 
 		await HandlePaysonIFrame(page);
 		// Fix shipping option change
