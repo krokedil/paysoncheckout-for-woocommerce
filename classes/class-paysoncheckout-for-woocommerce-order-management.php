@@ -14,11 +14,23 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class PaysonCheckout_For_WooCommerce_Order_Management {
 	/**
+	 * Messages for recurring errors.
+	 *
+	 * @var array
+	 */
+	private $error_message;
+
+	/**
 	 * Class constructor.
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_order_status_cancelled', array( $this, 'cancel_reservation' ) );
 		add_action( 'woocommerce_order_status_completed', array( $this, 'activate_reservation' ) );
+
+		$this->error_message = array(
+			'refund_negative' => __( 'Please make sure that you only use positive numbers when initiating a refund. Using negative numbers can cause problems.', 'payson-checkout-for-woocommerce' ),
+		);
+
 	}
 
 	/**
@@ -76,15 +88,14 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$order->add_order_note( $formated_text );
 			return;
 
-			/// Check if the order has already been canceled through the merchant portal.
-		} else if (isset($payson_order_tmp['history']['canceled'])) {
-			update_post_meta( $order_id, '_paysoncheckout_reservation_cancelled', (new DateTime($payson_order_tmp['history']['canceled']))->format('Y-m-d H:i:s') );
+			// Check if the order has already been canceled through the merchant portal.
+		} elseif ( isset( $payson_order_tmp['history']['canceled'] ) ) {
+			update_post_meta( $order_id, '_paysoncheckout_reservation_cancelled', ( new DateTime( $payson_order_tmp['history']['canceled'] ) )->format( 'Y-m-d H:i:s' ) );
 			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_tmp_order['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->save();
 			return;
 		}
-
 
 		// Set new order status.
 		$payson_order_tmp['status'] = 'canceled';
@@ -179,8 +190,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			return;
 
 			// Check if the order has already been activated through the merchant portal.
-		} else if (isset($payson_order_tmp['history']['shipped'])) {
-			update_post_meta( $order_id, '_paysoncheckout_reservation_activated', (new DateTime($payson_order_tmp['history']['shipped']))->format('Y-m-d H:i:s'));
+		} elseif ( isset( $payson_order_tmp['history']['shipped'] ) ) {
+			update_post_meta( $order_id, '_paysoncheckout_reservation_activated', ( new DateTime( $payson_order_tmp['history']['shipped'] ) )->format( 'Y-m-d H:i:s' ) );
 			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_order_tmp['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully activated.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->save();
@@ -219,20 +230,22 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 	/**
 	 * Refunds the payments.
 	 *
-	 * @param string $order_id The WooCommerce order id.
-	 * @return boolean Did the refund go through okay?
+	 * @param int $order_id The WooCommerce order id.
+	 * @return bool Did the refund go through okay?
 	 */
 	public function refund_payment( $order_id ) {
 		$order        = wc_get_order( $order_id );
-		$payment_id   = get_post_meta( $order_id, '_payson_checkout_id', true );
+		$payment_id   = $order->get_meta( '_payson_checkout_id' );
 		$subscription = $this->check_if_subscription( $order );
 
 		// Get the Payson order.
 		$payson_order_tmp = ( $subscription ) ? PCO_WC()->get_recurring_payment->request( $payment_id ) : PCO_WC()->get_order->request( $payment_id );
-		$refund_order     = $order->get_refunds()[0];
+
+		// Fetch the most recent, current refund.
+		$refund_order = $order->get_refunds()[0];
 
 		// Check if the order has already been _fully_ refunded through the merchant portal. This does not account for part refunds.
-		if ( $payson_order_tmp['order']['totalCreditedAmount'] === floatval($order->get_total())) {
+		if ( floatval( $order->get_total() === $payson_order_tmp['order']['totalCreditedAmount'] ) ) {
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully refunded for ', 'woocommerce-gateway-paysoncheckout' ) . wc_price( abs( $refund_order->get_total() ) ) );
 			return true;
 		}
@@ -242,7 +255,17 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			foreach ( $refund_order->get_items() as $refund_item ) {
 				$product = $refund_item->get_product();
 				if ( $product->get_sku() === $payson_item['reference'] || (string) $product->get_id() === $payson_item['reference'] ) {
-					$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_item->get_total() + $refund_item->get_total_tax() );
+					$product_total = $refund_item->get_total();
+					$product_tax   = $refund_item->get_total_tax();
+
+					// Check if the customer has entered a negative value (e.g., -50).
+					if ( $product_total > 0 || $product_tax > 0 ) {
+						$order->add_order_note( $this->error_message['refund_negative'] );
+						$order->save();
+						return false;
+					}
+
+					$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $product_total + $product_tax );
 					$payson_order_tmp['order']['items'][ $key ] = $payson_item;
 					$continue                                   = true;
 					break;
@@ -256,7 +279,17 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			$refund_shipping = $refund_order->get_shipping_method();
 
 			if ( $payson_item['name'] === $refund_shipping ) {
-				$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $refund_order->get_shipping_total() + $refund_order->get_shipping_tax() );
+				$shipping_total = $refund_order->get_shipping_total();
+				$shipping_tax   = $refund_order->get_shipping_tax();
+
+				// Check if the customer has entered a negative value.
+				if ( $shipping_total > 0 || $shipping_tax > 0 ) {
+					$order->add_order_note( $this->error_message['refund_negative'] );
+					$order->save();
+					return false;
+				}
+
+				$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $shipping_total + $shipping_tax );
 				$payson_order_tmp['order']['items'][ $key ] = $payson_item;
 				$continue                                   = true;
 				break;
