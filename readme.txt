@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 6.1.1
+Tested up to: 6.3.1
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 7.3.0
+WC tested up to: 8.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +37,12 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2023.08.28    - version 3.6.0 =
+* Feature       - Added supports for multiple checkout layouts.
+* Fix           - Fixed an issue where the customer could not pay for a subscription through their account page.
+* Tweak         - Added a remote order status check to prevent error due to conflicting local and remote order status.
+* Tweak         - Payson do not support changing subscription payment method through their API. This feature support has therefore been removed from WooCommerce for Payson orders. You can still changing payment method through Payson's account page.
+
 = 2023.02.28    - version 3.5.1 =
 * Fix           - Fix a fatal error caused by a check in PHP versions older than 8.0.0.
 

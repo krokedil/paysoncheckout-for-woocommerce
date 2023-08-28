@@ -1,4 +1,4 @@
-# Copyright (C) 2022 paysoncheckout-for-woocommerce
+# Copyright (C) 2023 paysoncheckout-for-woocommerce
 # This file is distributed under the same license as the paysoncheckout-for-woocommerce package.
 msgid ""
 msgstr ""
@@ -32,46 +32,51 @@ msgstr ""
 msgid "Payson"
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:23, ../includes/paysoncheckout-for-woocommerce-form-fields.php:12, ../includes/paysoncheckout-for-woocommerce-form-fields.php:93
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:23, ../includes/paysoncheckout-for-woocommerce-form-fields.php:12, ../includes/paysoncheckout-for-woocommerce-form-fields.php:105
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:186
+#. translators: %s is an error message either from WordPress or Payson.
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:179
+msgid "The Payson order could not be retrieved: %s"
+msgstr ""
+
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:191
 msgid "It seems like the WooCommerce and Payson total amount differs. Please, try again."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:58
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:70
 msgid "PaysonCheckout reservation could not be cancelled. Missing Payson payment id."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:64
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:76
 msgid "Could not cancel PaysonCheckout reservation, PaysonCheckout reservation is already cancelled."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:91
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:95, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:112
 msgid "PaysonCheckout reservation was successfully cancelled."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:100
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:121
 msgid "PaysonCheckout reservation could not be cancelled."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:145
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:166
 msgid "PaysonCheckout reservation could not be activated. Missing Payson payment id."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:153
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:174
 msgid "Could not activate PaysonCheckout reservation, PaysonCheckout reservation is already activated."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:183
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:196, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:213
 msgid "PaysonCheckout reservation was successfully activated."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:194
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:224
 msgid "PaysonCheckout reservation could not be activatied."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:292
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:249, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:331
 msgid "PaysonCheckout reservation was successfully refunded for "
 msgstr ""
 
@@ -155,26 +160,42 @@ msgid "Pick wich customer type you want to be the default for your checkout."
 msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:78
-msgid "Color Scheme"
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:81
-msgid "Gray"
+msgid "Checkout layout"
 msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:82
+msgid "Two column checkout (Payson Checkout in right column)"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:83
+msgid "Two column checkout (Payson Checkout in left column)"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:85
+msgid "Select the Checkout layout."
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:90
+msgid "Color Scheme"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:93
+msgid "Gray"
+msgstr ""
+
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:94
 msgid "White"
 msgstr ""
 
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:84
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:96
 msgid "Different color schemes for how the embedded PaysonCheckout iframe should be displayed."
 msgstr ""
 
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:89
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:101
 msgid "Debug Log"
 msgstr ""
 
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:91
+#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:103
 msgid "Enable logging"
 msgstr ""
 
