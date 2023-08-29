@@ -37,6 +37,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2023.08.29    - version 3.6.1 =
+* Fix           - Fixed an issue where a string comparison failed due to HTML entities in the item name.
+* Fix           - Revert changes from previous update that prevented renewal of failed subscriptions.
+
 = 2023.08.28    - version 3.6.0 =
 * Feature       - Added supports for multiple checkout layouts.
 * Fix           - Fixed an issue where the customer could not pay for a subscription through their account page.
