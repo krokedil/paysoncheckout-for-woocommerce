@@ -36,11 +36,11 @@ msgstr ""
 msgstr ""
 
 #. translators: %s is an error message either from WordPress or Payson.
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:179
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:181
 msgid "The Payson order could not be retrieved: %s"
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:191
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:193
 msgid "It seems like the WooCommerce and Payson total amount differs. Please, try again."
 msgstr ""
 
