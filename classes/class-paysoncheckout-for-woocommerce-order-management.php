@@ -278,7 +278,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 			$refund_shipping = $refund_order->get_shipping_method();
 
-			if ( $payson_item['name'] === $refund_shipping ) {
+			if ( html_entity_decode( $payson_item['name'] ) === html_entity_decode( $refund_shipping ) ) {
 				$shipping_total = $refund_order->get_shipping_total();
 				$shipping_tax   = $refund_order->get_shipping_tax();
 
