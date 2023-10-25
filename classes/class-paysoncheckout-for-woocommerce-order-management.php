@@ -90,8 +90,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 			// Check if the order has already been canceled through the merchant portal.
 		} elseif ( isset( $payson_order_tmp['history']['canceled'] ) ) {
-			update_post_meta( $order_id, '_paysoncheckout_reservation_cancelled', ( new DateTime( $payson_order_tmp['history']['canceled'] ) )->format( 'Y-m-d H:i:s' ) );
-			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_tmp_order['status'] );
+			$order->update_meta_data( '_paysoncheckout_reservation_cancelled', ( new DateTime( $payson_order_tmp['history']['canceled'] ) )->format( 'Y-m-d H:i:s' )  );
+			$order->update_meta_data( '_paysoncheckout_order_status', $payson_tmp_order['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->save();
 			return;
@@ -106,9 +106,10 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		// Check if we where successfull.
 		if ( ! is_wp_error( $payson_order ) && 'canceled' == $payson_order['status'] ) {
 			// Add time stamp, used to prevent duplicate cancellations for the same order.
-			update_post_meta( $order_id, '_paysoncheckout_reservation_cancelled', current_time( 'mysql' ) );
+			$order->update_meta_data( '_paysoncheckout_reservation_cancelled', current_time( 'mysql' ) );
 			// Add Payson order status.
-			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_order['status'] );
+			$order->update_meta_data( $order_id, '_paysoncheckout_order_status', $payson_order['status'] );
+			$order->save();
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 		} elseif ( is_wp_error( $payson_order ) ) {
 			// If error save error message.
@@ -191,8 +192,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 			// Check if the order has already been activated through the merchant portal.
 		} elseif ( isset( $payson_order_tmp['history']['shipped'] ) ) {
-			update_post_meta( $order_id, '_paysoncheckout_reservation_activated', ( new DateTime( $payson_order_tmp['history']['shipped'] ) )->format( 'Y-m-d H:i:s' ) );
-			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_order_tmp['status'] );
+			$order->update_meta_data('_paysoncheckout_reservation_activated', ( new DateTime( $payson_order_tmp['history']['shipped'] ) )->format( 'Y-m-d H:i:s' ) );
+			$order->update_meta_data('_paysoncheckout_order_status', $payson_order_tmp['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully activated.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->save();
 			return;
@@ -207,10 +208,13 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		// Check if we where successfull.
 		if ( ! is_wp_error( $payson_order ) && 'shipped' == $payson_order['status'] ) {
 			// Add time stamp, used to prevent duplicate activations for the same order.
-			update_post_meta( $order_id, '_paysoncheckout_reservation_activated', current_time( 'mysql' ) );
+			$order->update_meta_data('_paysoncheckout_reservation_activated', current_time( 'mysql' ) );
+
 			// Add Payson order status.
-			update_post_meta( $order_id, '_paysoncheckout_order_status', $payson_order['status'] );
+			$order->update_meta_data('_paysoncheckout_order_status', $payson_order['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully activated.', 'woocommerce-gateway-paysoncheckout' ) );
+			$order->save();
+
 		} elseif ( is_wp_error( $payson_order ) ) {
 			// If error save error message.
 			$code          = $payson_order->get_error_code();

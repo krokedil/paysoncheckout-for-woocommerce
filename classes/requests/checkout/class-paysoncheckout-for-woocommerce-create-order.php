@@ -37,7 +37,9 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 
 		// If this is a pay for order, save the payment id to the order.
 		if ( ! empty( $order_id ) ) {
-			update_post_meta( $order_id, '_payson_checkout_id', $formated_response['id'] );
+			$order = wc_get_order( $order_id );
+			$order->update_meta_data( '_payson_checkout_id', $formated_response['id'] );
+			$order->save();
 		}
 		return $formated_response;
 	}

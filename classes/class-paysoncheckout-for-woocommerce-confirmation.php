@@ -107,12 +107,14 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		$subscription_id = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
 		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
 		foreach ( $subcriptions as $subcription ) {
-			update_post_meta( $subcription->get_id(), '_payson_subscription_id', $subscription_id );
+			$order->update_meta_data( '_payson_subscription_id', $subscription_id );
+			$order->save();
 		}
 
 		// If subscription is free, then return true.
 		if ( 0 >= $order->get_total() ) {
-			update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
+			$order->update_meta_data( '_payson_subscription_id', $subscription_id );
+			$order->save();
 			$order->payment_complete( $subscription_id );
 			return true;
 		}
@@ -131,8 +133,9 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		}
 
 		// Save meta data to order and subscriptions.
-		update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
-		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
+		$order->update_meta_data( '_payson_subscription_id', $subscription_id );
+		$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
+		$order->save();
 
 		if ( 'readyToShip' === $payson_order['status'] ) {
 			// Set payment complete if all is successful.
@@ -162,7 +165,8 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 
 		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
 			// Set post meta and complete order.
-			update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+			$order->update_meta_data( '_payson_checkout_id', $payment_id );
+			$order->save();
 			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
 			$order->payment_complete( $payson_order['purchaseId'] );
 			return true;

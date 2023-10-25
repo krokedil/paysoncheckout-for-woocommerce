@@ -48,8 +48,10 @@ function pco_wc_show_pay_for_order_snippet() {
 
 		// Create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order( $order_id );
-		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
-			update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
+		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) { 
+			$order = wc_get_order( $order_id );
+			$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
+			$order->save();
 		}
 		if ( is_wp_error( $payson_order ) ) {
 			// If error print error message.

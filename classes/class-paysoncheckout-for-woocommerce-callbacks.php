@@ -125,7 +125,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		foreach ( $orders as $order_id ) {
 			$subscription_id  = get_post_meta( $order_id, '_payson_subscription_id', true );
 			$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
-
+			
 			if ( $order_payment_id === $payment_id || $subscription_id === $payment_id ) {
 				$order_id_match = $order_id;
 				break;
@@ -155,7 +155,8 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		if ( 'readyToShip' === $payson_order['status'] ) {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order approved by Payson: ' . $payment_id );
 			$order->add_order_note( sprintf( __( 'Subscription payment approved by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
-			update_post_meta( $order->get_id(), '_payson_renewal_confirmed', true );
+			$order->update_meta_data( '_payson_renewal_confirmed', true );
+			$order->save();		
 			if ( ! wcs_order_contains_renewal( $order ) ) {
 				$order->payment_complete( $payment_id );
 			}
