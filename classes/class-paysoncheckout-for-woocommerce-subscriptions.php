@@ -36,9 +36,10 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 		$subscription_id = get_post_meta( $order_id, '_payson_subscription_id', true );
 
 		if ( empty( $subscription_id ) ) {
-			$subscription_id = get_post_meta( WC_Subscriptions_Renewal_Order::get_parent_order_id( $order_id ), '_payson_subscription_id', true );
-			$order->update_meta_data('_payson_subscription_id', $subscription_id );
-			$order->save();
+			$subscription = wc_get_order(WC_Subscriptions_Renewal_Order::get_parent_order_id( $order_id ));
+			$subscription_id = $subscription->get_meta('_payson_subscription_id')
+			$subscription->update_meta_data('_payson_subscription_id', $subscription_id );
+			$subscription->save();
 		}
 
 		$payson_order = PCO_WC()->recurring_payment->request( $subscription_id, $order_id );

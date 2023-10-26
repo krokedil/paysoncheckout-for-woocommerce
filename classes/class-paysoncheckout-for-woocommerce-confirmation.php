@@ -107,8 +107,8 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		$subscription_id = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
 		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
 		foreach ( $subcriptions as $subcription ) {
-			$order->update_meta_data( '_payson_subscription_id', $subscription_id );
-			$order->save();
+			$subcription->update_meta_data( '_payson_subscription_id', $subscription_id );
+			$subcription->save();
 		}
 
 		// If subscription is free, then return true.
