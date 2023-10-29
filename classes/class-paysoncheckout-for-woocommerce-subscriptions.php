@@ -37,7 +37,7 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 
 		if ( empty( $subscription_id ) ) {
 			$subscription = wc_get_order(WC_Subscriptions_Renewal_Order::get_parent_order_id( $order_id ));
-			$subscription_id = $subscription->get_meta('_payson_subscription_id')
+			$subscription_id = $subscription->get_meta('_payson_subscription_id');
 			$order->update_meta_data('_payson_subscription_id', $subscription_id );
 			$order->save();
 		}
