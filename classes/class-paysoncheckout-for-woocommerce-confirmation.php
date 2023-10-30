@@ -58,17 +58,17 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 			return;
 		}
 
+		$order = wc_get_order( $order_id );
+
 		// Get the pco_order_id if we don't have one.
 		if ( empty( $pco_order_id ) ) {
-			$pco_order_id = get_post_meta( $order_id, '_payson_checkout_id' );
+			$pco_order_id = $order->get_meta('_payson_checkout_id');
 		}
 
 		// Return if we still don't have a pco_order_id.
 		if ( empty( $pco_order_id ) ) {
 			return;
 		}
-
-		$order = wc_get_order( $order_id );
 
 		// Check that the order status is correct before continuing.
 		if ( $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {

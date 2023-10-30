@@ -45,8 +45,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		if ( 'paysoncheckout' != $order->get_payment_method() ) {
 			return;
 		}
-
-		if ( ! empty( get_post_meta( $order_id, '_paysoncheckout_reservation_activated', true ) ) ) {
+		if ( ! empty( $order->get_meta('_paysoncheckout_reservation_activated') ) ) {
 			return;
 		}
 

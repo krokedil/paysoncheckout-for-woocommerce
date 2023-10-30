@@ -48,8 +48,9 @@ function pco_wc_show_pay_for_order_snippet() {
 
 		// Create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order( $order_id );
+		$order = wc_get_order( $order_id );
+
 		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) { 
-			$order = wc_get_order( $order_id );
 			$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
 			$order->save();
 		}
@@ -64,7 +65,8 @@ function pco_wc_show_pay_for_order_snippet() {
 		</ul>
 			<?php
 			// Remove the post meta so that we can create a new order with payson on an error.
-			delete_post_meta( $order_id, '_payson_checkout_id' );
+			$order->delete_meta_data('_payson_checkout_id');
+			$order->save();
 		} else {
 			$snippet = $payson_order['snippet'];
 			echo $snippet;
@@ -82,9 +84,10 @@ function pco_wc_show_pay_for_order_snippet() {
 function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
 	$order = wc_get_order( $order_id );
 	if ( $subscription ) {
-		$payment_id = get_post_meta( $order_id, '_payson_subscription_id', true );
+		$payment_id = $order->get_meta('_payson_subscription_id');
+
 	} else {
-		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
+		$payment_id = $order->get_meta('_payson_checkout_id');
 	}
 	$payson_order = pco_wc_get_order( $payment_id, $subscription );
 

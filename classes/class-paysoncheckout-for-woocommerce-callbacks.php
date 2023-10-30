@@ -123,9 +123,11 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		$order_id_match = '';
 
 		foreach ( $orders as $order_id ) {
-			$subscription_id  = get_post_meta( $order_id, '_payson_subscription_id', true );
-			$order_payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
-			
+			$order = wc_get_order( $order_id );
+
+			$subscription_id  = $order->get_post_meta('_payson_subscription_id');
+			$order_payment_id = $order->get_post_meta('_payson_checkout_id');
+
 			if ( $order_payment_id === $payment_id || $subscription_id === $payment_id ) {
 				$order_id_match = $order_id;
 				break;
