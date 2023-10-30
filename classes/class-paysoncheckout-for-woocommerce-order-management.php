@@ -64,14 +64,14 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		$subscription = $this->check_if_subscription( $order );
 
 		// Check if we have a payment id.
-		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
+		$payment_id = $order->get_meta('_payson_checkout_id');
 		if ( empty( $payment_id ) ) {
 			$order->add_order_note( __( 'PaysonCheckout reservation could not be cancelled. Missing Payson payment id.', 'woocommerce-gateway-paysoncheckout' ) );
 			return;
 		}
 
 		// If this reservation was already cancelled, do nothing.
-		if ( get_post_meta( $order_id, '_paysoncheckout_reservation_cancelled', true ) ) {
+		if ( $order->get_meta( '_paysoncheckout_reservation_cancelled') ) {
 			$order->add_order_note( __( 'Could not cancel PaysonCheckout reservation, PaysonCheckout reservation is already cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 			return;
 		}
@@ -139,7 +139,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		if (
 			class_exists( 'WC_Subscriptions' )
 			&& wcs_order_contains_renewal( $order )
-			&& empty( get_post_meta( $order->get_id(), '_payson_renewal_confirmed', true ) )
+			&& empty( $order->get_meta( '_payson_renewal_confirmed' ) )
+
 		) {
 			$order->add_order_note( __( 'Please wait for Payson to confirm the order before processing the order.', 'woocommerce-gateway-payson' ) );
 			$order->set_status( 'on-hold' );
@@ -161,7 +162,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		}
 
 		// Check if we have a payment id.
-		$payment_id = get_post_meta( $order_id, '_payson_checkout_id', true );
+		$payment_id = $order->get_meta( '_payson_checkout_id' );
+
 		if ( empty( $payment_id ) ) {
 			$order->add_order_note( __( 'PaysonCheckout reservation could not be activated. Missing Payson payment id.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->set_status( 'on-hold' );
@@ -170,9 +172,9 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		}
 
 		// If this reservation was already activated, do nothing.
-		if ( get_post_meta( $order_id, '_paysoncheckout_reservation_activated', true ) ) {
-			$order->add_order_note( __( 'Could not activate PaysonCheckout reservation, PaysonCheckout reservation is already activated.', 'woocommerce-gateway-paysoncheckout' ) );
-			$order->save();
+		if ( $order->get_meta( '_paysoncheckout_reservation_activated' ) ) {
+			 $order->add_order_note( __( 'Could not activate PaysonCheckout reservation, PaysonCheckout reservation is already activated.', 'woocommerce-gateway-paysoncheckout' ) );
+			 $order->save();
 			return;
 		}
 

@@ -100,11 +100,11 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		}
 
 		// Check if we have set the subscription id already. To prevent issues with customers reloading the confirmation page.
-		if ( get_post_meta( $order_id, '_payson_subscription_id', true ) ) {
+		if ( $order->get_meta( '_payson_subscription_id' ) ) {
 			return true;
 		}
 
-		$subscription_id = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
+		$subscription_id = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : $order->get_meta( '_payson_checkout_id' );
 		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
 		foreach ( $subcriptions as $subcription ) {
 			$subcription->update_meta_data( '_payson_subscription_id', $subscription_id );
@@ -154,9 +154,9 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 	 * @return bool|void
 	 */
 	public function confirm_payson_order( $order_id ) {
-		$payment_id   = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
-		$payson_order = pco_wc_get_order( $payment_id );
 		$order        = wc_get_order( $order_id );
+		$payment_id   = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : $order->get_meta( '_payson_checkout_id' );
+		$payson_order = pco_wc_get_order( $payment_id );
 
 		// If the order is already completed, return.
 		if ( null !== $order->get_date_paid() ) {
