@@ -107,7 +107,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 			// Add time stamp, used to prevent duplicate cancellations for the same order.
 			$order->update_meta_data( '_paysoncheckout_reservation_cancelled', current_time( 'mysql' ) );
 			// Add Payson order status.
-			$order->update_meta_data( $order_id, '_paysoncheckout_order_status', $payson_order['status'] );
+			$order->update_meta_data( '_paysoncheckout_order_status', $payson_order['status'] );
 			$order->save();
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 		} elseif ( is_wp_error( $payson_order ) ) {
