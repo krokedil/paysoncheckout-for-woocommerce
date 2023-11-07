@@ -1,7 +1,8 @@
 .idea/
 SyncToy_*.dat
 node_modules/
-package-lock.json
 wp/
+
+/vendor
 
 .DS_Store
