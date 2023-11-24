@@ -31,7 +31,7 @@ class PaysonCheckout_For_WooCommerce_Helper_GUI {
 	 * @return string $payson_language The Payson language code.
 	 */
 	public function get_payson_language() {
-		$iso_code      = explode( '_', get_locale() );
+		$iso_code      = preg_split( '/[_-]/', get_locale() );
 		$shop_language = $iso_code[0];
 		switch ( $shop_language ) {
 			case 'sv':
