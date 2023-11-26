@@ -12,7 +12,7 @@
  * Domain Path:     /languages
  *
  * WC requires at least: 4.0
- * WC tested up to: 8.2.0
+ * WC tested up to: 8.3.1
  *
  * Copyright:       © 2016-2023 Krokedil.
  * License:         GNU General Public License v3.0
@@ -193,7 +193,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			add_action( 'before_woocommerce_init', array( $this, 'declare_wc_compatibility' ) );
 		}
 
-		public function declare_wc_compatibility () {
+		public function declare_wc_compatibility() {
 			if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
 				\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 			}
