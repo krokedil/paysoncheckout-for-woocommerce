@@ -58,17 +58,17 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 			return;
 		}
 
+		$order = wc_get_order( $order_id );
+
 		// Get the pco_order_id if we don't have one.
 		if ( empty( $pco_order_id ) ) {
-			$pco_order_id = get_post_meta( $order_id, '_payson_checkout_id' );
+			$pco_order_id = $order->get_meta('_payson_checkout_id');
 		}
 
 		// Return if we still don't have a pco_order_id.
 		if ( empty( $pco_order_id ) ) {
 			return;
 		}
-
-		$order = wc_get_order( $order_id );
 
 		// Check that the order status is correct before continuing.
 		if ( $order->has_status( array( 'on-hold', 'processing', 'completed' ) ) ) {
@@ -100,19 +100,21 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		}
 
 		// Check if we have set the subscription id already. To prevent issues with customers reloading the confirmation page.
-		if ( get_post_meta( $order_id, '_payson_subscription_id', true ) ) {
+		if ( $order->get_meta( '_payson_subscription_id' ) ) {
 			return true;
 		}
 
-		$subscription_id = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
+		$subscription_id = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : $order->get_meta( '_payson_checkout_id' );
 		$subcriptions    = wcs_get_subscriptions_for_order( $order_id );
 		foreach ( $subcriptions as $subcription ) {
-			update_post_meta( $subcription->get_id(), '_payson_subscription_id', $subscription_id );
+			$subcription->update_meta_data( '_payson_subscription_id', $subscription_id );
+			$subcription->save();
 		}
 
 		// If subscription is free, then return true.
 		if ( 0 >= $order->get_total() ) {
-			update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
+			$order->update_meta_data( '_payson_subscription_id', $subscription_id );
+			$order->save();
 			$order->payment_complete( $subscription_id );
 			return true;
 		}
@@ -131,8 +133,9 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 		}
 
 		// Save meta data to order and subscriptions.
-		update_post_meta( $order_id, '_payson_subscription_id', $subscription_id );
-		update_post_meta( $order_id, '_payson_checkout_id', $payson_order['id'] );
+		$order->update_meta_data( '_payson_subscription_id', $subscription_id );
+		$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
+		$order->save();
 
 		if ( 'readyToShip' === $payson_order['status'] ) {
 			// Set payment complete if all is successful.
@@ -151,9 +154,9 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 	 * @return bool|void
 	 */
 	public function confirm_payson_order( $order_id ) {
-		$payment_id   = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : get_post_meta( $order_id, '_payson_checkout_id', true );
-		$payson_order = pco_wc_get_order( $payment_id );
 		$order        = wc_get_order( $order_id );
+		$payment_id   = ( null !== WC()->session && ! empty( WC()->session->get( 'payson_payment_id' ) ) ) ? WC()->session->get( 'payson_payment_id' ) : $order->get_meta( '_payson_checkout_id' );
+		$payson_order = pco_wc_get_order( $payment_id );
 
 		// If the order is already completed, return.
 		if ( null !== $order->get_date_paid() ) {
@@ -162,7 +165,8 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 
 		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
 			// Set post meta and complete order.
-			update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+			$order->update_meta_data( '_payson_checkout_id', $payment_id );
+			$order->save();
 			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
 			$order->payment_complete( $payson_order['purchaseId'] );
 			return true;
