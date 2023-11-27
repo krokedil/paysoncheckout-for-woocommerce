@@ -65,6 +65,10 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_available() {
+		if ( isset( $_GET['change_payment_method'] ) ) {
+			return true;
+		}
+
 		$is_pay_for_order = false;
 		if ( is_wc_endpoint_url( 'order-pay' ) ) {
 			$is_pay_for_order = true;
@@ -163,7 +167,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$payment_id   = WC()->session->get( 'payson_payment_id' );
 		$payson_order = pco_wc_get_order( $payment_id, true );
 		$payson_order = PCO_WC()->update_recurring_reference->request( $order_id, $payson_order );
-		$order = wc_get_order( $order_id );
+		$order        = wc_get_order( $order_id );
 		$order->update_meta_data( '_payson_checkout_id', $payment_id );
 		$order->save();
 		return $payson_order;
@@ -187,8 +191,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 
 		$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
 
-		$order        = wc_get_order( $order_id );
-		$order->update_meta_data('_payson_checkout_id', $payment_id);
+		$order = wc_get_order( $order_id );
+		$order->update_meta_data( '_payson_checkout_id', $payment_id );
 		$order->save();
 
 		$total_amount = $payson_order['order']['totalPriceIncludingTax']; // Uses the same "major units" similar to WC_Order->get_total().
