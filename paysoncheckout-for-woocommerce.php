@@ -119,7 +119,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			$this->recurring_payment          = new PaysonCheckout_For_WooCommerce_Create_Recurring_Payment();
 			$this->get_recurring_payment      = new PaysonCheckout_For_WooCommerce_Get_Recurring_Payment();
 			$this->update_recurring_payment   = new PaysonCheckout_For_WooCommerce_Update_Recurring_Payment();
-			$this->get_account                = '';
 
 			// Request Helpers.
 			$this->cart_items    = new PaysonCheckout_For_WooCommerce_Helper_Cart();
