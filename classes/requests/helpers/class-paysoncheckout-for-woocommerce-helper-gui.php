@@ -35,21 +35,20 @@ class PaysonCheckout_For_WooCommerce_Helper_GUI {
 		$shop_language = $iso_code[0];
 		switch ( $shop_language ) {
 			case 'sv':
-				$payson_language = 'sv';
-				break;
+				return 'sv';
 			case 'fi':
-				$payson_language = 'fi';
-				break;
+				return 'fi';
 			case 'es':
-				$payson_language = 'es';
-				break;
+				return 'es';
 			case 'de':
-				$payson_language = 'de';
-				break;
+				return 'de';
+			case 'da':
+				return 'da';
+			case 'nb' || 'nn':
+				return 'no';
 			default:
-				$payson_language = 'en';
+				return 'en';
 		}
-		return $payson_language;
 	}
 
 	/**
