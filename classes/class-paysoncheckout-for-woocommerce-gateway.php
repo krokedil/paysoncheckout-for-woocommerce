@@ -35,7 +35,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$this->merchant_id      = $this->get_option( 'merchant_id' );
 		$this->api_key          = $this->get_option( 'api_key' );
 		$this->color_scheme     = $this->get_option( 'color_scheme' );
-		$this->request_phone    = $this->get_option( 'request_phone' );
 		$this->debug            = $this->get_option( 'debug' );
 		$this->order_management = $this->get_option( 'order_management' );
 
