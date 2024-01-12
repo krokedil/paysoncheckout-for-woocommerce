@@ -103,9 +103,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			// Load scripts.
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ) );
 
-			// Redirect for Pay for order purchases.
-			add_action( 'wp_head', array( $this, 'redirect_to_thankyou' ) );
-
 			// Set variables for shorthand access to classes.
 			// Requests.
 			$this->requests                   = new PaysonCheckout_For_WooCommerce_Request();
@@ -285,21 +282,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			}
 		}
 
-		public function redirect_to_thankyou() {
-			$pco_confirm = filter_input( INPUT_GET, 'pco_confirm', FILTER_SANITIZE_STRING );
-			$wc_order_id = filter_input( INPUT_GET, 'wc_order_id', FILTER_SANITIZE_STRING );
-
-			if ( ! empty( $pco_confirm ) && ! empty( $wc_order_id ) ) {
-				PaysonCheckout_For_WooCommerce_Logger::log( $wc_order_id . ': Confirmation endpoint hit for pay for order purchase.' );
-
-				$order = wc_get_order( $wc_order_id );
-				// Confirm, redirect and exit.
-				PaysonCheckout_For_WooCommerce_Logger::log( $wc_order_id . ': Confirm the Payson pay for order purchase from the confirmation page.' );
-				( new PaysonCheckout_For_WooCommerce_Gateway() )->process_standard_payson_order( $wc_order_id );
-				header( 'Location:' . $order->get_checkout_order_received_url() );
-				exit;
-			}
-		}
 	}
 	PaysonCheckout_For_WooCommerce::get_instance();
 
