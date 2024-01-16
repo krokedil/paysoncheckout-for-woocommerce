@@ -45,7 +45,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		if ( 'paysoncheckout' != $order->get_payment_method() ) {
 			return;
 		}
-		if ( ! empty( $order->get_meta('_paysoncheckout_reservation_activated') ) ) {
+		if ( ! empty( $order->get_meta( '_paysoncheckout_reservation_activated' ) ) ) {
 			return;
 		}
 
@@ -64,14 +64,14 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		$subscription = $this->check_if_subscription( $order );
 
 		// Check if we have a payment id.
-		$payment_id = $order->get_meta('_payson_checkout_id');
+		$payment_id = $order->get_meta( '_payson_checkout_id' );
 		if ( empty( $payment_id ) ) {
 			$order->add_order_note( __( 'PaysonCheckout reservation could not be cancelled. Missing Payson payment id.', 'woocommerce-gateway-paysoncheckout' ) );
 			return;
 		}
 
 		// If this reservation was already cancelled, do nothing.
-		if ( $order->get_meta( '_paysoncheckout_reservation_cancelled') ) {
+		if ( $order->get_meta( '_paysoncheckout_reservation_cancelled' ) ) {
 			$order->add_order_note( __( 'Could not cancel PaysonCheckout reservation, PaysonCheckout reservation is already cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 			return;
 		}
@@ -89,7 +89,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 			// Check if the order has already been canceled through the merchant portal.
 		} elseif ( isset( $payson_order_tmp['history']['canceled'] ) ) {
-			$order->update_meta_data( '_paysoncheckout_reservation_cancelled', ( new DateTime( $payson_order_tmp['history']['canceled'] ) )->format( 'Y-m-d H:i:s' )  );
+			$order->update_meta_data( '_paysoncheckout_reservation_cancelled', ( new DateTime( $payson_order_tmp['history']['canceled'] ) )->format( 'Y-m-d H:i:s' ) );
 			$order->update_meta_data( '_paysoncheckout_order_status', $payson_tmp_order['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully cancelled.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->save();
@@ -136,15 +136,11 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		}
 
 		// If it is a subscription, check if the order has been confirmed.
-		if (
-			class_exists( 'WC_Subscriptions' )
-			&& wcs_order_contains_renewal( $order )
-			&& empty( $order->get_meta( '_payson_renewal_confirmed' ) )
-
-		) {
+		if ( function_exists( 'wcs_order_contains_renewal' ) && wcs_order_contains_renewal( $order ) && empty( $order->get_meta( '_payson_renewal_confirmed' ) ) ) {
 			$order->add_order_note( __( 'Please wait for Payson to confirm the order before processing the order.', 'woocommerce-gateway-payson' ) );
 			$order->set_status( 'on-hold' );
 			$order->save();
+
 			return;
 		}
 
@@ -193,8 +189,8 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 
 			// Check if the order has already been activated through the merchant portal.
 		} elseif ( isset( $payson_order_tmp['history']['shipped'] ) ) {
-			$order->update_meta_data('_paysoncheckout_reservation_activated', ( new DateTime( $payson_order_tmp['history']['shipped'] ) )->format( 'Y-m-d H:i:s' ) );
-			$order->update_meta_data('_paysoncheckout_order_status', $payson_order_tmp['status'] );
+			$order->update_meta_data( '_paysoncheckout_reservation_activated', ( new DateTime( $payson_order_tmp['history']['shipped'] ) )->format( 'Y-m-d H:i:s' ) );
+			$order->update_meta_data( '_paysoncheckout_order_status', $payson_order_tmp['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully activated.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->save();
 			return;
@@ -209,10 +205,10 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		// Check if we where successfull.
 		if ( ! is_wp_error( $payson_order ) && 'shipped' == $payson_order['status'] ) {
 			// Add time stamp, used to prevent duplicate activations for the same order.
-			$order->update_meta_data('_paysoncheckout_reservation_activated', current_time( 'mysql' ) );
+			$order->update_meta_data( '_paysoncheckout_reservation_activated', current_time( 'mysql' ) );
 
 			// Add Payson order status.
-			$order->update_meta_data('_paysoncheckout_order_status', $payson_order['status'] );
+			$order->update_meta_data( '_paysoncheckout_order_status', $payson_order['status'] );
 			$order->add_order_note( __( 'PaysonCheckout reservation was successfully activated.', 'woocommerce-gateway-paysoncheckout' ) );
 			$order->save();
 
