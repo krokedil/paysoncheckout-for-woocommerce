@@ -19,7 +19,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Order extends PaysonChecko
 	 * @return array
 	 */
 	public function request() {
-		$request_url  = $this->enviroment . 'RecurringSubscriptions';
+		$request_url  = $this->environment . 'RecurringSubscriptions';
 		$request_args = apply_filters( 'pco_create_recurring_order_args', $this->get_request_args() );
 		$response     = wp_remote_request( $request_url, $request_args );
 		$code         = wp_remote_retrieve_response_code( $response );

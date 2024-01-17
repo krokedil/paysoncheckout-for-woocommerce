@@ -22,7 +22,7 @@ class PaysonCheckout_For_WooCommerce_Manage_Order extends PaysonCheckout_For_Woo
 	 */
 	public function request( $order_id = null, $payson_data = null, $payment_id = null ) {
 		$payment_id        = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
-		$request_url       = $this->enviroment . 'Checkouts/' . $payment_id;
+		$request_url       = $this->environment . 'Checkouts/' . $payment_id;
 		$request_args      = apply_filters( 'pco_manage_order_args', $this->get_request_args( $order_id, $payson_data, $payment_id ) );
 		$response          = wp_remote_request( $request_url, $request_args );
 		$code              = wp_remote_retrieve_response_code( $response );
