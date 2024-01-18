@@ -42,9 +42,9 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 	 * Confirm order
 	 */
 	public function pco_confirm_order() {
-		$pco_confirm  = filter_input( INPUT_GET, 'pco_confirm', FILTER_SANITIZE_STRING );
-		$pco_order_id = filter_input( INPUT_GET, 'pco_order_id', FILTER_SANITIZE_STRING );
-		$order_key    = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_STRING );
+		$pco_confirm  = filter_input( INPUT_GET, 'pco_confirm', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$pco_order_id = filter_input( INPUT_GET, 'pco_order_id', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$order_key    = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		// Return if we dont have our parameters set.
 		if ( empty( $pco_confirm ) || empty( $order_key ) ) {
@@ -62,7 +62,7 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 
 		// Get the pco_order_id if we don't have one.
 		if ( empty( $pco_order_id ) ) {
-			$pco_order_id = $order->get_meta('_payson_checkout_id');
+			$pco_order_id = $order->get_meta( '_payson_checkout_id' );
 		}
 
 		// Return if we still don't have a pco_order_id.

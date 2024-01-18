@@ -46,6 +46,142 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		protected static $instance;
 
 		/**
+		 * Main request class.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Request
+		 */
+		public $requests;
+
+		/**
+		 * Class for request create order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Create_Order
+		 */
+		public $create_order;
+		/**
+		 * Class for request update order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Order
+		 */
+		public $update_order;
+		/**
+		 * Class for request manage order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Manage_Order
+		 */
+		public $manage_order;
+		/**
+		 * Class for request update order reference.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Reference
+		 */
+		public $update_reference;
+		/**
+		 * Class for request get order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Get_Order
+		 */
+		public $get_order;
+		/**
+		 * Class for request refund order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Refund_Order
+		 */
+		public $refund_order;
+		/**
+		 * Class for request create recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Create_Recurring_Order
+		 */
+		public $create_recurring_order;
+		/**
+		 * Class for request update recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Recurring_Order
+		 */
+		public $update_recurring_order;
+		/**
+		 * Class for request update recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Recurring_Reference
+		 */
+		public $update_recurring_reference;
+		/**
+		 * Class for request get order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Get_Recurring_Order
+		 */
+		public $get_recurring_order;
+		/**
+		 * Class for request create recurring payment.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Create_Recurring_Payment
+		 */
+		public $recurring_payment;
+		/**
+		 * Class for request get payment.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Get_Recurring_Payment
+		 */
+		public $get_recurring_payment;
+		/**
+		 * Class for request update recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Recurring_Payment
+		 */
+		public $update_recurring_payment;
+
+		/**
+		 * Helper class for cart management.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Cart
+		 */
+		public $cart_items;
+		/**
+		 * Helper class for merchant object.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Merchant
+		 */
+		public $merchant_urls;
+		/**
+		 * Class to generate customer data for requests.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Customer
+		 */
+		public $customer;
+		/**
+		 * Class to generate gui data for requests.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_GUI
+		 */
+		public $gui;
+		/**
+		 * Helper class for merchant object.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Agreement
+		 */
+		public $agreement;
+		/**
+		 * Helper class for order management.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Order
+		 */
+		public $order_items;
+
+		/**
+		 * Order management class.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Order_Management
+		 */
+		public $order_management;
+		/**
+		 * PaysonCheckout Subscription class.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Subscriptions
+		 */
+		public $subscriptions;
+
+		/**
 		 * Class constructor.
 		 */
 		public function __construct() {
@@ -119,7 +255,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			$this->recurring_payment          = new PaysonCheckout_For_WooCommerce_Create_Recurring_Payment();
 			$this->get_recurring_payment      = new PaysonCheckout_For_WooCommerce_Get_Recurring_Payment();
 			$this->update_recurring_payment   = new PaysonCheckout_For_WooCommerce_Update_Recurring_Payment();
-			$this->get_account                = '';
 
 			// Request Helpers.
 			$this->cart_items    = new PaysonCheckout_For_WooCommerce_Helper_Cart();
