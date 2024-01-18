@@ -113,6 +113,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			$this->get_order                  = new PaysonCheckout_For_WooCommerce_Get_Order();
 			$this->refund_order               = new PaysonCheckout_For_WooCommerce_Refund_Order();
 			$this->create_recurring_order     = new PaysonCheckout_For_WooCommerce_Create_Recurring_Order();
+			$this->cancel_recurring_order     = new PaysonCheckout_For_WooCommerce_Cancel_Recurring_Order();
 			$this->update_recurring_order     = new PaysonCheckout_For_WooCommerce_Update_Recurring_Order();
 			$this->update_recurring_reference = new PaysonCheckout_For_WooCommerce_Update_Recurring_Reference();
 			$this->get_recurring_order        = new PaysonCheckout_For_WooCommerce_Get_Recurring_Order();
@@ -166,6 +167,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/checkout/class-paysoncheckout-for-woocommerce-refund-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/checkout/class-paysoncheckout-for-woocommerce-manage-order.php';
 			// Recurring.
+			include_once PAYSONCHECKOUT_PATH . '/classes/requests/recurring/class-paysoncheckout-for-woocommerce-cancel-recurring-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/recurring/class-paysoncheckout-for-woocommerce-create-recurring-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/recurring/class-paysoncheckout-for-woocommerce-update-recurring-order.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/recurring/class-paysoncheckout-for-woocommerce-update-recurring-reference.php';
