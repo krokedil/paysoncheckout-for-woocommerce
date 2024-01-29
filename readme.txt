@@ -38,6 +38,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.01.29    - version 3.7.0 =
+* Feature       - Added support for WooCommerce's "High-Performance Order Storage" ("HPOS").
+* Feature       - Added support for Danish and Norwegian.
+* Fix           - Resolved deprecation warnings.
+
 = 2023.08.29    - version 3.6.1 =
 * Fix           - Fixed an issue where a string comparison failed due to HTML entities in the item name.
 * Fix           - Revert changes from previous update that prevented renewal of failed subscriptions.

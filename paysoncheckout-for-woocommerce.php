@@ -3,7 +3,7 @@
  * Plugin Name:     PaysonCheckout for WooCommerce
  * Plugin URI:      http://krokedil.com/
  * Description:     Provides a PaysonCheckout payment gateway for WooCommerce.
- * Version:         3.6.1
+ * Version:         3.7.0
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
  * Developer:       Krokedil
@@ -14,7 +14,7 @@
  * WC requires at least: 4.0
  * WC tested up to: 8.5.0
  *
- * Copyright:       © 2016-2023 Krokedil.
+ * Copyright:       © 2016-2024 Krokedil.
  * License:         GNU General Public License v3.0
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.html
  *
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'PAYSONCHECKOUT_VERSION', '3.6.1' );
+define( 'PAYSONCHECKOUT_VERSION', '3.7.0' );
 define( 'PAYSONCHECKOUT_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_LIVE_ENV', 'https://api.payson.se/2.0/' );

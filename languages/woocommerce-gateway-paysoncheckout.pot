@@ -1,4 +1,4 @@
-# Copyright (C) 2023 paysoncheckout-for-woocommerce
+# Copyright (C) 2024 paysoncheckout-for-woocommerce
 # This file is distributed under the same license as the paysoncheckout-for-woocommerce package.
 msgid ""
 msgstr ""
@@ -8,6 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Krokedil <info@krokedil.se>\n"
 "Last-Translator: Krokedil <info@krokedil.se>\n"
+"POT-Creation-Date: 2024-01-29 09:16+0000\n"
 "Report-Msgid-Bugs-To: http://krokedil.se\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
@@ -16,43 +17,40 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../paysoncheckout-for-woocommerce.php:204
+#: ../paysoncheckout-for-woocommerce.php:344
 msgid "Settings"
 msgstr ""
 
-#: ../paysoncheckout-for-woocommerce.php:205
+#: ../paysoncheckout-for-woocommerce.php:345
 msgid "Support"
 msgstr ""
 
-#: ../paysoncheckout-for-woocommerce.php:246, ../includes/paysoncheckout-for-woocommerce-functions.php:198
+#: ../paysoncheckout-for-woocommerce.php:386, ../includes/paysoncheckout-for-woocommerce-functions.php:203
 msgid "Select another payment method"
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:21
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:53
 msgid "Payson"
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:23, ../includes/paysoncheckout-for-woocommerce-form-fields.php:12, ../includes/paysoncheckout-for-woocommerce-form-fields.php:105
-msgstr ""
-
 #. translators: %s is an error message either from WordPress or Payson.
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:181
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:214
 msgid "The Payson order could not be retrieved: %s"
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:193
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:228
 msgid "It seems like the WooCommerce and Payson total amount differs. Please, try again."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:70
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:69
 msgid "PaysonCheckout reservation could not be cancelled. Missing Payson payment id."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:76
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:75
 msgid "Could not cancel PaysonCheckout reservation, PaysonCheckout reservation is already cancelled."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:95, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:112
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:94, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:112
 msgid "PaysonCheckout reservation was successfully cancelled."
 msgstr ""
 
@@ -60,23 +58,23 @@ msgstr ""
 msgid "PaysonCheckout reservation could not be cancelled."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:166
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:168
 msgid "PaysonCheckout reservation could not be activated. Missing Payson payment id."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:174
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:176
 msgid "Could not activate PaysonCheckout reservation, PaysonCheckout reservation is already activated."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:196, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:213
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:198, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:216
 msgid "PaysonCheckout reservation was successfully activated."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:224
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:229
 msgid "PaysonCheckout reservation could not be activatied."
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:249, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:331
+#: ../classes/class-paysoncheckout-for-woocommerce-order-management.php:254, ../classes/class-paysoncheckout-for-woocommerce-order-management.php:336
 msgid "PaysonCheckout reservation was successfully refunded for "
 msgstr ""
 
@@ -90,10 +88,6 @@ msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:18
 msgid "This controls the title which the user sees during checkout."
-msgstr ""
-
-#: ../includes/paysoncheckout-for-woocommerce-form-fields.php:19
-msgid "$this->method_title"
 msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:23
@@ -129,6 +123,7 @@ msgid "Agent ID"
 msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:46, ../includes/paysoncheckout-for-woocommerce-form-fields.php:52
+msgid ""
 msgstr ""
 
 #: ../includes/paysoncheckout-for-woocommerce-form-fields.php:50
