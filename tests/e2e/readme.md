@@ -1,92 +1,39 @@
-# End to End testing
+# E2E Tests with Playwright
 
-## Installation
-To use this E2E testing suite you will need a few things installed.
-- Docker
-- NodeJS
-- Yarn
+#### Description
+This plugin uses E2E testing to ensure functionality. For this we use Playwright to run our tests. These tests will be run automatically when a PR is created, but can also be triggered manually from Github actions using the Workflow Dispatch trigger, which will let you set some parameters that might be useful, such as WordPress and WooCommerce versions.
 
-After cloning the repository, open the `/test/e2e` folder in your command line and trigger the `yarn install` command. This will install the needed node packages that is needed.
+These tests can also be run manually in a local environment, either using a predefined site, or by spinning up a docker container for the tests to use.
 
-## Usage
-To run the tests in your environment, you can do so by opening the folder `/test/e2e` in your terminal. Then entering the command `yarn e2e:test`. This will start the process to create the docker container, install WordPress and WooCommerce, and run the tests. After the tests are done, the docker container will be destroyed and the results of the tests will be printed out in the terminal.
+If you want to run the tests against a local environment you will need to set some additional environment variables in the .env file that is needed for the tests to run. The tests also require access to the API, since it will create the items it needs on the fly for the tests. You can find a full list of requirements bellow.
 
-## Writing tests
-The core of the testing is around placing orders and making sure that the process goes well. This is done by the main test file that we have in the `/test/e2e/tests` folder. This will loop through a list of tests that are described by the `tests.json` file that we have in the `/test/e2e/config` folder.
+#### Requirements to run locally with provided docker container.
+* Docker - [Link](https://www.docker.com/products/docker-desktop/)
+* Node v16 or higher - [Link](https://nodejs.org/en/download/) <sup><sub>recommended to be installed using [NVM](https://github.com/nvm-sh/nvm)</sub></sup>
 
-A test will look like this:
-````
-	{
-		"name": "Test name",
-		"loggedIn": bool,
-		"inclusiveTax": "yes",
-		"shippingInIframe": "yes",
-		"products": ["Product 1 name", "Product 2 name"],
-		"shippingMethod": "shipping_method",
-		"coupons": ["coupon code"],
-		"customerType": "person",
-		"expectedTotal": float,
-		"expectedOrderLines": int
-	}
-````
-To create a new test, simply add a line to the tests.json file and include the following keys with the values you need for your tests.
-- name: The name that you want the test to have in the logs that are printed out after the test is done. It is good to mention in the name what the test actually includes.
-- loggedIn: Set this to `true` or `false`. True for if the customer is not a guest, but should be logged in to an account. And false if the customer is a guest for this test.
-- inclusiveTax: `"yes"` or `"no"` depending on if you want prices to be entered inclusive of tax in WooCommerce. This can be good to change depending on what you want to test for different calculation results. A product that costs 100 with taxes inclusive will always be 100. But with this set to no, the end price in the cart will be 125 if the tax amount is 25%.
-- shippingInIframe: `"yes"` or `"no"`. For Payson checkout we have the option to include shipping options in the iframe or not.
-- products: An array of the names of the products you wish to add to the cart for the test.
-- shippingMethod: The shipping method name/id that you wish to use for the test. Send an empty string ( `""` ) if you don't wish to add one.
-- coupons: Same as products, but send in the coupon codes that you want to apply to the cart during checkout.
-- customerType: `"person"` or `"company"`. Person for B2C tests, and Company for B2B tests.
-- expectedTotal: A float value of the expected price that you expect the test to return. We will check the Payson order to make sure this matches at the end.
-- expectedOrderLines: A int of how many order lines you expect the test to return. We will check the Payson order to make sure this matches at the end.
+##### How to run with provided docker container.
+1. Create a `.env` in the tests folder file following the example in the [.example.env](./.example.env) file. You actually don't need more than the Payson credentials to get it up and running and can comment out the rest.
+2. Open the `tests/e2e` folder in your CLI. For VS Code you can rightclick the folder and press "Open in Integrated Terminal".
+3. Run `npm ci` to install required packages.
+4. Run `npm run docker:up` to let our script setup the docker container. The WP site should now be available locally at http://localhost:8080 and WP username `admin` and password `password` if you would like to access it manually.
+5. Run `npm run test` to run the normal tests, and `npm run test:debug` to run the tests with headless mode turned off to be able to see the browser while the test is running.
+6. When done with the testing, you can run `npm run docker:down` to kill the docker container. Only to be run when you are done with all the testing.
 
-## Adding products, shipping methods and coupons to the environment.
-Similarly to the tests above, we have a json file for all the products, coupons, shipping methods an more that the environment needs to run the tests. These can be expanded on in the same way as above.
+#### Requirements to run locally with your own site.
+* Node v16 or higher - [Link](https://nodejs.org/en/download/) <sup><sub>recommended to be installed using [NVM](https://github.com/nvm-sh/nvm)</sub></sup>
+* A working site with the plugin installed.
+* An account with admin access to the site you want to run the tests on.
+* API keys that work, or using the plugin [WP API - Basic Auth](https://github.com/WP-API/Basic-Auth) which will let us use the admin login as the authorization for the API.
+* A .env file with the required environment variables set. If they are missing the default values will be used instead.
 
-### Products
-````
-{
-	"id": null,
-	"name": "Product name",
-	"sku": "product-sku",
-	"regular_price": "100.00",
-	"virtual": bool,
-	"downloadable": bool,
-	"tax_class": "25"
-}
-````
-- id: Always add this as null. This will be set automatically by our code later.
-- name: The name of the product to be added.
-- sku: The SKU of the product to be added.
-- regular_price: The price of the product sent as a string but formated as a float.
-- virtual: `true` or `false` based on if this is a virtual product or not.
-- downloadable: `true` or `false` based on if this is a downloadable product or not.
-- tax_class: The name of the tax class you wish to apply to the product. We currently have 25, 12, 06 and 00 who all add the tax rate similar to their names.
+##### How to run with your own site.
+1. Ensure that you have a site setup and running using whatever method you want.
+2. Create a `.env` in the tests folder file following the example in the [.example.env](./.example.env) file
+3. Open the `tests/e2e` folder in your CLI. For VS Code you can rightclick the folder and press "Open in Integrated Ierminal".
+4. Run `npm ci` to install required packages.
+5. Run `npm run test` to run the normal tests, and `npm run test:debug` to run the tests with headless mode turned off to be able to see the browser while the test is running.
 
-### Shipping methods
-````
-	{
-		"name": "Sweden",
-		"location": { "code": "SE", "type": "country" },
-		"methods": [
-			{ "method": "flat_rate", "amount": 49 },
-			{ "method": "free_shipping", "amount": 0 }
-		]
-	}
-````
-- name: The name of the shipping zone.
-- location: The location object for the shipping zone. The code is for the country/region/zip code that you want to add, and the type is either country, region or zipcode.
-- methods: An array of methods to add to the shipping zone. Method is the id for the method type being added. And amount is how much the option should cost.
-
-### Coupons
-````
-	{ 
-		"code": "coupon_code",
-		"amount": "10", 
-		"discountType": "fixed_cart" 
-	}
-````
-- code: The coupon code to be used.
-- amount: The amount that the coupon should apply.
-- discountType: The different discount types of coupons that WooCommerce offers. Check the WooCommerce documentation for the different types. But the most common are fixed_cart and percent
+#### Usefull links
+* [Playwright documentation](https://playwright.dev/docs/intro)
+* [Krokedil WC Setup Package](https://krokedil.se)
+* [Krokedil internal e2e documentation](https://app.clickup.com/2423261/v/dc/29yex-1415/29yex-18425)

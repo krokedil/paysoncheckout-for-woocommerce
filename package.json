@@ -1,6 +1,6 @@
 {
 	"name": "paysoncheckout-for-woocommerce",
-	"version": "1.0.0",
+	"version": "3.7.0",
 	"description": "PaysonCheckout for WooCommerce",
 	"main": "gulpfile.js",
 	"repository": "https://github.com/krokedil/paysoncheckout-for-woocommerce.git",
@@ -14,10 +14,15 @@
 		"gulp-uglify": "^3.0.0",
 		"gulp-watch": "^4.3.11",
 		"gulp-wp-pot": "^2.0.7",
-		"prettier": "^1.5.3",
+		"prettier": "npm:wp-prettier@^3.0.3",
 		"pump": "^1.0.2"
 	},
 	"overrides": {
 		"graceful-fs": "^4.2.10"
+	},
+	"scripts": {
+		"lint": "yarn prettier assets/js --paren-spacing --tab-width 4 --print-width 120 --no-semi --write",
+		"makepot": "npx gulp makePOT",
+		"build": "npm run lint && npm run makepot"
 	}
 }

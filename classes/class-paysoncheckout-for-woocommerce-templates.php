@@ -10,6 +10,13 @@
  */
 class PaysonCheckout_For_WooCommerce_Templates {
 	/**
+	 * Checkout layout.
+	 *
+	 * @var string
+	 */
+	private $checkout_layout;
+
+	/**
 	 * Class constructor
 	 */
 	public function __construct() {

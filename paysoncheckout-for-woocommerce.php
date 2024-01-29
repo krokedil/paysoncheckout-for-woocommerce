@@ -3,7 +3,7 @@
  * Plugin Name:     PaysonCheckout for WooCommerce
  * Plugin URI:      http://krokedil.com/
  * Description:     Provides a PaysonCheckout payment gateway for WooCommerce.
- * Version:         3.6.1
+ * Version:         3.7.0
  * Author:          Krokedil
  * Author URI:      http://krokedil.com/
  * Developer:       Krokedil
@@ -12,9 +12,9 @@
  * Domain Path:     /languages
  *
  * WC requires at least: 4.0
- * WC tested up to: 8.0.2
+ * WC tested up to: 8.5.0
  *
- * Copyright:       © 2016-2023 Krokedil.
+ * Copyright:       © 2016-2024 Krokedil.
  * License:         GNU General Public License v3.0
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.html
  *
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'PAYSONCHECKOUT_VERSION', '3.6.1' );
+define( 'PAYSONCHECKOUT_VERSION', '3.7.0' );
 define( 'PAYSONCHECKOUT_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'PAYSONCHECKOUT_LIVE_ENV', 'https://api.payson.se/2.0/' );
@@ -44,6 +44,142 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		 * @var $instance
 		 */
 		protected static $instance;
+
+		/**
+		 * Main request class.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Request
+		 */
+		public $requests;
+
+		/**
+		 * Class for request create order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Create_Order
+		 */
+		public $create_order;
+		/**
+		 * Class for request update order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Order
+		 */
+		public $update_order;
+		/**
+		 * Class for request manage order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Manage_Order
+		 */
+		public $manage_order;
+		/**
+		 * Class for request update order reference.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Reference
+		 */
+		public $update_reference;
+		/**
+		 * Class for request get order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Get_Order
+		 */
+		public $get_order;
+		/**
+		 * Class for request refund order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Refund_Order
+		 */
+		public $refund_order;
+		/**
+		 * Class for request create recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Create_Recurring_Order
+		 */
+		public $create_recurring_order;
+		/**
+		 * Class for request update recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Recurring_Order
+		 */
+		public $update_recurring_order;
+		/**
+		 * Class for request update recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Recurring_Reference
+		 */
+		public $update_recurring_reference;
+		/**
+		 * Class for request get order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Get_Recurring_Order
+		 */
+		public $get_recurring_order;
+		/**
+		 * Class for request create recurring payment.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Create_Recurring_Payment
+		 */
+		public $recurring_payment;
+		/**
+		 * Class for request get payment.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Get_Recurring_Payment
+		 */
+		public $get_recurring_payment;
+		/**
+		 * Class for request update recurring order.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Update_Recurring_Payment
+		 */
+		public $update_recurring_payment;
+
+		/**
+		 * Helper class for cart management.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Cart
+		 */
+		public $cart_items;
+		/**
+		 * Helper class for merchant object.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Merchant
+		 */
+		public $merchant_urls;
+		/**
+		 * Class to generate customer data for requests.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Customer
+		 */
+		public $customer;
+		/**
+		 * Class to generate gui data for requests.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_GUI
+		 */
+		public $gui;
+		/**
+		 * Helper class for merchant object.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Agreement
+		 */
+		public $agreement;
+		/**
+		 * Helper class for order management.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Helper_Order
+		 */
+		public $order_items;
+
+		/**
+		 * Order management class.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Order_Management
+		 */
+		public $order_management;
+		/**
+		 * PaysonCheckout Subscription class.
+		 *
+		 * @var PaysonCheckout_For_WooCommerce_Subscriptions
+		 */
+		public $subscriptions;
 
 		/**
 		 * Class constructor.
@@ -103,9 +239,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			// Load scripts.
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ) );
 
-			// Redirect for Pay for order purchases.
-			add_action( 'wp_head', array( $this, 'redirect_to_thankyou' ) );
-
 			// Set variables for shorthand access to classes.
 			// Requests.
 			$this->requests                   = new PaysonCheckout_For_WooCommerce_Request();
@@ -122,7 +255,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			$this->recurring_payment          = new PaysonCheckout_For_WooCommerce_Create_Recurring_Payment();
 			$this->get_recurring_payment      = new PaysonCheckout_For_WooCommerce_Get_Recurring_Payment();
 			$this->update_recurring_payment   = new PaysonCheckout_For_WooCommerce_Update_Recurring_Payment();
-			$this->get_account                = '';
 
 			// Request Helpers.
 			$this->cart_items    = new PaysonCheckout_For_WooCommerce_Helper_Cart();
@@ -189,6 +321,14 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 
 			// Include include files.
 			include_once PAYSONCHECKOUT_PATH . '/includes/paysoncheckout-for-woocommerce-functions.php';
+
+			add_action( 'before_woocommerce_init', array( $this, 'declare_wc_compatibility' ) );
+		}
+
+		public function declare_wc_compatibility() {
+			if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+				\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+			}
 		}
 
 		/**
@@ -277,21 +417,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			}
 		}
 
-		public function redirect_to_thankyou() {
-			$pco_confirm = filter_input( INPUT_GET, 'pco_confirm', FILTER_SANITIZE_STRING );
-			$wc_order_id = filter_input( INPUT_GET, 'wc_order_id', FILTER_SANITIZE_STRING );
-
-			if ( ! empty( $pco_confirm ) && ! empty( $wc_order_id ) ) {
-				PaysonCheckout_For_WooCommerce_Logger::log( $wc_order_id . ': Confirmation endpoint hit for pay for order purchase.' );
-
-				$order = wc_get_order( $wc_order_id );
-				// Confirm, redirect and exit.
-				PaysonCheckout_For_WooCommerce_Logger::log( $wc_order_id . ': Confirm the Payson pay for order purchase from the confirmation page.' );
-				( new PaysonCheckout_For_WooCommerce_Gateway() )->process_standard_payson_order( $wc_order_id );
-				header( 'Location:' . $order->get_checkout_order_received_url() );
-				exit;
-			}
-		}
 	}
 	PaysonCheckout_For_WooCommerce::get_instance();
 

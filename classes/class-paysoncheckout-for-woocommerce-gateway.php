@@ -13,6 +13,38 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Gateway class.
  */
 class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
+
+	/**
+	 * The merchant (agent) ID.
+	 *
+	 * @var string
+	 */
+	public $merchant_id;
+	/**
+	 * The API key.
+	 *
+	 * @var string
+	 */
+	public $api_key;
+	/**
+	 *  The preferred color scheme.
+	 *
+	 * @var string
+	 */
+	public $color_scheme;
+	/**
+	 * Whether to use the debug log.
+	 *
+	 * @var string
+	 */
+	public $debug;
+	/**
+	 * Order management.
+	 *
+	 * @var string
+	 */
+	public $order_management;
+
 	/**
 	 * Class constructor.
 	 */
@@ -35,7 +67,6 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$this->merchant_id      = $this->get_option( 'merchant_id' );
 		$this->api_key          = $this->get_option( 'api_key' );
 		$this->color_scheme     = $this->get_option( 'color_scheme' );
-		$this->request_phone    = $this->get_option( 'request_phone' );
 		$this->debug            = $this->get_option( 'debug' );
 		$this->order_management = $this->get_option( 'order_management' );
 
@@ -163,7 +194,9 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$payment_id   = WC()->session->get( 'payson_payment_id' );
 		$payson_order = pco_wc_get_order( $payment_id, true );
 		$payson_order = PCO_WC()->update_recurring_reference->request( $order_id, $payson_order );
-		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
+		$order        = wc_get_order( $order_id );
+		$order->update_meta_data( '_payson_checkout_id', $payment_id );
+		$order->save();
 		return $payson_order;
 	}
 
@@ -184,9 +217,11 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		}
 
 		$payson_order = PCO_WC()->update_reference->request( $order_id, $payson_order );
-		update_post_meta( $order_id, '_payson_checkout_id', $payment_id );
 
-		$order        = wc_get_order( $order_id );
+		$order = wc_get_order( $order_id );
+		$order->update_meta_data( '_payson_checkout_id', $payment_id );
+		$order->save();
+
 		$total_amount = $payson_order['order']['totalPriceIncludingTax']; // Uses the same "major units" similar to WC_Order->get_total().
 
 		if ( abs( $total_amount - $order->get_total() ) > 3 ) {

@@ -2,10 +2,11 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 6.3.1
+Tested up to: 6.4.2
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 8.0.2
+WC tested up to: 8.5.0
+
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Stable tag: trunk
@@ -37,6 +38,11 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.01.29    - version 3.7.0 =
+* Feature       - Added support for WooCommerce's "High-Performance Order Storage" ("HPOS").
+* Feature       - Added support for Danish and Norwegian.
+* Fix           - Resolved deprecation warnings.
+
 = 2023.08.29    - version 3.6.1 =
 * Fix           - Fixed an issue where a string comparison failed due to HTML entities in the item name.
 * Fix           - Revert changes from previous update that prevented renewal of failed subscriptions.
