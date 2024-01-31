@@ -30,8 +30,8 @@ class PaysonCheckout_For_WooCommerce_Get_Recurring_Payment extends PaysonCheckou
 			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'GET', 'Payson get recurring payment request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 			PaysonCheckout_For_WooCommerce_Logger::log( $log );
 
-			$formated_response = $this->process_response( $response, $request_args, $request_url );
-			return $formated_response;
+			$formatted_response = $this->process_response( $response, $request_args, $request_url );
+			return $formatted_response;
 		} else {
 			return new WP_Error( '400', 'Missing payment id.' );
 		}

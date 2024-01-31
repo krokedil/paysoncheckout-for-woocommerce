@@ -33,15 +33,15 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'POST', 'Payson create order request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
 
-		$formated_response = $this->process_response( $response, $request_args, $request_url );
+		$formatted_response = $this->process_response( $response, $request_args, $request_url );
 
 		// If this is a pay for order, save the payment id to the order.
 		if ( ! empty( $order_id ) ) {
 			$order = wc_get_order( $order_id );
-			$order->update_meta_data( '_payson_checkout_id', $formated_response['id'] );
+			$order->update_meta_data( '_payson_checkout_id', $formatted_response['id'] );
 			$order->save();
 		}
-		return $formated_response;
+		return $formatted_response;
 	}
 
 	/**
