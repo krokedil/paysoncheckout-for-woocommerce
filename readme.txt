@@ -38,6 +38,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.02.02    - version 3.7.1 =
+* Fix           - Fixed an issue where the incorrect language would be set in the checkout.
+
 = 2024.01.29    - version 3.7.0 =
 * Feature       - Added support for WooCommerce's "High-Performance Order Storage" ("HPOS").
 * Feature       - Added support for Danish and Norwegian.
