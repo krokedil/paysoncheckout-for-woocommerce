@@ -22,7 +22,7 @@ class PaysonCheckout_For_WooCommerce_Update_Order extends PaysonCheckout_For_Woo
 	 */
 	public function request( $order_id = null, $payson_data = null, $payment_id = null ) {
 		$payment_id   = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
-		$request_url  = $this->enviroment . 'Checkouts/' . $payment_id;
+		$request_url  = $this->environment . 'Checkouts/' . $payment_id;
 		$request_args = apply_filters( 'pco_update_order_args', $this->get_request_args( $order_id, $payson_data, $payment_id ) );
 		if ( WC()->session->get( 'pco_wc_update_md5' ) && WC()->session->get( 'pco_wc_update_md5' ) === md5( serialize( $request_args ) ) ) {
 			return false;

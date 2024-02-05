@@ -22,7 +22,7 @@ class PaysonCheckout_For_WooCommerce_Update_Recurring_Payment extends PaysonChec
 	 */
 	public function request( $order_id = null, $payson_data = null, $payment_id = null ) {
 		$payment_id         = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
-		$request_url        = $this->enviroment . 'RecurringPayments/' . $payment_id;
+		$request_url        = $this->environment . 'RecurringPayments/' . $payment_id;
 		$request_args       = apply_filters( 'pco_update_recurring_payment_args', $this->get_request_args( $order_id, $payson_data, $payment_id ) );
 		$response           = wp_remote_request( $request_url, $request_args );
 		$code               = wp_remote_retrieve_response_code( $response );
