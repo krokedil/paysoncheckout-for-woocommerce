@@ -444,9 +444,16 @@ jQuery( function ( $ ) {
                         }
                     }
                 },
-                error: function ( data ) {
-                    pco_wc.logToFile( "AJAX error | " + data )
-                    pco_wc.failOrder( "ajax-error", data )
+                error: function (data) {
+                    let public_message = 'Error: ' + data.status;
+                    try {
+                        public_message = $(data.responseText).text()
+                        pco_wc.logToFile( "AJAX error | " + JSON.stringify(data) )
+                    } catch {
+                        pco_wc.logToFile( "AJAX error | Failed to parse error message." )
+
+                    }
+                    pco_wc.failOrder( "ajax-error", public_message )
                 },
             } )
         },
