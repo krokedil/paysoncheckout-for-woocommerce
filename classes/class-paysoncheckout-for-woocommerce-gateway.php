@@ -96,28 +96,26 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_available() {
-		$is_pay_for_order = false;
-		if ( is_wc_endpoint_url( 'order-pay' ) ) {
-			$is_pay_for_order = true;
-			global $wp;
-			$order_id = $wp->query_vars['order-pay'];
-			$order    = wc_get_order( $order_id );
-		}
-
-		$is_subscription = false;
-		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
-			$is_subscription = true;
-		}
-
-		// Check if is enabled.
 		if ( 'yes' !== $this->enabled ) {
 			return false;
 		}
 
-		// Currency check.
+		$is_pay_for_order = is_wc_endpoint_url( 'order-pay' );
+		if ( $is_pay_for_order ) {
+			$order_id = absint( get_query_var( 'order-pay', 0 ) );
+			$order    = wc_get_order( $order_id );
+		}
+
 		if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ), true ) ) {
 			return false;
 		}
+
+		// Is the customer trying to change payment method for a subscription? No need to check for minimum order amount.
+		if ( PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+			return true;
+		}
+
+		$is_subscription = PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription();
 
 		// Required fields check.
 		if ( ! $this->merchant_id || ! $this->api_key ) {
