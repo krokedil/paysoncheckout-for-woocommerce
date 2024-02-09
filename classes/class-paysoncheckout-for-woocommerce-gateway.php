@@ -167,6 +167,25 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	public function process_payment( $order_id ) {
 		$order = wc_get_order( $order_id );
 
+		$is_change = PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method();
+		if ( $is_change ) {
+			$result = PCO_WC()->create_recurring_order->request();
+			if ( is_wp_error( $result ) ) {
+				return array(
+					'result' => 'error',
+				);
+			}
+
+			$subscription_id = $result['id'];
+			$order->update_meta_data( '_payson_subscription_id', $subscription_id );
+			$order->save();
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $order->get_view_order_url(),
+			);
+		}
+
 		if ( PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order ) ) {
 			$result = $this->update_recurring_reference( $order_id );
 		} else {
