@@ -166,8 +166,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 */
 	public function process_payment( $order_id ) {
 		$order = wc_get_order( $order_id );
-		// Confirm the order.
-		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+
+		if ( PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order ) ) {
 			$result = $this->update_recurring_reference( $order_id );
 		} else {
 			$result = $this->update_order_reference( $order_id );
