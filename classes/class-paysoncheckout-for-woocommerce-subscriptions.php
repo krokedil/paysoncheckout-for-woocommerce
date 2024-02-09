@@ -18,6 +18,21 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_scheduled_subscription_payment_paysoncheckout', array( $this, 'trigger_scheduled_payment' ), 10, 2 );
+		add_filter(
+			'pco_create_recurring_order_args',
+			function ( $args ) {
+				if ( self::is_change_payment_method() ) {
+					$body = json_decode( $args['body'], true );
+
+					$key      = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS );
+					$order_id = wc_get_order_id_by_order_key( $key );
+
+					$body['customer'] = PCO_WC()->customer->get_customer_data( null, $order_id );
+					$args['body']     = json_encode( $body );
+				}
+				return $args;
+			}
+		);
 	}
 
 	/**
