@@ -139,6 +139,17 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 		WC()->cart->calculate_fees();
 		WC()->cart->calculate_totals();
 
+		// Do not update the order if the payson order status is set to readyToShip. This means the order has already been completed.
+		if ( 'readyToShip' === $payson_data['status'] ) {
+			wp_send_json_success(
+				array(
+					'address'   => isset( $payson_data['customer'] ) ? $payson_data['customer'] : null,
+					'changed'   => false,
+					'pco_nonce' => wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce', true, false ),
+				)
+			);
+		}
+
 		// Update the payson order.
 		$payson_order = ( $subscription ) ? PCO_WC()->update_recurring_order->request( null, $payson_data ) : PCO_WC()->update_order->request( null, $payson_data );
 
