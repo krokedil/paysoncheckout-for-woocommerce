@@ -173,7 +173,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return array|bool
 	 */
 	public function process_payment( $order_id ) {
-		$is_subscription = function_exists( 'wcs_is_subscription' ) && wcs_is_subscription( $order_id ) ? true : false;
+		$order           = wc_get_order( $order_id );
+		$is_subscription = PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order );
 		if ( $is_subscription && PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
 			$subscription = wc_get_order( $order_id );
 			return array(
