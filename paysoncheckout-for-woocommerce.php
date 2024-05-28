@@ -361,11 +361,55 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		 * Loads the needed scripts for PaysonCheckout.
 		 */
 		public function load_scripts() {
-			if ( ! is_checkout() || PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+			if ( ! is_checkout() ) {
 				return;
 			}
 
-			// Styling required for both checkout and thankyou page.
+				// Check if we are on the confirmation page or not so we can load the correct JS file for the page.
+			if ( ! isset( $_GET['pco_confirm'] ) ) {
+				// Checkout script.
+				wp_register_script(
+					'pco_wc',
+					PAYSONCHECKOUT_URL . '/assets/js/pco_checkout.js',
+					array( 'jquery' ),
+					PAYSONCHECKOUT_VERSION,
+					true
+				);
+
+				$standard_woo_checkout_fields = array( 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_address_2', 'billing_postcode', 'billing_city', 'billing_phone', 'billing_email', 'billing_state', 'billing_country', 'billing_company', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_address_2', 'shipping_postcode', 'shipping_city', 'shipping_state', 'shipping_country', 'shipping_company', 'terms', 'terms-field', '_wp_http_referer', 'ship_to_different_address' );
+				$order_id                     = null;
+				$is_order_pay                 = false;
+				if ( is_wc_endpoint_url( 'order-pay' ) ) {
+					global $wp;
+					$order_id     = $wp->query_vars['order-pay'];
+					$is_order_pay = true;
+				}
+				$params = array(
+					'ajax_url'                     => admin_url( 'admin-ajax.php' ),
+					'select_another_method_text'   => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
+					'standard_woo_checkout_fields' => $standard_woo_checkout_fields,
+					'address_changed_url'          => WC_AJAX::get_endpoint( 'pco_wc_address_changed' ),
+					'address_changed_nonce'        => wp_create_nonce( 'pco_wc_address_changed' ),
+					'update_order_url'             => WC_AJAX::get_endpoint( 'pco_wc_update_checkout' ),
+					'update_order_nonce'           => wp_create_nonce( 'pco_wc_update_checkout' ),
+					'change_payment_method_url'    => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
+					'change_payment_method_nonce'  => wp_create_nonce( 'pco_wc_change_payment_method' ),
+					'get_order_url'                => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
+					'get_order_nonce'              => wp_create_nonce( 'pco_wc_get_order' ),
+					'log_to_file_url'              => WC_AJAX::get_endpoint( 'pco_wc_log_js' ),
+					'log_to_file_nonce'            => wp_create_nonce( 'pco_wc_log_js' ),
+					'submit_order'                 => WC_AJAX::get_endpoint( 'checkout' ),
+					'order_id'                     => $order_id,
+					'is_order_pay'                 => $is_order_pay,
+				);
+				wp_localize_script(
+					'pco_wc',
+					'pco_wc_params',
+					$params
+				);
+				wp_enqueue_script( 'pco_wc' );
+			}
+
 			wp_register_style(
 				'pco',
 				PAYSONCHECKOUT_URL . '/assets/css/pco_style.css',
@@ -373,56 +417,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 				PAYSONCHECKOUT_VERSION
 			);
 			wp_enqueue_style( 'pco' );
-
-			// JS not needed on the thankyou page.
-			if ( isset( $_GET['pco_confirm'] ) ) {
-				return;
-			}
-
-			// === Checkout page ===
-			wp_register_script(
-				'pco_wc',
-				PAYSONCHECKOUT_URL . '/assets/js/pco_checkout.js',
-				array( 'jquery' ),
-				PAYSONCHECKOUT_VERSION,
-				true
-			);
-
-			$standard_woo_checkout_fields = array( 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_address_2', 'billing_postcode', 'billing_city', 'billing_phone', 'billing_email', 'billing_state', 'billing_country', 'billing_company', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_address_2', 'shipping_postcode', 'shipping_city', 'shipping_state', 'shipping_country', 'shipping_company', 'terms', 'terms-field', '_wp_http_referer', 'ship_to_different_address' );
-			$order_id                     = null;
-			$is_order_pay                 = false;
-			if ( is_wc_endpoint_url( 'order-pay' ) ) {
-				global $wp;
-				$order_id     = $wp->query_vars['order-pay'];
-				$is_order_pay = true;
-			}
-
-			$params = array(
-				'ajax_url'                     => admin_url( 'admin-ajax.php' ),
-				'select_another_method_text'   => __( 'Select another payment method', 'woocommerce-gateway-paysoncheckout' ),
-				'standard_woo_checkout_fields' => $standard_woo_checkout_fields,
-				'address_changed_url'          => WC_AJAX::get_endpoint( 'pco_wc_address_changed' ),
-				'address_changed_nonce'        => wp_create_nonce( 'pco_wc_address_changed' ),
-				'update_order_url'             => WC_AJAX::get_endpoint( 'pco_wc_update_checkout' ),
-				'update_order_nonce'           => wp_create_nonce( 'pco_wc_update_checkout' ),
-				'change_payment_method_url'    => WC_AJAX::get_endpoint( 'pco_wc_change_payment_method' ),
-				'change_payment_method_nonce'  => wp_create_nonce( 'pco_wc_change_payment_method' ),
-				'get_order_url'                => WC_AJAX::get_endpoint( 'pco_wc_get_order' ),
-				'get_order_nonce'              => wp_create_nonce( 'pco_wc_get_order' ),
-				'log_to_file_url'              => WC_AJAX::get_endpoint( 'pco_wc_log_js' ),
-				'log_to_file_nonce'            => wp_create_nonce( 'pco_wc_log_js' ),
-				'submit_order'                 => WC_AJAX::get_endpoint( 'checkout' ),
-				'order_id'                     => $order_id,
-				'is_order_pay'                 => $is_order_pay,
-			);
-			wp_localize_script(
-				'pco_wc',
-				'pco_wc_params',
-				$params
-			);
-			wp_enqueue_script( 'pco_wc' );
 		}
-
 	}
 	PaysonCheckout_For_WooCommerce::get_instance();
 

@@ -25,10 +25,11 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 	 *
 	 * @param string   $renewal_total The total price for the order.
 	 * @param WC_Order $renewal_order The WooCommerce order for the renewal.
+	 * @return void
 	 */
 	public function trigger_scheduled_payment( $renewal_total, $renewal_order ) {
 		$order_id = $renewal_order->get_id();
-		$order = wc_get_order( $order_id );
+		$order    = wc_get_order( $order_id );
 
 		$subscriptions = wcs_get_subscriptions_for_renewal_order( $renewal_order->get_id() );
 		reset( $subscriptions );
@@ -36,11 +37,17 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 		$subscription_id = $order->get_meta( '_payson_subscription_id' );
 
 		if ( empty( $subscription_id ) ) {
-			$subscription = wc_get_order(WC_Subscriptions_Renewal_Order::get_parent_order_id( $order_id ));
-			$subscription_id = $subscription->get_meta('_payson_subscription_id');
-			$order->update_meta_data('_payson_subscription_id', $subscription_id );
-			$order->save();
+			$subscription    = self::get_parent_order( $order_id );
+			$subscription_id = $subscription->get_meta( '_payson_subscription_id' );
 		}
+
+		// If the subscription_id is still empty, most likely, subscription was created using a different payment method.
+		// We need to create a new recurring token.
+		if ( empty( $subscription_id ) ) {
+			$subscription = PCO_WC()->create_recurring_order->request( $order_id );
+		}
+		$order->update_meta_data( '_payson_subscription_id', $subscription_id );
+		$order->save();
 
 		$payson_order = PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
 		if ( is_wp_error( $payson_order ) ) {
@@ -62,5 +69,58 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 			$renewal_order->set_transaction_id( $payson_order['purchaseId'] );
 			$renewal_order->save();
 		}
+	}
+
+	// FIXME: Is this function needed?
+	/**
+	 * Get a subscription's parent order.
+	 *
+	 * @param int $order_id The WooCommerce order id.
+	 * @return WC_Order|false The parent order or false if none is found.
+	 */
+	public static function get_parent_order( $order_id ) {
+		$subscriptions = wcs_get_subscriptions_for_renewal_order( $order_id );
+		foreach ( $subscriptions as $subscription ) {
+			$parent_order = $subscription->get_parent();
+			return $parent_order;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if the current request is for changing the payment method.
+	 *
+	 * @return bool
+	 */
+	public static function is_change_payment_method() {
+		return isset( $_GET['change_payment_method'] );
+	}
+
+	/**
+	 * Check if an order contains a subscription.
+	 *
+	 * @param WC_Order $order The WooCommerce order or leave empty to use the cart (default).
+	 * @return bool
+	 */
+	public static function order_has_subscription( $order ) {
+		if ( empty( $order ) ) {
+			return false;
+		}
+
+		return function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order, array( 'parent', 'resubscribe', 'switch', 'renewal' ) );
+	}
+
+	/**
+	 * Check if a cart contains a subscription.
+	 *
+	 * @return bool
+	 */
+	public static function cart_has_subscription() {
+		if ( ! is_checkout() ) {
+			return false;
+		}
+
+		return ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) || ( function_exists( 'wcs_cart_contains_failed_renewal_order_payment' ) && wcs_cart_contains_failed_renewal_order_payment() );
 	}
 }

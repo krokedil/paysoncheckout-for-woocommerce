@@ -96,6 +96,21 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_available() {
+		// Check if is enabled.
+		if ( 'yes' !== $this->enabled ) {
+			return false;
+		}
+
+		// Required fields check.
+		if ( ! $this->merchant_id || ! $this->api_key ) {
+			return false;
+		}
+
+		// Currency check.
+		if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ), true ) ) {
+			return false;
+		}
+
 		$is_pay_for_order = false;
 		if ( is_wc_endpoint_url( 'order-pay' ) ) {
 			$is_pay_for_order = true;
@@ -109,19 +124,10 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			$is_subscription = true;
 		}
 
-		// Check if is enabled.
-		if ( 'yes' !== $this->enabled ) {
-			return false;
-		}
-
-		// Currency check.
-		if ( ! in_array( get_woocommerce_currency(), array( 'EUR', 'SEK' ), true ) ) {
-			return false;
-		}
-
-		// Required fields check.
-		if ( ! $this->merchant_id || ! $this->api_key ) {
-			return false;
+		// Check if the current request is for changing the subscription's payment method.
+		$change_payment_method = isset( $_GET['change_payment_method'] ) ? absint( $_GET['change_payment_method'] ) : false;
+		if ( is_a( wc_get_order( $change_payment_method ), 'WC_Subscription' ) ) {
+			return true;
 		}
 
 		// Don't display the payment method if we have an order with to low amount.
@@ -164,12 +170,19 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 *
 	 * @param string $order_id The WooCommerce order ID.
 	 *
-	 * @return array
+	 * @return array|bool
 	 */
 	public function process_payment( $order_id ) {
-		$order = wc_get_order( $order_id );
-		// Confirm the order.
-		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+		$is_subscription = function_exists( 'wcs_is_subscription' ) && wcs_is_subscription( $order_id ) ? true : false;
+		if ( $is_subscription && PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+			$subscription = wc_get_order( $order_id );
+			return array(
+				'result'   => 'success',
+				'redirect' => $subscription->get_view_order_url(),
+			);
+		}
+
+		if ( $is_subscription ) {
 			$result = $this->update_recurring_reference( $order_id );
 		} else {
 			$result = $this->update_order_reference( $order_id );

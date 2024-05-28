@@ -48,9 +48,9 @@ function pco_wc_show_pay_for_order_snippet() {
 
 		// Create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order( $order_id );
-		$order = wc_get_order( $order_id );
+		$order        = wc_get_order( $order_id );
 
-		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) { 
+		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
 			$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
 			$order->save();
 		}
@@ -65,7 +65,7 @@ function pco_wc_show_pay_for_order_snippet() {
 		</ul>
 			<?php
 			// Remove the post meta so that we can create a new order with payson on an error.
-			$order->delete_meta_data('_payson_checkout_id');
+			$order->delete_meta_data( '_payson_checkout_id' );
 			$order->save();
 		} else {
 			$snippet = $payson_order['snippet'];
@@ -84,10 +84,10 @@ function pco_wc_show_pay_for_order_snippet() {
 function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
 	$order = wc_get_order( $order_id );
 	if ( $subscription ) {
-		$payment_id = $order->get_meta('_payson_subscription_id');
+		$payment_id = $order->get_meta( '_payson_subscription_id' );
 
 	} else {
-		$payment_id = $order->get_meta('_payson_checkout_id');
+		$payment_id = $order->get_meta( '_payson_checkout_id' );
 	}
 	$payson_order = pco_wc_get_order( $payment_id, $subscription );
 
@@ -259,7 +259,7 @@ function pco_wc_create_order( $order_id = null ) {
 function pco_wc_get_order( $payment_id = null, $subscription = false ) {
 	$payment_id = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
 	// Check if the cart has a subscription.
-	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() || $subscription ) {
+	if ( PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription() || $subscription ) {
 		return PCO_WC()->get_recurring_order->request( $payment_id );
 	}
 	return PCO_WC()->get_order->request( $payment_id );
