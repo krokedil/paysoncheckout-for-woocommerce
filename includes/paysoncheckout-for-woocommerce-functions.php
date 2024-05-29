@@ -24,7 +24,7 @@ function pco_wc_show_snippet( $subscription = false ) {
 			$text    = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s'
 			?>
 			<ul class="woocommerce-error" role="alert">
-				<li><?php echo sprintf( $text, $code, $message ); ?></li>
+				<li><?php printf( $text, $code, $message ); ?></li>
 			</ul>
 			<?php
 			// Then unset the payment id session to force a new order to be created on page load.
@@ -60,7 +60,7 @@ function pco_wc_show_pay_for_order_snippet() {
 			$text    = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s'
 			?>
 		<ul class="woocommerce-error" role="alert">
-			<li><?php echo sprintf( $text, $code, $message ); ?></li>
+			<li><?php printf( $text, $code, $message ); ?></li>
 		</ul>
 			<?php
 			// Remove the post meta so that we can create a new order with payson on an error.
