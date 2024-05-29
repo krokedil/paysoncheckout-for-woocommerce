@@ -43,8 +43,7 @@ function pco_wc_show_snippet( $subscription = false ) {
  */
 function pco_wc_show_pay_for_order_snippet() {
 	if ( ! isset( $_GET['pco_confirm'] ) ) {
-		global $wp;
-		$order_id = $wp->query_vars['order-pay'];
+		$order_id = absint( get_query_var( 'order-pay', 0 ) );
 
 		// Create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order( $order_id );

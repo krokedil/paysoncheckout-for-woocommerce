@@ -380,8 +380,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 				$order_id                     = null;
 				$is_order_pay                 = false;
 				if ( is_wc_endpoint_url( 'order-pay' ) ) {
-					global $wp;
-					$order_id     = $wp->query_vars['order-pay'];
+					$order_id     = absint( get_query_var( 'order-pay', 0 ) );
 					$is_order_pay = true;
 				}
 				$params = array(

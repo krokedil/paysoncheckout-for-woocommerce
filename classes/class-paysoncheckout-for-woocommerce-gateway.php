@@ -114,9 +114,8 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$is_pay_for_order = false;
 		if ( is_wc_endpoint_url( 'order-pay' ) ) {
 			$is_pay_for_order = true;
-			global $wp;
-			$order_id = $wp->query_vars['order-pay'];
-			$order    = wc_get_order( $order_id );
+			$order_id         = absint( get_query_var( 'order-pay', 0 ) );
+			$order            = wc_get_order( $order_id );
 		}
 
 		$is_subscription = false;
