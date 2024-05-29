@@ -42,7 +42,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 * @return string
 	 */
 	public function override_template( $template, $template_name ) {
-		if ( is_checkout() ) {
+		if ( is_checkout() || PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method()) {
 			// PaysonCheckout Checkout.
 			if ( 'checkout/form-checkout.php' === $template_name ) {
 				// Don't display PCO template if we have a cart that doesn't needs payment.
@@ -86,10 +86,9 @@ class PaysonCheckout_For_WooCommerce_Templates {
 				}
 			}
 
-			// PaysonCheckout Pay for order.
-			if ( 'checkout/form-pay.php' === $template_name ) {
-				global $wp;
-				$order_id           = $wp->query_vars['order-pay'];
+			// PaysonCheckout Pay for order and change payment method.
+			if ( in_array( $template_name, array( 'checkout/form-pay.php', 'checkout/form-change-payment-method.php' ) ) ) {
+				$order_id           = absint( get_query_var( 'order-pay', 0 ) );
 				$order              = wc_get_order( $order_id );
 				$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 				if ( array_key_exists( 'paysoncheckout', $available_gateways ) ) {
