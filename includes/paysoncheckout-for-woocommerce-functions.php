@@ -229,6 +229,10 @@ function pco_maybe_show_validation_error_message() {
  * @return array|WP_Error
  */
 function pco_wc_create_order( $order_id = null ) {
+	if ( PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+		return PCO_WC()->create_recurring_order->request();
+	}
+
 	if ( empty( $order_id ) ) {
 		// Check if the cart has a subscription.
 		if ( PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription() ) {
