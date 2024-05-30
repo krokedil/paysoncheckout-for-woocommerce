@@ -12,9 +12,7 @@
  * @return void
  */
 function pco_wc_show_snippet( $subscription = false ) {
-	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
-		$subscription = true;
-	}
+	$subscription = PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription();
 	if ( ! isset( $_GET['pco_confirm'] ) ) {
 		$payson_order = pco_wc_maybe_create_payson_order( $subscription );
 		if ( is_wp_error( $payson_order ) ) {
@@ -231,16 +229,17 @@ function pco_maybe_show_validation_error_message() {
  * @return array|WP_Error
  */
 function pco_wc_create_order( $order_id = null ) {
-	if ( null === $order_id ) {
+	if ( empty( $order_id ) ) {
 		// Check if the cart has a subscription.
-		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+		if ( PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription() ) {
 			return PCO_WC()->create_recurring_order->request();
 		}
 		return PCO_WC()->create_order->request();
 	} else {
 		$order = wc_get_order( $order_id );
+
 		// Check if the order has a subscription.
-		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+		if ( PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order ) ) {
 			$subscription_id = WC()->session->get( 'payson_payment_id' );
 			return PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
 		}

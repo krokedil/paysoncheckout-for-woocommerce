@@ -124,7 +124,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		}
 
 		// Check if the current request is for changing the subscription's payment method.
-		$change_payment_method = isset( $_GET['change_payment_method'] ) ? absint( $_GET['change_payment_method'] ) : false;
+		$change_payment_method = PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method();
 		if ( is_a( wc_get_order( $change_payment_method ), 'WC_Subscription' ) ) {
 			return true;
 		}
