@@ -365,6 +365,13 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 				return;
 			}
 
+			// We don't want to load scripts since, when you pick Payson as the gateway you want to change to, the script will trigger
+			// "the pco_wc_change_payment_method" AJAX event which is not what we want since Woo will consider the change as "successful".
+			// This results in process_payment not being triggered, and the customer is redirected back to the subscription view page.
+			if ( PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+				return;
+			}
+
 				// Check if we are on the confirmation page or not so we can load the correct JS file for the page.
 			if ( ! isset( $_GET['pco_confirm'] ) ) {
 				// Checkout script.
