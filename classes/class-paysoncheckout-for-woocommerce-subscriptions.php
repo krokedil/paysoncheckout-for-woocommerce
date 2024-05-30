@@ -18,6 +18,12 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_scheduled_subscription_payment_paysoncheckout', array( $this, 'trigger_scheduled_payment' ), 10, 2 );
+
+		// Set the return_url for change payment method.
+		add_filter( 'pco_create_recurring_order_args', array( $this, 'set_subscription_order_redirect_urls' ) );
+
+		// On successful payment method change, the customer is redirected back to the subscription view page. We need to handle the redirect and create a recurring token.
+		add_action( 'woocommerce_account_view-subscription_endpoint', array( $this, 'handle_redirect_from_change_payment_method' ) );
 	}
 
 	/**
@@ -71,7 +77,51 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 		}
 	}
 
-	// FIXME: Is this function needed?
+	/**
+	 * Set the session URLs for change payment method request.
+	 *
+	 * Used for changing payment method.
+	 *
+	 * @param array $request The request data.
+	 * @return array
+	 */
+	public function set_subscription_order_redirect_urls( $request ) {
+		if ( ! self::is_change_payment_method() ) {
+			return $request;
+		}
+
+		$body                                = json_decode( $request['body'], true );
+		$subscription                        = self::get_subscription( absint( get_query_var( 'order-pay', 0 ) ) );
+		$body['merchant']['confirmationUri'] = add_query_arg( 'pco_confirm', 1, $subscription->get_view_order_url() );
+		$body['merchant']['checkoutUri']     = $subscription->get_checkout_payment_url();
+		$request['body']                     = wp_json_encode( $body );
+
+		return $request;
+	}
+
+	/**
+	 * Handle the redirect from the change payment method page.
+	 *
+	 * @param int $order_id The subscription/order ID.
+	 * @return void
+	 */
+	public function handle_redirect_from_change_payment_method( $order_id ) {
+		$is_confirm = wc_get_var( $_REQUEST['pco_confirm'] );
+		if ( ! empty( $is_confirm ) ) {
+			$subscription    = self::get_subscription( $order_id );
+			$subscription_id = $subscription->get_meta( '_payson_checkout_id' );
+			$subscription->update_meta_data( '_payson_subscription_id', $subscription_id );
+			$subscription->save();
+
+			// translators: %s Subscription id.
+			$message = sprintf( __( 'Subscription payment method changed to Payson. Subscription id: %s.', 'payson-checkout-for-woocommerce' ), $subscription_id );
+			$subscription->add_order_note( $message );
+			if ( function_exists( 'wc_print_notice' ) ) {
+				wc_print_notice( $message, 'success' );
+			}
+		}
+	}
+
 	/**
 	 * Get a subscription's parent order.
 	 *
@@ -86,6 +136,16 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Retrieve a WC_Subscription from order ID.
+	 *
+	 * @param int $order_id  Woo order ID.
+	 * @return bool|WC_Subscription The subscription object, or false if it cannot be found.
+	 */
+	public static function get_subscription( $order_id ) {
+		return ! function_exists( 'wcs_get_subscription' ) ? false : wcs_get_subscription( $order_id );
 	}
 
 	/**
@@ -108,7 +168,7 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 			return false;
 		}
 
-		return function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order, array( 'parent', 'resubscribe', 'switch', 'renewal' ) );
+		return ( ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order, array( 'parent', 'resubscribe', 'switch', 'renewal' ) ) ) || ( function_exists( 'wcs_is_subscription' ) && wcs_is_subscription( $order ) ) );
 	}
 
 	/**
