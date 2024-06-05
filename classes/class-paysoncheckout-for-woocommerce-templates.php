@@ -42,7 +42,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 	 * @return string
 	 */
 	public function override_template( $template, $template_name ) {
-		if ( is_checkout() || PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method()) {
+		if ( is_checkout() ) {
 			// PaysonCheckout Checkout.
 			if ( 'checkout/form-checkout.php' === $template_name ) {
 				// Don't display PCO template if we have a cart that doesn't needs payment.
@@ -86,8 +86,11 @@ class PaysonCheckout_For_WooCommerce_Templates {
 				}
 			}
 
+			// When the customer changes subscription method to Payson Checkout, we'll redirect back to the same page, but with the added query parameter 'gateway'. If it is present, we'll override the the template, and display the Payson iframe instead.
+			$is_change_payment_method = ( 'checkout/form-change-payment-method.php' === $template_name ) && isset($_GET['gateway']) && 'paysoncheckout' === $_GET['gateway'];
+
 			// PaysonCheckout Pay for order and change payment method.
-			if ( in_array( $template_name, array( 'checkout/form-pay.php', 'checkout/form-change-payment-method.php' ) ) ) {
+			if ( 'checkout/form-pay.php' === $template_name || $is_change_payment_method ) {
 				$order_id           = absint( get_query_var( 'order-pay', 0 ) );
 				$order              = wc_get_order( $order_id );
 				$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
@@ -140,7 +143,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 					<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
 				</div>
 				<input id="payment_method_paysoncheckout" type="radio" class="input-radio" name="payment_method" value="paysoncheckout" checked="checked" />
-			<?php }; ?>
+			<?php } ?>
 		</div>
 		<?php
 	}

@@ -174,10 +174,16 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$order           = wc_get_order( $order_id );
 		$is_subscription = PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order );
 		if ( $is_subscription && PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
-			$subscription = wc_get_order( $order_id );
 			return array(
 				'result'   => 'success',
-				'redirect' => $subscription->get_view_order_url(),
+				'redirect' => add_query_arg(
+					array(
+						'gateway'               => 'paysoncheckout',
+						'change_payment_method' => $order_id,
+						'_wpnonce'              => wc_get_var( $_GET['_wpnonce'] ),
+					),
+					$order->get_checkout_payment_url( true )
+				),
 			);
 		}
 
