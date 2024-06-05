@@ -8,7 +8,7 @@
 /**
  * Prints the PaysonCheckout snippet.
  *
- * @param boolean $sbuscription If this is a subscription order or not.
+ * @param boolean $subscription If this is a subscription order or not.
  * @return void
  */
 function pco_wc_show_snippet( $subscription = false ) {
@@ -101,11 +101,11 @@ function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
  * Maybe creates the Payson order.
  *
  * @param boolean $subscription If this is a subscription order or not.
- * @return array
+ * @return array|WP_Error
  */
 function pco_wc_maybe_create_payson_order( $subscription = false ) {
 	// Check if we have a payment id. If we do get the order. Also check if previous session was a subscription or not.
-	if ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription || is_order_received_page() ) {
+	if ( ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription ) || is_order_received_page() ) {
 
 		// Check if the initial selected currency for the order has been changed - if so, force a new checkout session.
 		if ( ! pco_compare_currencies() ) {
@@ -217,8 +217,9 @@ function pco_wc_show_another_gateway_button() {
  * @return void
  */
 function pco_maybe_show_validation_error_message() {
-	if ( isset( $_GET['pco_validation_error'] ) && is_checkout() ) {
-		$errors = json_decode( base64_decode( $_GET['pco_validation_error'] ), true );
+	$validation_errors = wc_get_var( $_GET['pco_validation_error'] );
+	if ( $validation_errors && is_checkout() ) {
+		$errors = json_decode( base64_decode( $validation_errors ), true );
 		foreach ( $errors as $error ) {
 			wc_add_notice( $error, 'error' );
 		}
@@ -259,7 +260,7 @@ function pco_wc_create_order( $order_id = null ) {
 function pco_wc_get_order( $payment_id = null, $subscription = false ) {
 	$payment_id = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
 	// Check if the cart has a subscription.
-	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() || $subscription ) {
+	if ( ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) || $subscription ) {
 		return PCO_WC()->get_recurring_order->request( $payment_id );
 	}
 	return PCO_WC()->get_order->request( $payment_id );
@@ -308,15 +309,14 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
 			if ( 'readyToShip' === $payson_order['status'] ) {
 				$order->payment_complete( $pco_order_id );
 				$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $pco_order_id );
-				$order->save();
 			} else {
 				$order->set_status( 'on-hold', __( 'Invalid status for payson order', 'payson-checkout-for-woocommerce' ) );
-				$order->save();
 			}
 		} else {
 			$order->set_status( 'on-hold', __( 'Waiting for verification from Payson notification callback', 'payson-checkout-for-woocommerce' ) );
-			$order->save();
 		}
+
+		$order->save();
 	}
 }
 
