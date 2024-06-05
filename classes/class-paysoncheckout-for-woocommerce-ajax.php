@@ -130,6 +130,19 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			$formated_text = sprintf( $text, $code, $message );
 			wp_send_json_error( $formated_text );
 		}
+
+		// If the order status is readyToShip, it means the purchase has already been completed. Let's try to redirect the user to confirmation page.
+		if ( 'readyToShip' === $payson_order_tmp['status'] ) {
+			$order = pco_get_order_by_payson_id( $payson_order_tmp['id'] );
+			if ( ! empty( $order ) ) {
+				wp_safe_redirect( $order->get_checkout_order_received_url() );
+				exit;
+			}
+
+			// As a default, if the order cannot be found, respond with an error. This should trigger a reload on the frontend that should detect this order is already completed.
+			wp_send_json_error( __( 'The purchase has already been completed.', 'payson-checkout-for-woocommerce' ) );
+		}
+
 		// Get needed variables from the payson order.
 		$payson_data = array(
 			'status'   => $payson_order_tmp['status'],
@@ -138,17 +151,6 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 
 		WC()->cart->calculate_fees();
 		WC()->cart->calculate_totals();
-
-		// Do not update the order if the payson order status is set to readyToShip. This means the order has already been completed.
-		if ( 'readyToShip' === $payson_data['status'] ) {
-			wp_send_json_success(
-				array(
-					'address'   => isset( $payson_data['customer'] ) ? $payson_data['customer'] : null,
-					'changed'   => false,
-					'pco_nonce' => wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce', true, false ),
-				)
-			);
-		}
 
 		// Update the payson order.
 		$payson_order = ( $subscription ) ? PCO_WC()->update_recurring_order->request( null, $payson_data ) : PCO_WC()->update_order->request( null, $payson_data );
