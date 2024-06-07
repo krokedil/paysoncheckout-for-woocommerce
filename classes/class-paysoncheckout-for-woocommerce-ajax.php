@@ -130,6 +130,19 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			$formated_text = sprintf( $text, $code, $message );
 			wp_send_json_error( $formated_text );
 		}
+
+		// If the order status is readyToShip, it means the purchase has already been completed. Let's try to redirect the user to confirmation page.
+		if ( 'readyToShip' === $payson_order_tmp['status'] ) {
+			$order = pco_get_order_by_payson_id( $payson_order_tmp['id'] );
+			if ( ! empty( $order ) ) {
+				wp_safe_redirect( $order->get_checkout_order_received_url() );
+				exit;
+			}
+
+			// As a default, if the order cannot be found, respond with an error. This should trigger a reload on the frontend that should detect this order is already completed.
+			wp_send_json_error( __( 'The purchase has already been completed.', 'payson-checkout-for-woocommerce' ) );
+		}
+
 		// Get needed variables from the payson order.
 		$payson_data = array(
 			'status'   => $payson_order_tmp['status'],
