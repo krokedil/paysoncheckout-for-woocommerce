@@ -50,36 +50,76 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	public function notification_cb() {
 		$payment_id = null;
 		if ( isset( $_GET['checkout'] ) ) {
-			$payment_id   = $_GET['checkout'];
+			$payment_id   = filter_input( INPUT_GET, 'checkout', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 			$subscription = false;
-			$payson_order = pco_wc_get_order( $payment_id, $subscription );
 		} elseif ( isset( $_GET['subscription'] ) ) {
-			$payment_id   = $_GET['subscription'];
+			$payment_id   = filter_input( INPUT_GET, 'subscription', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 			$subscription = true;
-			$payson_order = pco_wc_get_order( $payment_id, $subscription );
 		} elseif ( isset( $_GET['payment'] ) ) {
-			$payment_id   = $_GET['payment'];
-			$subscription = true;
+			$payment_id   = filter_input( INPUT_GET, 'payment', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 			$payson_order = PCO_WC()->get_recurring_payment->request( $payment_id );
 			$this->process_recurring_payment( $payment_id, $payson_order );
 			header( 'HTTP/1.1 200 OK' );
 			die();
 		}
 
+		PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . wp_json_encode( $_GET ) . ' URL: ' . wc_get_var( $_SERVER['REQUEST_URI'] ) );
+		$payson_order = pco_wc_get_order( $payment_id, $subscription );
+
 		if ( isset( $payment_id ) ) {
 			if ( is_wp_error( $payson_order ) ) {
 				PaysonCheckout_For_WooCommerce_Logger::log( 'Could not get order in notification callback. Payment ID: ' . $payment_id . 'Is subscription order: ' . $subscription );
 			} else {
 				if ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) {
-					PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . json_encode( $_GET ) . ' URL: ' . $_SERVER['REQUEST_URI'] );
-					wp_schedule_single_event( time() + 120, 'pco_check_for_order', array( $payment_id, $subscription ) );
+					$this->maybe_schedule_callback( $payment_id );
 				}
 				header( 'HTTP/1.1 200 OK' );
 			}
 		}
 	}
 
-	public function pco_check_for_order_callback( $payment_id, $subscription ) {
+	/**
+	 * Maybe schedules a callback handler.
+	 *
+	 * Only schedules one if there are none already pending for the same payment id.
+	 *
+	 * @param string $payment_id The Payson payment ID.
+	 * @return void
+	 */
+	private function maybe_schedule_callback( $payment_id ) {
+		$as_args          = array(
+			'hook'   => 'pco_check_for_order',
+			'status' => ActionScheduler_Store::STATUS_PENDING,
+		);
+		$scheduled_action = as_get_scheduled_actions( $as_args, OBJECT );
+
+		/**
+		* Loop all actions to check if this one has been scheduled already.
+		*
+		* @var ActionScheduler_Action $action The action from the Action scheduler.
+		*/
+		foreach ( $scheduled_action as $action ) {
+			$action_args = $action->get_args();
+			if ( $payment_id === $action_args['payment_id'] ) {
+				PaysonCheckout_For_WooCommerce_Logger::log( "CALLBACK [action_scheduler]: The Payson order $payment_id has already been scheduled for processing." );
+				return;
+			}
+		}
+
+		$result = as_schedule_single_action(
+			time() + 120,
+			'pco_check_for_order',
+			array(
+				'payment_id' => $payment_id,
+			)
+		);
+
+		if ( 0 === $result ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( "CALLBACK [action_scheduler]: There is no scheduled action for the Payson order $payment_id, and a new failed to be scheduled." );
+		}
+	}
+
+	public function pco_check_for_order_callback( $payment_id ) {
 		$order = $this->get_wc_order_by_payment_id( $payment_id );
 
 		// Did we get a match?
@@ -125,8 +165,8 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		foreach ( $orders as $order_id ) {
 			$order = wc_get_order( $order_id );
 
-			$subscription_id  = $order->get_meta('_payson_subscription_id');
-			$order_payment_id = $order->get_meta('_payson_checkout_id');
+			$subscription_id  = $order->get_meta( '_payson_subscription_id' );
+			$order_payment_id = $order->get_meta( '_payson_checkout_id' );
 
 			if ( $order_payment_id === $payment_id || $subscription_id === $payment_id ) {
 				$order_id_match = $order_id;
@@ -158,7 +198,7 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order approved by Payson: ' . $payment_id );
 			$order->add_order_note( sprintf( __( 'Subscription payment approved by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
 			$order->update_meta_data( '_payson_renewal_confirmed', true );
-			$order->save();		
+			$order->save();
 			if ( ! wcs_order_contains_renewal( $order ) ) {
 				$order->payment_complete( $payment_id );
 			}
