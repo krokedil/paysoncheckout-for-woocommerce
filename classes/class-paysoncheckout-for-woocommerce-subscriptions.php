@@ -111,13 +111,15 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 			$subscription    = self::get_subscription( $order_id );
 			$subscription_id = $subscription->get_meta( '_payson_checkout_id' );
 			$subscription->update_meta_data( '_payson_subscription_id', $subscription_id );
-			$subscription->save();
 
 			// translators: %s Subscription id.
-			$message = sprintf( __( 'Subscription payment method changed to Payson. Subscription id: %s.', 'payson-checkout-for-woocommerce' ), $subscription_id );
-			$subscription->add_order_note( $message );
+			$note = sprintf( __( 'Subscription payment method changed to Payson. Subscription id: %s.', 'payson-checkout-for-woocommerce' ), $subscription_id );
+			$subscription->add_order_note( $note );
+
+			$subscription->save();
+
 			if ( function_exists( 'wc_print_notice' ) ) {
-				wc_print_notice( $message, 'success' );
+				wc_print_notice( __( 'Subscription payment method changed to Payson.' ), 'success' );
 			}
 		}
 	}
