@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 6.4.2
+Tested up to: 6.5.3
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 8.5.0
+WC tested up to: 8.9.1
 
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,6 +38,9 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.02.02    - version 3.7.1 =
+* Fix           - Fixed an issue where the incorrect language would be set in the checkout.
+
 = 2024.01.29    - version 3.7.0 =
 * Feature       - Added support for WooCommerce's "High-Performance Order Storage" ("HPOS").
 * Feature       - Added support for Danish and Norwegian.

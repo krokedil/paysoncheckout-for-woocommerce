@@ -44,7 +44,8 @@ class PaysonCheckout_For_WooCommerce_Helper_GUI {
 				return 'de';
 			case 'da':
 				return 'da';
-			case 'nb' || 'nn':
+			case 'nb':
+			case 'nn':
 				return 'no';
 			default:
 				return 'en';
