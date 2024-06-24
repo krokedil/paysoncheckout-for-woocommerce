@@ -25,16 +25,16 @@ class PaysonCheckout_For_WooCommerce_Refund_Order extends PaysonCheckout_For_Woo
 		$endpoint = ( ! $subscription ) ? 'Checkouts/' : 'RecurringPayments/';
 
 		// Make the request.
-		$request_url       = $this->enviroment . $endpoint . $payment_id;
-		$request_args      = apply_filters( 'pco_refund_order_args', $this->get_request_args( $order_id, $payson_data ) );
-		$response          = wp_remote_request( $request_url, $request_args );
-		$code              = wp_remote_retrieve_response_code( $response );
-		$formated_response = $this->process_response( $response, $request_args, $request_url );
+		$request_url        = $this->environment . $endpoint . $payment_id;
+		$request_args       = apply_filters( 'pco_refund_order_args', $this->get_request_args( $order_id, $payson_data ) );
+		$response           = wp_remote_request( $request_url, $request_args );
+		$code               = wp_remote_retrieve_response_code( $response );
+		$formatted_response = $this->process_response( $response, $request_args, $request_url );
 
 		// Log the request.
 		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson refund order request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
-		return $formated_response;
+		return $formatted_response;
 	}
 
 	/**
