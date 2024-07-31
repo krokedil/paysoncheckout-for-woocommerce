@@ -66,16 +66,21 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		PaysonCheckout_For_WooCommerce_Logger::log( 'Notification Listener hit: ' . wp_json_encode( $_GET ) . ' URL: ' . wc_get_var( $_SERVER['REQUEST_URI'] ) );
 		$payson_order = pco_wc_get_order( $payment_id, $subscription );
 
+		$status = 'HTTP/1.1 404 Not Found';
 		if ( isset( $payment_id ) ) {
 			if ( is_wp_error( $payson_order ) ) {
 				PaysonCheckout_For_WooCommerce_Logger::log( 'Could not get order in notification callback. Payment ID: ' . $payment_id . 'Is subscription order: ' . $subscription );
 			} else {
-				if ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) {
+				$order = pco_get_order_by_payson_id( $payment_id );
+				if ( ! empty( $order ) && ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) ) {
 					$this->maybe_schedule_callback( $payment_id );
+					$status = 'HTTP/1.1 200 OK';
 				}
-				header( 'HTTP/1.1 200 OK' );
 			}
 		}
+
+		header( $status );
+		exit;
 	}
 
 	/**
