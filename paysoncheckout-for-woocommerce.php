@@ -12,7 +12,7 @@
  * Domain Path:     /languages
  *
  * WC requires at least: 4.0
- * WC tested up to: 9.0.2
+ * WC tested up to: 9.1.4
  *
  * Copyright:       © 2016-2024 Krokedil.
  * License:         GNU General Public License v3.0
@@ -423,7 +423,6 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 				PAYSONCHECKOUT_VERSION
 			);
 			wp_enqueue_style( 'pco' );
-
 		}
 	}
 	PaysonCheckout_For_WooCommerce::get_instance();
