@@ -444,14 +444,13 @@ jQuery( function ( $ ) {
                         }
                     }
                 },
-                error: function (data) {
-                    let public_message = 'Error: ' + data.status;
+                error: function ( data ) {
+                    let public_message = "Error: " + data.status
                     try {
-                        public_message = $(data.responseText).text()
-                        pco_wc.logToFile( "AJAX error | " + JSON.stringify(data) )
+                        public_message = $( data.responseText ).text()
+                        pco_wc.logToFile( "AJAX error | " + JSON.stringify( data ) )
                     } catch {
                         pco_wc.logToFile( "AJAX error | Failed to parse error message." )
-
                     }
                     pco_wc.failOrder( "ajax-error", public_message )
                 },
