@@ -86,16 +86,17 @@ class PaysonCheckout_For_WooCommerce_Templates {
 				}
 			}
 
-			// PaysonCheckout Pay for order.
-			if ( 'checkout/form-pay.php' === $template_name ) {
-				global $wp;
-				$order_id           = $wp->query_vars['order-pay'];
+			// When the customer changes subscription method to Payson Checkout, we'll redirect back to the same page, but with the added query parameter 'gateway'. If it is present, we'll override the the template, and display the Payson iframe instead.
+			$is_change_payment_method = ( 'checkout/form-change-payment-method.php' === $template_name ) && isset( $_GET['gateway'] ) && 'paysoncheckout' === $_GET['gateway'];
+
+			// PaysonCheckout Pay for order and change payment method.
+			if ( 'checkout/form-pay.php' === $template_name || $is_change_payment_method ) {
+				$order_id           = absint( get_query_var( 'order-pay', 0 ) );
 				$order              = wc_get_order( $order_id );
 				$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
 				if ( array_key_exists( 'paysoncheckout', $available_gateways ) ) {
-					if ( locate_template( 'woocommerce/paysoncheckout-pay.php' ) ) {
-						$paysoncheckout_pay_template = locate_template( 'woocommerce/paysoncheckout-pay.php' );
-					} else {
+					$paysoncheckout_pay_template = locate_template( 'woocommerce/paysoncheckout-pay.php' );
+					if ( empty($paysoncheckout_pay_template ) ) {
 						$paysoncheckout_pay_template = PAYSONCHECKOUT_PATH . '/templates/paysoncheckout-pay.php';
 					}
 
@@ -110,7 +111,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 						reset( $available_gateways );
 						if ( 'paysoncheckout' === key( $available_gateways ) ) {
 							if ( ! isset( $_GET['confirm'] ) ) {
-								$template = $paysoncheckout_template;
+								$template = $paysoncheckout_pay_template;
 							}
 						}
 					}
@@ -141,7 +142,7 @@ class PaysonCheckout_For_WooCommerce_Templates {
 					<?php wp_nonce_field( 'woocommerce-process_checkout', 'woocommerce-process-checkout-nonce' ); ?>
 				</div>
 				<input id="payment_method_paysoncheckout" type="radio" class="input-radio" name="payment_method" value="paysoncheckout" checked="checked" />
-			<?php }; ?>
+			<?php } ?>
 		</div>
 		<?php
 	}

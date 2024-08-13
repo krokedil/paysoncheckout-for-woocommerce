@@ -21,7 +21,7 @@ class PaysonCheckout_For_WooCommerce_Get_Recurring_Order extends PaysonCheckout_
 	 */
 	public function request( $payment_id = null ) {
 		if ( null !== $payment_id ) {
-			$request_url  = $this->enviroment . 'RecurringSubscriptions/' . $payment_id;
+			$request_url  = $this->environment . 'RecurringSubscriptions/' . $payment_id;
 			$request_args = apply_filters( 'pco_get_order_args', $this->get_request_args() );
 			$response     = wp_remote_request( $request_url, $request_args );
 			$code         = wp_remote_retrieve_response_code( $response );
@@ -30,8 +30,8 @@ class PaysonCheckout_For_WooCommerce_Get_Recurring_Order extends PaysonCheckout_
 			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'GET', 'Payson get recurring order request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 			PaysonCheckout_For_WooCommerce_Logger::log( $log );
 
-			$formated_response = $this->process_response( $response, $request_args, $request_url );
-			return $formated_response;
+			$formatted_response = $this->process_response( $response, $request_args, $request_url );
+			return $formatted_response;
 		} else {
 			return new WP_Error( '400', 'Missing payment id.' );
 		}

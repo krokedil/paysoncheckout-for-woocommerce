@@ -8,13 +8,11 @@
 /**
  * Prints the PaysonCheckout snippet.
  *
- * @param boolean $sbuscription If this is a subscription order or not.
+ * @param boolean $subscription If this is a subscription order or not.
  * @return void
  */
 function pco_wc_show_snippet( $subscription = false ) {
-	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
-		$subscription = true;
-	}
+	$subscription = PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription();
 	if ( ! isset( $_GET['pco_confirm'] ) ) {
 		$payson_order = pco_wc_maybe_create_payson_order( $subscription );
 		if ( is_wp_error( $payson_order ) ) {
@@ -24,7 +22,7 @@ function pco_wc_show_snippet( $subscription = false ) {
 			$text    = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s'
 			?>
 			<ul class="woocommerce-error" role="alert">
-				<li><?php echo sprintf( $text, $code, $message ); ?></li>
+				<li><?php printf( $text, $code, $message ); ?></li>
 			</ul>
 			<?php
 			// Then unset the payment id session to force a new order to be created on page load.
@@ -43,14 +41,13 @@ function pco_wc_show_snippet( $subscription = false ) {
  */
 function pco_wc_show_pay_for_order_snippet() {
 	if ( ! isset( $_GET['pco_confirm'] ) ) {
-		global $wp;
-		$order_id = $wp->query_vars['order-pay'];
+		$order_id = absint( get_query_var( 'order-pay', 0 ) );
 
 		// Create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order( $order_id );
-		$order = wc_get_order( $order_id );
+		$order        = wc_get_order( $order_id );
 
-		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) { 
+		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
 			$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
 			$order->save();
 		}
@@ -61,11 +58,11 @@ function pco_wc_show_pay_for_order_snippet() {
 			$text    = __( 'Payson API Error: ', 'payson-checkout-for-woocommerce' ) . '%s %s'
 			?>
 		<ul class="woocommerce-error" role="alert">
-			<li><?php echo sprintf( $text, $code, $message ); ?></li>
+			<li><?php printf( $text, $code, $message ); ?></li>
 		</ul>
 			<?php
 			// Remove the post meta so that we can create a new order with payson on an error.
-			$order->delete_meta_data('_payson_checkout_id');
+			$order->delete_meta_data( '_payson_checkout_id' );
 			$order->save();
 		} else {
 			$snippet = $payson_order['snippet'];
@@ -84,10 +81,10 @@ function pco_wc_show_pay_for_order_snippet() {
 function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
 	$order = wc_get_order( $order_id );
 	if ( $subscription ) {
-		$payment_id = $order->get_meta('_payson_subscription_id');
+		$payment_id = $order->get_meta( '_payson_subscription_id' );
 
 	} else {
-		$payment_id = $order->get_meta('_payson_checkout_id');
+		$payment_id = $order->get_meta( '_payson_checkout_id' );
 	}
 	$payson_order = pco_wc_get_order( $payment_id, $subscription );
 
@@ -101,11 +98,11 @@ function pco_wc_thankyou_page_snippet( $order_id, $subscription ) {
  * Maybe creates the Payson order.
  *
  * @param boolean $subscription If this is a subscription order or not.
- * @return array
+ * @return array|WP_Error
  */
 function pco_wc_maybe_create_payson_order( $subscription = false ) {
 	// Check if we have a payment id. If we do get the order. Also check if previous session was a subscription or not.
-	if ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription || is_order_received_page() ) {
+	if ( ( WC()->session->get( 'payson_payment_id' ) && WC()->session->get( 'payson_subscription' ) === $subscription ) || is_order_received_page() ) {
 
 		// Check if the initial selected currency for the order has been changed - if so, force a new checkout session.
 		if ( ! pco_compare_currencies() ) {
@@ -217,8 +214,9 @@ function pco_wc_show_another_gateway_button() {
  * @return void
  */
 function pco_maybe_show_validation_error_message() {
-	if ( isset( $_GET['pco_validation_error'] ) && is_checkout() ) {
-		$errors = json_decode( base64_decode( $_GET['pco_validation_error'] ), true );
+	$validation_errors = wc_get_var( $_GET['pco_validation_error'] );
+	if ( $validation_errors && is_checkout() ) {
+		$errors = json_decode( base64_decode( $validation_errors ), true );
 		foreach ( $errors as $error ) {
 			wc_add_notice( $error, 'error' );
 		}
@@ -232,16 +230,21 @@ function pco_maybe_show_validation_error_message() {
  * @return array|WP_Error
  */
 function pco_wc_create_order( $order_id = null ) {
-	if ( null === $order_id ) {
+	if ( PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+		return PCO_WC()->create_recurring_order->request();
+	}
+
+	if ( empty( $order_id ) ) {
 		// Check if the cart has a subscription.
-		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+		if ( PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription() ) {
 			return PCO_WC()->create_recurring_order->request();
 		}
 		return PCO_WC()->create_order->request();
 	} else {
 		$order = wc_get_order( $order_id );
+
 		// Check if the order has a subscription.
-		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+		if ( PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order ) ) {
 			$subscription_id = WC()->session->get( 'payson_payment_id' );
 			return PCO_WC()->recurring_payment->request( $subscription_id, $order_id );
 		}
@@ -259,7 +262,7 @@ function pco_wc_create_order( $order_id = null ) {
 function pco_wc_get_order( $payment_id = null, $subscription = false ) {
 	$payment_id = ( null === $payment_id ) ? WC()->session->get( 'payson_payment_id' ) : $payment_id;
 	// Check if the cart has a subscription.
-	if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() || $subscription ) {
+	if ( PaysonCheckout_For_WooCommerce_Subscriptions::cart_has_subscription() || $subscription ) {
 		return PCO_WC()->get_recurring_order->request( $payment_id );
 	}
 	return PCO_WC()->get_order->request( $payment_id );
@@ -279,7 +282,7 @@ function pco_check_valid_order_status( $payson_order ) {
 	}
 	$payson_order_status = $payson_order['status'];
 	// If the order status is an invalid status, return false.
-	if ( in_array( $payson_order_status, $invalid_status ) ) {
+	if ( in_array( $payson_order_status, $invalid_status, true ) ) {
 		return false;
 	}
 	// If we get here return true.
@@ -308,15 +311,14 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
 			if ( 'readyToShip' === $payson_order['status'] ) {
 				$order->payment_complete( $pco_order_id );
 				$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $pco_order_id );
-				$order->save();
 			} else {
 				$order->set_status( 'on-hold', __( 'Invalid status for payson order', 'payson-checkout-for-woocommerce' ) );
-				$order->save();
 			}
 		} else {
 			$order->set_status( 'on-hold', __( 'Waiting for verification from Payson notification callback', 'payson-checkout-for-woocommerce' ) );
-			$order->save();
 		}
+
+		$order->save();
 	}
 }
 
@@ -324,7 +326,7 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
  * Checks whether the initial currency for the order has remained the same throughout the checkout process.
  * If the currency changes, a new Payson Checkout session will be forced.
  *
- * @return void
+ * @return bool
  */
 function pco_compare_currencies() {
 	$currency = WC()->session->get( 'pco_selected_currency' );
@@ -332,4 +334,30 @@ function pco_compare_currencies() {
 		return false;
 	}
 	return true;
+}
+
+/**
+ * Get the Woo order by Payson order ID.
+ *
+ * @param string $payson_order_id The Payson order ID.
+ * @return WC_Order|false The Woo order or false if not found.
+ */
+function pco_get_order_by_payson_id( $payson_order_id ) {
+	$meta_key = '_payson_checkout_id';
+	$orders   = wc_get_orders(
+		array(
+			'meta_key'   => $meta_key,
+			'meta_value' => $payson_order_id,
+			'limit'      => 1,
+			'orderby'    => 'date',
+			'order'      => 'DESC',
+		)
+	);
+
+	$order = reset( $orders );
+	if ( empty( $order ) || $payson_order_id !== $order->get_meta( $meta_key ) ) {
+		return false;
+	}
+
+	return $order;
 }

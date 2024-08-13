@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 6.4.2
+Tested up to: 6.6.1
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 8.5.0
+WC tested up to: 9.2.0
 
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,6 +38,13 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.08.13    - version 3.8.0 =
+* Feature       - Payson events will now be scheduled using the WC Action Scheduler.
+* Fix           - Fixed an issue where the customer could not change subscription payment method to Payson.
+* Fix           - Fixed an issue where Payson would not be available as payment option on the pay for order page if the order's payment method was not set to Payson.
+* Fix           - Removed reference to the deprecated wc_get_log_file_path function.
+* Tweak         - Prevent the Payson order from being modified if it has already been finalized.
+
 = 2024.02.02    - version 3.7.1 =
 * Fix           - Fixed an issue where the incorrect language would be set in the checkout.
 

@@ -14,17 +14,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class PaysonCheckout_For_WooCommerce_Request {
 	/**
-	 * The request enviroment.
+	 * The request environment.
 	 *
-	 * @var $enviroment
+	 * @var $environment
 	 */
-	public $enviroment;
+	public $environment;
 
 	/**
 	 * Class constructor.
 	 */
 	public function __construct() {
-		$this->set_enviroment();
+		$this->set_environment();
 	}
 
 	/**
@@ -37,18 +37,18 @@ class PaysonCheckout_For_WooCommerce_Request {
 	}
 
 	/**
-	 * Sets the enviroment.
+	 * Sets the environment.
 	 *
 	 * @return void
 	 */
-	public function set_enviroment() {
+	public function set_environment() {
 		$payson_settings = get_option( 'woocommerce_paysoncheckout_settings' );
 
 		if ( ! empty( $payson_settings ) ) {
 			if ( 'no' === $payson_settings['testmode'] ) {
-				$this->enviroment = 'https://api.payson.se/2.0/';
+				$this->environment = 'https://api.payson.se/2.0/';
 			} else {
-				$this->enviroment = 'https://test-api.payson.se/2.0/';
+				$this->environment = 'https://test-api.payson.se/2.0/';
 			}
 		}
 	}

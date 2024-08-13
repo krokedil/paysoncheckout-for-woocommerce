@@ -102,7 +102,7 @@ $settings = array(
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable logging', 'woocommerce-gateway-paysoncheckout' ),
 		'default'     => 'no',
-		'description' => sprintf( __( 'Log ' . $this->method_title . ' events in <code>%s</code>', 'woocommerce-gateway-paysoncheckout' ), wc_get_log_file_path( 'paysoncheckout' ) ), // phpcs:ignore
+		'description' => sprintf( __( 'You can find the log file <a href="%s">here</a>.', 'woocommerce-gateway-paysoncheckout' ), admin_url('admin.php?page=wc-status&tab=logs')), // phpcs:ignore
 	),
 );
 

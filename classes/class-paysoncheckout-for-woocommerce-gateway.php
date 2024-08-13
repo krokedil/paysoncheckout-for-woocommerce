@@ -96,21 +96,13 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_available() {
-		$is_pay_for_order = false;
-		if ( is_wc_endpoint_url( 'order-pay' ) ) {
-			$is_pay_for_order = true;
-			global $wp;
-			$order_id = $wp->query_vars['order-pay'];
-			$order    = wc_get_order( $order_id );
-		}
-
-		$is_subscription = false;
-		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
-			$is_subscription = true;
-		}
-
 		// Check if is enabled.
 		if ( 'yes' !== $this->enabled ) {
+			return false;
+		}
+
+		// Required fields check.
+		if ( ! $this->merchant_id || ! $this->api_key ) {
 			return false;
 		}
 
@@ -119,9 +111,21 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 			return false;
 		}
 
-		// Required fields check.
-		if ( ! $this->merchant_id || ! $this->api_key ) {
-			return false;
+		$is_pay_for_order = false;
+		if ( is_wc_endpoint_url( 'order-pay' ) ) {
+			$is_pay_for_order = true;
+			$order_id         = absint( get_query_var( 'order-pay', 0 ) );
+			$order            = wc_get_order( $order_id );
+		}
+
+		$is_subscription = false;
+		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+			$is_subscription = true;
+		}
+
+		// Check if the current request is for changing the subscription's payment method.
+		if ( PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+			return true;
 		}
 
 		// Don't display the payment method if we have an order with to low amount.
@@ -164,12 +168,26 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 *
 	 * @param string $order_id The WooCommerce order ID.
 	 *
-	 * @return array
+	 * @return array|bool
 	 */
 	public function process_payment( $order_id ) {
-		$order = wc_get_order( $order_id );
-		// Confirm the order.
-		if ( class_exists( 'WC_Subscriptions_Order' ) && wcs_order_contains_subscription( $order ) ) {
+		$order           = wc_get_order( $order_id );
+		$is_subscription = PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order );
+		if ( $is_subscription && PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
+			return array(
+				'result'   => 'success',
+				'redirect' => add_query_arg(
+					array(
+						'gateway'               => 'paysoncheckout',
+						'change_payment_method' => $order_id,
+						'_wpnonce'              => wc_get_var( $_GET['_wpnonce'] ),
+					),
+					$order->get_checkout_payment_url( true )
+				),
+			);
+		}
+
+		if ( $is_subscription ) {
 			$result = $this->update_recurring_reference( $order_id );
 		} else {
 			$result = $this->update_order_reference( $order_id );

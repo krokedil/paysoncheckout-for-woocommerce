@@ -91,6 +91,10 @@ class PaysonCheckout_For_WooCommerce_Logger {
 			),
 			'timestamp'      => date( 'Y-m-d H:i:s' ),
 			'plugin_version' => PAYSONCHECKOUT_VERSION,
+			'php_version'    => phpversion(),
+			'wc_version'     => WC()->version,
+			'wp_version'     => get_bloginfo( 'version' ),
+			'user_agent'     => wc_get_user_agent(),
 			'stacktrace'     => self::get_stack(),
 		);
 	}
