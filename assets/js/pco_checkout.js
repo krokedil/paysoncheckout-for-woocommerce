@@ -93,7 +93,7 @@ jQuery( function ( $ ) {
 
         failOrder: function ( event, error_message ) {
             // Send false and cancel
-            this.paymentInitiationCancelled()
+            pco_wc.paymentInitiationCancelled()
 
             // Renable the form.
             $( "body" ).trigger( "updated_checkout" )
