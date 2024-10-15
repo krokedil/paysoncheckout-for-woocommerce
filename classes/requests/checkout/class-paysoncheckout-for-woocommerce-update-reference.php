@@ -32,7 +32,7 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 
 		// If the PID is missing, and we have an WP_Error, an internal server error has most likely happened.
 		if ( empty( $payment_id ) && is_wp_error( $payson_data ) ) {
-			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update reference request.', $request_args, json_encode( $payson_data, true ), 500 );
+			$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update reference request.', $request_args, $request_url, json_encode( $payson_data, true ), 500 );
 			PaysonCheckout_For_WooCommerce_Logger::log( $log );
 			return $payson_data;
 		}
@@ -42,7 +42,7 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 		$formatted_response = $this->process_response( $response, $request_args, $request_url );
 
 		// Log the request.
-		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update reference request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
+		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'PUT', 'Payson update reference request.', $request_args, $request_url, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
 		return $formatted_response;
 	}
