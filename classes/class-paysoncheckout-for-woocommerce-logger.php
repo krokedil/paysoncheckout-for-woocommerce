@@ -111,9 +111,9 @@ class PaysonCheckout_For_WooCommerce_Logger {
 			$extra_data = '';
 			if ( ! in_array( $data['function'], array( 'get_stack', 'format_log' ), true ) ) {
 				if ( in_array( $data['function'], array( 'do_action', 'apply_filters' ), true ) ) {
-					if ( isset( $data['object'] ) ) {
+					if ( isset( $data['object'] ) && $data['object'] instanceof WP_Hook ) {
 						$priority   = $data['object']->current_priority();
-						$name       = key( $data['object']->current() );
+						$name       = is_array( $data['object']->current() ) ? key( $data['object']->current() ) : '';
 						$extra_data = $name . ' : ' . $priority;
 					}
 				}
