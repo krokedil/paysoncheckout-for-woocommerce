@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 6.6.1
+Tested up to: 6.6.2
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 9.2.0
+WC tested up to: 9.3.3
 
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,6 +38,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.10.23    - version 3.8.1 =
+* Fix           - Fixed a critical error in the logger.
+* Tweak         - Added the request URL to the logging data for improved traceability.
+
 = 2024.08.13    - version 3.8.0 =
 * Feature       - Payson events will now be scheduled using the WC Action Scheduler.
 * Fix           - Fixed an issue where the customer could not change subscription payment method to Payson.

@@ -29,7 +29,7 @@ class PaysonCheckout_For_WooCommerce_Create_Recurring_Order extends PaysonChecko
 		}
 
 		// Log the request.
-		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'POST', 'Payson create recurring order request.', $request_args, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
+		$log = PaysonCheckout_For_WooCommerce_Logger::format_log( $payment_id, 'POST', 'Payson create recurring order request.', $request_args, $request_url, json_decode( wp_remote_retrieve_body( $response ), true ), $code );
 		PaysonCheckout_For_WooCommerce_Logger::log( $log );
 
 		$formatted_response = $this->process_response( $response, $request_args, $request_url );

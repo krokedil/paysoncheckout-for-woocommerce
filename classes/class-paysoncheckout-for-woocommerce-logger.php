@@ -62,11 +62,12 @@ class PaysonCheckout_For_WooCommerce_Logger {
 	 * @param string $method The method.
 	 * @param string $title The title for the log.
 	 * @param array  $request_args The request args.
+	 * @param string $request_url The request URL.
 	 * @param array  $response The response.
 	 * @param string $code The status code.
 	 * @return array
 	 */
-	public static function format_log( $payment_id, $method, $title, $request_args, $response, $code ) {
+	public static function format_log( $payment_id, $method, $title, $request_args, $request_url, $response, $code ) {
 		// Unset the snipp et to prevent issues in the response.
 		if ( isset( $response['snippet'] ) ) {
 			unset( $response['snippet'] );
@@ -80,11 +81,13 @@ class PaysonCheckout_For_WooCommerce_Logger {
 				$request_args['body'] = wp_json_encode( $request_body );
 			}
 		}
+
 		return array(
 			'id'             => $payment_id,
 			'type'           => $method,
 			'title'          => $title,
 			'request'        => $request_args,
+			'request_url'    => $request_url,
 			'response'       => array(
 				'body' => $response,
 				'code' => $code,
@@ -111,9 +114,9 @@ class PaysonCheckout_For_WooCommerce_Logger {
 			$extra_data = '';
 			if ( ! in_array( $data['function'], array( 'get_stack', 'format_log' ), true ) ) {
 				if ( in_array( $data['function'], array( 'do_action', 'apply_filters' ), true ) ) {
-					if ( isset( $data['object'] ) ) {
+					if ( isset( $data['object'] ) && $data['object'] instanceof WP_Hook ) {
 						$priority   = $data['object']->current_priority();
-						$name       = key( $data['object']->current() );
+						$name       = is_array( $data['object']->current() ) ? key( $data['object']->current() ) : '';
 						$extra_data = $name . ' : ' . $priority;
 					}
 				}

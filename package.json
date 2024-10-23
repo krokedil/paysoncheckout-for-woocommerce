@@ -1,6 +1,6 @@
 {
 	"name": "paysoncheckout-for-woocommerce",
-	"version": "3.8.0",
+	"version": "3.8.1",
 	"description": "PaysonCheckout for WooCommerce",
 	"main": "gulpfile.js",
 	"repository": "https://github.com/krokedil/paysoncheckout-for-woocommerce.git",
@@ -21,7 +21,7 @@
 		"graceful-fs": "^4.2.10"
 	},
 	"scripts": {
-		"lint": "yarn prettier assets/js --paren-spacing --tab-width 4 --print-width 120 --no-semi --write",
+		"lint": "npx prettier assets/js --paren-spacing --tab-width 4 --print-width 120 --no-semi --write",
 		"makepot": "npx gulp makePOT",
 		"build": "npm run lint && npm run makepot"
 	}
