@@ -38,6 +38,10 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.10.23    - version 3.8.1 =
+* Fix           - Fixed a critical error in the logger.
+* Tweak         - Added the request URL to the logging data for improved traceability.
+
 = 2024.08.13    - version 3.8.0 =
 * Feature       - Payson events will now be scheduled using the WC Action Scheduler.
 * Fix           - Fixed an issue where the customer could not change subscription payment method to Payson.
