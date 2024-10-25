@@ -110,7 +110,16 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 			);
 		}
 
-		$subscription = ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) ? true : false;
+		$subscription = false;
+		if ( class_exists( 'WC_Subscriptions_Cart' ) ) {
+			foreach ( WC()->cart->get_cart() as $cart_item ) {
+				$product_id = $cart_item['product_id'];
+				if ( WC_Subscriptions_Product::is_subscription( $product_id ) ) {
+					$subscription = true;
+					break;
+				}
+			}
+		}
 
 		if ( ! $subscription && ! WC()->cart->needs_payment() ) {
 			wp_send_json_success(
