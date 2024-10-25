@@ -199,6 +199,10 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 
 		$order = $this->get_wc_order_by_payment_id( $payment_id );
 
+		if ( ! $order ) {
+			return false;
+		}
+
 		if ( 'readyToShip' === $payson_order['status'] ) {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order approved by Payson: ' . $payment_id );
 			$order->add_order_note( sprintf( __( 'Subscription payment approved by Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
