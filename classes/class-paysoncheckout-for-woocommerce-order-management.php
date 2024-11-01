@@ -267,7 +267,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 					if ( $product_total > 0 || $product_tax > 0 ) {
 						$order->add_order_note( $this->error_message['refund_negative'] );
 						$order->save();
-						return false;
+						return new WP_Error( 'refund_negative', $this->error_message['refund_negative'] );
 					}
 
 					$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $product_total + $product_tax );
@@ -291,7 +291,7 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 				if ( $shipping_total > 0 || $shipping_tax > 0 ) {
 					$order->add_order_note( $this->error_message['refund_negative'] );
 					$order->save();
-					return false;
+					return new WP_Error( 'refund_negative', $this->error_message['refund_negative'] );
 				}
 
 				$payson_item['creditedAmount']              = $payson_item['creditedAmount'] + abs( $shipping_total + $shipping_tax );
@@ -318,19 +318,19 @@ class PaysonCheckout_For_WooCommerce_Order_Management {
 		$payson_order                                     = PCO_WC()->refund_order->request( $order_id, $payson_order_tmp, $payment_id, $subscription );
 
 		if ( is_wp_error( $payson_order ) ) {
-			// If error, save error message and return false.
+			// If error, save error message and return WP_Error.
 			$code          = $payson_order->get_error_code();
 			$message       = $payson_order->get_error_message();
 			$text          = __( 'Payson API Error on Payson refund: ', 'payson-checkout-for-woocommerce' ) . '%s %s';
 			$formated_text = sprintf( $text, $code, $message );
 			$order->add_order_note( $formated_text );
-			return false;
+			return new WP_Error( $code, strip_tags( $formated_text ) );
 		}
 
 		// If Payson do not accept the refund, the totalCreditedAmount we sent, and the one they respond with, will not match.
 		if ( $payson_order_tmp['order']['totalCreditedAmount'] !== $payson_order['order']['totalCreditedAmount'] ) {
 			$order->add_order_note( __( 'Credited amount mismatch', 'payson-checkout-for-woocommerce' ) );
-			return false;
+			return new WP_Error( __( 'Credited amount mismatch', 'payson-checkout-for-woocommerce' ) );
 		}
 
 		$order->add_order_note( __( 'PaysonCheckout reservation was successfully refunded for ', 'woocommerce-gateway-paysoncheckout' ) . wc_price( abs( $refund_order->get_total() ) ) );
