@@ -72,7 +72,9 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 				PaysonCheckout_For_WooCommerce_Logger::log( 'Could not get order in notification callback. Payment ID: ' . $payment_id . 'Is subscription order: ' . $subscription );
 			} else {
 				$order = pco_get_order_by_payson_id( $payment_id );
-				if ( ! empty( $order ) && ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) ) {
+				if ( empty( $order ) ) {
+					PaysonCheckout_For_WooCommerce_Logger::log( 'Could not get WooCommerce order by payment id. No matching order found for payment id: ' . $payment_id );
+				} elseif ( 'readyToShip' === $payson_order['status'] || 'customerSubscribed' === $payson_order['status'] ) {
 					$this->maybe_schedule_callback( $payment_id );
 					$status = 'HTTP/1.1 200 OK';
 				}
@@ -198,6 +200,11 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 		}
 
 		$order = $this->get_wc_order_by_payment_id( $payment_id );
+
+		if ( empty( $order ) ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Could not get WooCommerce order by payment id. No matching order found for payment id: ' . $payment_id );
+			return false;
+		}
 
 		if ( 'readyToShip' === $payson_order['status'] ) {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'Recurring payment order approved by Payson: ' . $payment_id );
