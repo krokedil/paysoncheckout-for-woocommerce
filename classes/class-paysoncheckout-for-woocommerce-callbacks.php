@@ -194,12 +194,13 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 	 */
 	public function process_recurring_payment( $payment_id, $payson_order ) {
 		if ( is_wp_error( $payson_order ) ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Error processing recurring payment. Error message: ' . $payson_order->get_error_message() . ', Payment ID: ' . $payment_id );
 			return false;
 		}
 
 		$order = $this->get_wc_order_by_payment_id( $payment_id );
-
 		if ( ! $order ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Error processing recurring payment. WooCommerce order not found. Payment ID: ' . $payment_id );
 			return false;
 		}
 
