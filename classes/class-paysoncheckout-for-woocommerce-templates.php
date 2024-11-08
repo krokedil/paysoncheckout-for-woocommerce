@@ -100,7 +100,10 @@ class PaysonCheckout_For_WooCommerce_Templates {
 						$paysoncheckout_pay_template = PAYSONCHECKOUT_PATH . '/templates/paysoncheckout-pay.php';
 					}
 
-					if ( 'paysoncheckout' === $order->get_payment_method() ) {
+					// On the change-payment-method page, we do not change the payment method until the subscription has been confirmed as paid.
+					// Therefore, we must check if the `gateway` query parameter is set, as get_payment_method will refer to the previous payment method.
+					$gateway = filter_input( INPUT_GET, 'gateway', FILTER_SANITIZE_SPECIAL_CHARS );
+					if ( 'paysoncheckout' === $order->get_payment_method() || 'paysoncheckout' === $gateway ) {
 						if ( ! isset( $_GET['confirm'] ) ) {
 							$template = $paysoncheckout_pay_template;
 						}
