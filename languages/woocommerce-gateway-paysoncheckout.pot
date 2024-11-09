@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Krokedil <info@krokedil.se>\n"
 "Last-Translator: Krokedil <info@krokedil.se>\n"
-"POT-Creation-Date: 2024-10-23 12:10+0000\n"
+"POT-Creation-Date: 2024-11-09 03:23+0000\n"
 "Report-Msgid-Bugs-To: http://krokedil.se\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
@@ -34,11 +34,11 @@ msgid "Payson"
 msgstr ""
 
 #. translators: %s is an error message either from WordPress or Payson.
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:232
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:242
 msgid "The Payson order could not be retrieved: %s"
 msgstr ""
 
-#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:246
+#: ../classes/class-paysoncheckout-for-woocommerce-gateway.php:256
 msgid "It seems like the WooCommerce and Payson total amount differs. Please, try again."
 msgstr ""
 

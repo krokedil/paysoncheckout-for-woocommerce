@@ -423,8 +423,8 @@ jQuery( function ( $ ) {
                 dataType: "json",
                 success: function ( data ) {
                     try {
-                        if (data.nonce) {
-                            pco_wc.updateNonce(data.nonce)
+                        if ( data.nonce ) {
+                            pco_wc.updateNonce( data.nonce )
                         }
 
                         if ( "success" === data.result ) {
@@ -479,15 +479,15 @@ jQuery( function ( $ ) {
 
         /**
          * Update the nonce values.
-         * 
-         * This is required when a guest user is logged in and the nonce values are updated since the nonce is associated with the user ID (0 for guests). 
-         * 
+         *
+         * This is required when a guest user is logged in and the nonce values are updated since the nonce is associated with the user ID (0 for guests).
+         *
          * @param {object} nonce An object containing the new nonce values.
          */
-        updateNonce: function (nonce) {
-            for (const key in nonce) {
-                if (key in pco_wc_params) {
-                    pco_wc_params[key] = nonce[key]
+        updateNonce: function ( nonce ) {
+            for ( const key in nonce ) {
+                if ( key in pco_wc_params ) {
+                    pco_wc_params[ key ] = nonce[ key ]
                 }
             }
         },
