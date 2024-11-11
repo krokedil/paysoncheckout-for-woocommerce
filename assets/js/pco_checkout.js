@@ -423,6 +423,10 @@ jQuery( function ( $ ) {
                 dataType: "json",
                 success: function ( data ) {
                     try {
+                        if ( data.nonce ) {
+                            pco_wc.updateNonce( data.nonce )
+                        }
+
                         if ( "success" === data.result ) {
                             pco_wc.logToFile(
                                 'Successfully placed order. Sending "paymentInitiationVerified" to Payson',
@@ -471,6 +475,21 @@ jQuery( function ( $ ) {
                     nonce: pco_wc_params.log_to_file_nonce,
                 },
             } )
+        },
+
+        /**
+         * Update the nonce values.
+         *
+         * This is required when a guest user is logged in and the nonce values are updated since the nonce is associated with the user ID (0 for guests).
+         *
+         * @param {object} nonce An object containing the new nonce values.
+         */
+        updateNonce: function ( nonce ) {
+            for ( const key in nonce ) {
+                if ( key in pco_wc_params ) {
+                    pco_wc_params[ key ] = nonce[ key ]
+                }
+            }
         },
 
         /*

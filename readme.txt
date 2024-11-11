@@ -2,10 +2,10 @@
 Contributors: krokedil, niklashogefjord
 Tags: ecommerce, e-commerce, woocommerce, payson, paysoncheckout2.0
 Requires at least: 4.5
-Tested up to: 6.6.2
+Tested up to: 6.7
 Requires PHP: 7.0
 WC requires at least: 4.0.0
-WC tested up to: 9.3.3
+WC tested up to: 9.4.0
 
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -38,6 +38,13 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
+= 2024.11.11    - version 3.9.0 =
+* Feature       - Added support for paying for a subscription through pay for order.
+* Fix           - Fixed AJAX request failing due to outdated nonce.
+* Fix           - Fixed a critical error happening when handling the callback without verifing that a matching order was found.
+* Tweak         - When a refund fails, we'll let WooCommerce know. This ensure an alert is displayed to the user.
+* Tweak         - Improved logging for better traceability.
+
 = 2024.10.23    - version 3.8.1 =
 * Fix           - Fixed a critical error in the logger.
 * Tweak         - Added the request URL to the logging data for improved traceability.

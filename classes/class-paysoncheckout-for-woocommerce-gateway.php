@@ -119,7 +119,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 		}
 
 		$is_subscription = false;
-		if ( class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription() ) {
+		if ( class_exists( 'WC_Subscriptions_Cart' ) && ( WC_Subscriptions_Cart::cart_contains_subscription() || wcs_cart_contains_renewal() ) ) {
 			$is_subscription = true;
 		}
 
@@ -171,6 +171,14 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 	 * @return array|bool
 	 */
 	public function process_payment( $order_id ) {
+		$nonce = array(
+			'address_changed_nonce'       => wp_create_nonce( 'pco_wc_address_changed' ),
+			'update_order_nonce'          => wp_create_nonce( 'pco_wc_update_checkout' ),
+			'change_payment_method_nonce' => wp_create_nonce( 'pco_wc_change_payment_method' ),
+			'get_order_nonce'             => wp_create_nonce( 'pco_wc_get_order' ),
+			'log_to_file_nonce'           => wp_create_nonce( 'pco_wc_log_js' ),
+		);
+
 		$order           = wc_get_order( $order_id );
 		$is_subscription = PaysonCheckout_For_WooCommerce_Subscriptions::order_has_subscription( $order );
 		if ( $is_subscription && PaysonCheckout_For_WooCommerce_Subscriptions::is_change_payment_method() ) {
@@ -184,6 +192,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 					),
 					$order->get_checkout_payment_url( true )
 				),
+				'nonce'    => $nonce,
 			);
 		}
 
@@ -199,6 +208,7 @@ class PaysonCheckout_For_WooCommerce_Gateway extends WC_Payment_Gateway {
 
 		return array(
 			'result' => 'success',
+			'nonce'  => $nonce,
 		);
 	}
 

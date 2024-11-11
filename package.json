@@ -1,6 +1,6 @@
 {
 	"name": "paysoncheckout-for-woocommerce",
-	"version": "3.8.1",
+	"version": "3.9.0",
 	"description": "PaysonCheckout for WooCommerce",
 	"main": "gulpfile.js",
 	"repository": "https://github.com/krokedil/paysoncheckout-for-woocommerce.git",
