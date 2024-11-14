@@ -77,6 +77,7 @@ class PaysonCheckout_For_WooCommerce_Create_Order extends PaysonCheckout_For_Woo
 			'headers' => $this->get_headers(),
 			'method'  => 'POST',
 			'body'    => wp_json_encode( $this->get_body( $order_id ) ),
+			'timeout' => apply_filters( 'pco_request_timeout', 10 ),
 		);
 	}
 }

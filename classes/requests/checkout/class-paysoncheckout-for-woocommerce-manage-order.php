@@ -47,6 +47,7 @@ class PaysonCheckout_For_WooCommerce_Manage_Order extends PaysonCheckout_For_Woo
 			'headers' => $this->get_headers(),
 			'method'  => 'PUT',
 			'body'    => wp_json_encode( $payson_data ),
+			'timeout' => apply_filters( 'pco_request_timeout', 10 ),
 		);
 	}
 }
