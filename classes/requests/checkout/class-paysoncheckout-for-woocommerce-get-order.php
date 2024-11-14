@@ -46,7 +46,7 @@ class PaysonCheckout_For_WooCommerce_Get_Order extends PaysonCheckout_For_WooCom
 		return array(
 			'headers' => $this->get_headers(),
 			'method'  => 'GET',
-			'timeout' => apply_filters( 'payson_request_timeout', 10 ),
+			'timeout' => apply_filters( 'pco_request_timeout', 10 ),
 		);
 	}
 }
