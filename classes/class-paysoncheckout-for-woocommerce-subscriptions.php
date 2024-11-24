@@ -25,7 +25,7 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 		// On successful payment method change, the customer is redirected back to the subscription view page. We need to handle the redirect and create a recurring token.
 		add_action( 'woocommerce_account_view-subscription_endpoint', array( $this, 'handle_redirect_from_change_payment_method' ) );
 
-		// Delay updating the subscription's payment method until payment confirmation.
+		// CHANGE PAYMENT METHOD ONLY: Delay updating the subscription's payment method until payment confirmation.
 		// This ensures that if the customer cancels the action, the subscription retains its existing payment method.
 		add_filter( 'woocommerce_subscriptions_update_payment_via_pay_shortcode', array( $this, 'handle_change_payment_method' ), 10, 2 );
 	}
