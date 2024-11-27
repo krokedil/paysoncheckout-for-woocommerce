@@ -280,6 +280,11 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 				return;
 			}
 
+			// Include the autoloader from composer. If it fails, we'll just return and not load the plugin. But an admin notice will show to the merchant.
+			if ( ! self::init_composer() ) {
+				return;
+			}
+
 			// Includes Classes.
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-gateway.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-templates.php';
@@ -290,6 +295,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-order-management.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-status.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-subscriptions.php';
+			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-metabox.php';
 
 			// Request classes.
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-request.php';
@@ -423,6 +429,54 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 				PAYSONCHECKOUT_VERSION
 			);
 			wp_enqueue_style( 'pco' );
+		}
+
+		/**
+		 * Initialize composers autoloader. If it does not exist, bail and show an error.
+		 *
+		 * @return mixed
+		 */
+		private static function init_composer() {
+			// $autoloader = __DIR__ . '/dependencies/vendor/autoload.php';
+			$autoloader = __DIR__ . '/vendor/autoload.php';
+
+			if ( ! is_readable( $autoloader ) ) {
+				self::missing_autoloader();
+				return false;
+			}
+
+			$autoloader_result = require $autoloader;
+			if ( ! $autoloader_result ) {
+				return false;
+			}
+
+			return $autoloader_result;
+		}
+
+		/**
+		 * Print error message for missing autoloader.
+		 *
+		 * @return void
+		 */
+		private static function missing_autoloader() {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( // phpcs:ignore
+					esc_html__( 'Your installation of Payson Checkout for WooCommerce is not complete. If you installed this plugin directly from Github please refer to the README.DEV.md file in the plugin.', 'payson-checkout-for-woocommerce' )
+				);
+			}
+
+			add_action(
+				'admin_notices',
+				function () {
+					?>
+						<div class="notice notice-error">
+							<p>
+								<?php echo esc_html__( 'Your installation of Payson Checkout for WooCommerce is not complete. If you installed this plugin directly from Github please refer to the README.DEV.md file in the plugin.', 'payson-checkout-for-woocommerce' ); ?>
+							</p>
+						</div>
+						<?php
+				}
+			);
 		}
 	}
 	PaysonCheckout_For_WooCommerce::get_instance();
