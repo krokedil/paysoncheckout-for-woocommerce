@@ -24,6 +24,10 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 
 		// On successful payment method change, the customer is redirected back to the subscription view page. We need to handle the redirect and create a recurring token.
 		add_action( 'woocommerce_account_view-subscription_endpoint', array( $this, 'handle_redirect_from_change_payment_method' ) );
+
+		// CHANGE PAYMENT METHOD ONLY: Delay updating the subscription's payment method until payment confirmation.
+		// This ensures that if the customer cancels the action, the subscription retains its existing payment method.
+		add_filter( 'woocommerce_subscriptions_update_payment_via_pay_shortcode', array( $this, 'handle_change_payment_method' ), 10, 2 );
 	}
 
 	/**
@@ -108,20 +112,36 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 	public function handle_redirect_from_change_payment_method( $order_id ) {
 		$is_confirm = wc_get_var( $_REQUEST['pco_confirm'] );
 		if ( ! empty( $is_confirm ) ) {
-			$subscription    = self::get_subscription( $order_id );
+			$subscription = self::get_subscription( $order_id );
+			$subscription->set_payment_method( 'paysoncheckout' );
+
 			$subscription_id = $subscription->get_meta( '_payson_checkout_id' );
 			$subscription->update_meta_data( '_payson_subscription_id', $subscription_id );
 
 			// translators: %s Subscription id.
 			$note = sprintf( __( 'Subscription payment method changed to Payson. Subscription id: %s.', 'payson-checkout-for-woocommerce' ), $subscription_id );
 			$subscription->add_order_note( $note );
-
 			$subscription->save();
 
 			if ( function_exists( 'wc_print_notice' ) ) {
 				wc_print_notice( __( 'Subscription payment method changed to Payson.' ), 'success' );
 			}
 		}
+	}
+
+	/**
+	 * Do not change payment method until the subscription has been confirmed as paid.
+	 *
+	 * @param bool   $change_payment_method Whether to change the payment method.
+	 * @param string $new_payment_method The new payment method.
+	 * @return bool
+	 */
+	public function handle_change_payment_method( $change_payment_method, $new_payment_method ) {
+		if ( 'paysoncheckout' === $new_payment_method ) {
+			$change_payment_method = false;
+		}
+
+		return $change_payment_method;
 	}
 
 	/**
