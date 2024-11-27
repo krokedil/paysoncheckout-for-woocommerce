@@ -437,8 +437,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 		 * @return mixed
 		 */
 		private static function init_composer() {
-			// $autoloader = __DIR__ . '/dependencies/vendor/autoload.php';
-			$autoloader = __DIR__ . '/vendor/autoload.php';
+			$autoloader = __DIR__ . '/dependencies/autoload.php';
 
 			if ( ! is_readable( $autoloader ) ) {
 				self::missing_autoloader();
