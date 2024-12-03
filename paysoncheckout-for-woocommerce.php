@@ -290,6 +290,7 @@ if ( ! class_exists( 'PaysonCheckout_For_WooCommerce' ) ) {
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-order-management.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-status.php';
 			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-subscriptions.php';
+			include_once PAYSONCHECKOUT_PATH . '/classes/class-paysoncheckout-for-woocommerce-admin-actions.php';
 
 			// Request classes.
 			include_once PAYSONCHECKOUT_PATH . '/classes/requests/class-paysoncheckout-for-woocommerce-request.php';

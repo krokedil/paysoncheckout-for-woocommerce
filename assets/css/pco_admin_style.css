@@ -1,0 +1,28 @@
+.faulty-actions {
+    clear: both;
+    display: block;
+    border: solid 1px #b32d2e;
+    margin-top: 195px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#order_data .faulty-actions p {
+    margin: 0;
+    color: #b32d2e;
+    margin-bottom: 5px;
+}
+
+.faulty-actions ul {
+    display: none;
+    overflow: auto;
+}
+
+.faulty-actions ul li {
+    padding: 10px;
+    margin: 0;
+}
+
+.faulty-actions ul li:nth-child(odd) {
+    background: #f0f0f0;
+}
