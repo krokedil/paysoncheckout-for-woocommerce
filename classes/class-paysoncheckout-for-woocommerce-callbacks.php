@@ -139,11 +139,6 @@ class PaysonCheckout_For_WooCommerce_Callbacks {
 			} else {
 				$result = $order_confirmation->confirm_payson_order( $order->get_id() );
 			}
-
-			if ( $result ) {
-				$order->add_order_note( __( 'Order confirmed on a callback from Payson.', 'woocommerce-gateway-payson' ) );
-				PaysonCheckout_For_WooCommerce_Logger::log( 'Order confirmed on a callback from Payson. Payment id: ' . $payment_id . ' Order id: ' . $order->get_id() );
-			}
 		} else {
 			PaysonCheckout_For_WooCommerce_Logger::log( 'API-callback hit. We could NOT find Payment id ' . $payment_id );
 		}

@@ -163,17 +163,18 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 			return;
 		}
 
-		PaysonCheckout_For_WooCommerce_Logger::log( 'Attempting to confirm Payson order. Payment id: ' . $payment_id . ', order id: ' . $order_id );
-
 		if ( is_array( $payson_order ) && 'readyToShip' === $payson_order['status'] ) {
 			// Set post meta and complete order.
 			$order->update_meta_data( '_payson_checkout_id', $payment_id );
 			$order->save();
 			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
 			$order->payment_complete( $payson_order['purchaseId'] );
+
+			$order->add_order_note( __( 'Order confirmed on a callback from Payson.', 'woocommerce-gateway-payson' ) );
+			PaysonCheckout_For_WooCommerce_Logger::log( 'Order confirmed on a callback from Payson. Payment id: ' . $payment_id . ' Order id: ' . $order_id );
+
 			return true;
 		}
 	}
-
 }
 PaysonCheckout_For_WooCommerce_Confirmation::get_instance();
