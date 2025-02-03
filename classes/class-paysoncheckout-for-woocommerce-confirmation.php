@@ -134,7 +134,9 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 
 		// Save meta data to order and subscriptions.
 		$order->update_meta_data( '_payson_subscription_id', $subscription_id );
-		$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
+		if ( isset( $payson_order['purchaseId'] ) ) {
+			$order->update_meta_data( '_payson_checkout_id', $payson_order['purchaseId'] );
+		}
 		$order->save();
 
 		if ( 'readyToShip' === $payson_order['status'] ) {
@@ -172,6 +174,5 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 			return true;
 		}
 	}
-
 }
 PaysonCheckout_For_WooCommerce_Confirmation::get_instance();

@@ -71,8 +71,10 @@ class PaysonCheckout_For_WooCommerce_Subscriptions {
 				$subscription->payment_failed();
 			}
 		} else {
-			$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
-			$order->save();
+			if ( isset( $payson_order['purchaseId'] ) ) {
+				$order->update_meta_data( '_payson_checkout_id', $payson_order['purchaseId'] );
+				$order->save();
+			}
 			// translators: %s Payson order id.
 			$renewal_order->add_order_note( sprintf( __( 'Pending subscription payment made with Payson, waiting on confirmation from Payson. Payson order id: %s', 'payson-checkout-for-woocommerce' ), $payson_order['id'] ) );
 			// Set transaction id and wait for callback to complete the order.

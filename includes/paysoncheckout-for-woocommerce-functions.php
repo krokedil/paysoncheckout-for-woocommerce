@@ -47,8 +47,8 @@ function pco_wc_show_pay_for_order_snippet() {
 		$payson_order = pco_wc_create_order( $order_id );
 		$order        = wc_get_order( $order_id );
 
-		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
-			$order->update_meta_data( '_payson_checkout_id', $payson_order['id'] );
+		if ( is_array( $payson_order ) && isset( $payson_order['purchaseId'] ) ) {
+			$order->update_meta_data( '_payson_checkout_id', $payson_order['purchaseId'] );
 			$order->save();
 		}
 		if ( is_wp_error( $payson_order ) ) {
@@ -155,8 +155,8 @@ function pco_wc_maybe_create_payson_order( $subscription = false ) {
 	} else {
 		// Else create the order and maybe set payment id.
 		$payson_order = pco_wc_create_order();
-		if ( is_array( $payson_order ) && isset( $payson_order['id'] ) ) {
-			WC()->session->set( 'payson_payment_id', $payson_order['id'] );
+		if ( is_array( $payson_order ) && isset( $payson_order['purchaseId'] ) ) {
+			WC()->session->set( 'payson_payment_id', $payson_order['purchaseId'] );
 			WC()->session->set( 'payson_subscription', $subscription );
 		}
 	}
