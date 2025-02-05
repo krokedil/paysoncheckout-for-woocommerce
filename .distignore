@@ -4,6 +4,7 @@
 /.devcontainer
 /node_modules
 /tests
+/vendor
 .editorconfig
 .distignore
 .gitignore
