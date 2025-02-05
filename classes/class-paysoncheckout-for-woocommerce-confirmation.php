@@ -169,7 +169,6 @@ class PaysonCheckout_For_WooCommerce_Confirmation {
 			$order->save();
 			$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $payment_id );
 			$order->payment_complete( $payson_order['purchaseId'] );
-
 			return true;
 		}
 	}
