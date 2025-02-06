@@ -311,6 +311,7 @@ function pco_confirm_payson_order( $pco_order_id, $order_id = null ) {
 			if ( 'readyToShip' === $payson_order['status'] ) {
 				$order->payment_complete( $pco_order_id );
 				$order->add_order_note( __( 'Payment via PaysonCheckout, order ID: ', 'payson-checkout-for-woocommerce' ) . $pco_order_id );
+				PaysonCheckout_For_WooCommerce_Logger::log( 'Payson order confirmed. Payson order id: ' . $pco_order_id . ' Order id: ' . $order_id );
 			} else {
 				$order->set_status( 'on-hold', __( 'Invalid status for payson order', 'payson-checkout-for-woocommerce' ) );
 			}
