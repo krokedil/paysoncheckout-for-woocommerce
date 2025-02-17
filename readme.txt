@@ -38,7 +38,7 @@ More information on how to get started can be found in the [plugin documentation
 
 
 == CHANGELOG ==
-= 2025.02.10    - version 3.9.1 =
+= 2025.02.17    - version 3.9.1 =
 * Tweak         - Added filter to set request timeout for API calls.
 * Tweak         - Added logging on order confirmation.
 * Fix           - Delayed updating the subscription's payment method until payment confirmation.
