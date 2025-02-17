@@ -83,6 +83,7 @@ class PaysonCheckout_For_WooCommerce_Update_Reference extends PaysonCheckout_For
 			'headers' => $this->get_headers(),
 			'method'  => 'PUT',
 			'body'    => wp_json_encode( $this->get_body( $order_id, $payson_data ) ),
+			'timeout' => apply_filters( 'pco_request_timeout', 10 ),
 		);
 	}
 }
