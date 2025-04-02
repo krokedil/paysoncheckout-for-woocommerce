@@ -276,14 +276,20 @@ class PaysonCheckout_For_WooCommerce_AJAX extends WC_AJAX {
 	 * @return void
 	 */
 	public static function pco_wc_log_js() {
-		$nonce = isset( $_POST['nonce'] ) ? sanitize_key( $_POST['nonce'] ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'pco_wc_log_js' ) ) {
-			wp_send_json_error( 'bad_nonce' );
-			exit;
-		}
-		$posted_message    = isset( $_POST['message'] ) ? sanitize_text_field( wp_unslash( $_POST['message'] ) ) : '';
+		check_ajax_referer( 'pco_wc_log_js', 'nonce' );
 		$payson_payment_id = WC()->session->get( 'payson_payment_id' );
-		$message           = "Frontend JS $payson_payment_id: $posted_message";
+
+		// Get the content size of the request.
+		$post_size = (int) $_SERVER['CONTENT_LENGTH'] ?? 0;
+
+		// If the post data is too long, log an error message and return.
+		if ( $post_size > 1024 ) {
+			PaysonCheckout_For_WooCommerce_Logger::log( "Frontend JS $payson_payment_id: message too long and can't be logged." );
+			wp_send_json_success(); // Return success to not stop anything in the frontend if this happens.
+		}
+
+		$posted_message = filter_input( INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$message        = "Frontend JS $payson_payment_id: $posted_message";
 		PaysonCheckout_For_WooCommerce_Logger::log( $message );
 		wp_send_json_success();
 	}
