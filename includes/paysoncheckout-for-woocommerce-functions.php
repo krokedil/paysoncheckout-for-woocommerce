@@ -130,7 +130,7 @@ function pco_wc_maybe_create_payson_order( $subscription = false ) {
 			);
 
 			if ( count( $order ) > 0 ) {
-
+				// Redirect the customer and set the order key and payson payment id so that the order can be confirmed.
 				wp_safe_redirect(
 					add_query_arg(
 						array(
@@ -141,8 +141,6 @@ function pco_wc_maybe_create_payson_order( $subscription = false ) {
 						$order[0]->get_checkout_order_received_url()
 					)
 				);
-
-				pco_confirm_payson_order( WC()->session->get( 'payson_payment_id' ), $order[0]->get_id() );
 				exit;
 			}
 		}
