@@ -1,6 +1,38 @@
 {
     "require-dev": {
         "php-stubs/woocommerce-stubs": "^7.8",
-        "wp-coding-standards/wpcs": "^2.3"
+        "dealerdirect/phpcodesniffer-composer-installer": "*",
+        "object-calisthenics/phpcs-calisthenics-rules": "*",
+        "phpcompatibility/php-compatibility": "*",
+        "phpcompatibility/phpcompatibility-wp": "*",
+        "wp-coding-standards/wpcs": "*",
+        "wpify/scoper": "3.1.3"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "wpify/scoper": true
+        }
+    },
+    "scripts": {
+        "lint": "./vendor/bin/phpcs --standard=phpcs.xml.dist --colors --encoding=utf-8 -p `git ls-files --others --exclude-standard -c|grep \\.php`",
+        "lint-fix": "./vendor/bin/phpcbf --standard=phpcs.xml.dist --colors --encoding=utf-8 -p `git ls-files --others --exclude-standard -c|grep \\.php`",
+        "install-codestandards": [
+            "PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
+        ],
+        "post-install-cmd": [
+            "@install-codestandards"
+        ]
+    },
+    "extra": {
+        "wpify-scoper": {
+            "prefix": "KrokedilPaysonDeps",
+            "folder": "dependencies",
+            "autorun": true,
+            "globals": [
+                "wordpress",
+                "woocommerce"
+            ]
+        }
     }
 }

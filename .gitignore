@@ -6,3 +6,9 @@ wp/
 /vendor
 
 .DS_Store
+
+dependencies/*
+!dependencies/.gitkeep
+
+# tmp folders from scoping.
+tmp*
