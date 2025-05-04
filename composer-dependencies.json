@@ -1,0 +1,19 @@
+{
+    "require": {
+        "php": ">=7.4",
+        "krokedil/settings-page": "^1.1.0"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:krokedil/settings-page"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
